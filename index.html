@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dhaka Climate Week</title>
+  <title>Dhaka Climate Week — January 17–21, 2027</title>
   <meta name="description" content="Dhaka Climate Week — a 5-day platform to build the climate ecosystem Dhaka urgently needs. January 17–21, 2027." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -12,885 +12,701 @@
   <style>
     :root {
       --green: #1B4D2E;
+      --green-deep: #102B1A;
       --green-mid: #245c38;
-      --green-faint: rgba(27, 77, 46, 0.08);
       --mustard: #FAC55A;
-      --mustard-soft: rgba(250, 197, 90, 0.18);
       --coral: #C84B2F;
-      --ink: #111111;
-      --ink-soft: rgba(17, 17, 17, 0.62);
-      --linen: #F4F3EF;
+      --ink: #161616;
+      --ink-soft: rgba(22, 22, 22, 0.6);
+      --linen: #EFEDE6;
+      --paper: #FBFAF6;
       --white: #ffffff;
+      --line: rgba(22, 22, 22, 0.12);
+      --line-light: rgba(244, 243, 239, 0.16);
+
       --font-display: 'Roboto', sans-serif;
       --font-body: 'Roboto Slab', serif;
-      --max: 1180px;
-      --px: clamp(1.25rem, 4.5vw, 2.75rem);
-      --rule: 1px solid var(--green);
-      --rule-soft: 1px solid rgba(27, 77, 46, 0.22);
-      --header: 72px;
-      --top: var(--header);
-      --section: clamp(5rem, 11vw, 8.5rem);
-      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+      --max: 1280px;
+      --px: clamp(1.25rem, 5vw, 4rem);
+      --header: 80px;
+      --section: clamp(5rem, 11vw, 9.5rem);
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html {
       scroll-behavior: smooth;
-      scroll-padding-top: calc(var(--top) + 1.25rem);
+      scroll-padding-top: calc(var(--header) + 1rem);
+      -webkit-text-size-adjust: 100%;
     }
     body {
       font-family: var(--font-body);
-      font-weight: 400;
       color: var(--ink);
-      background: var(--linen);
-      line-height: 1.65;
+      background: var(--paper);
+      line-height: 1.6;
       -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
     }
-
     img { max-width: 100%; display: block; }
     a { color: inherit; text-decoration: none; }
     button, input { font: inherit; border-radius: 0; }
-
-    :focus-visible {
-      outline: 2px solid var(--mustard);
-      outline-offset: 3px;
-    }
+    ::selection { background: var(--mustard); color: var(--green-deep); }
+    :focus-visible { outline: 2px solid var(--coral); outline-offset: 3px; }
 
     .skip {
-      position: absolute;
-      top: -100%;
-      left: var(--px);
-      z-index: 999;
-      padding: 0.65rem 1.1rem;
-      background: var(--green);
-      color: var(--mustard);
-      font-family: var(--font-display);
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
+      position: absolute; top: -200%; left: var(--px); z-index: 999;
+      padding: 0.7rem 1.2rem; background: var(--green); color: var(--mustard);
+      font-family: var(--font-display); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em;
     }
-    .skip:focus { top: 0.75rem; }
+    .skip:focus { top: 1rem; }
 
-    .wrap {
-      width: min(calc(100% - 2 * var(--px)), var(--max));
-      margin-inline: auto;
-    }
+    .wrap { width: min(calc(100% - 2 * var(--px)), var(--max)); margin-inline: auto; position: relative; z-index: 1; }
 
-    .wrap--wide {
-      width: min(calc(100% - 2 * var(--px)), 1320px);
-      margin-inline: auto;
+    /* ── Dhaka motif decorations (live in empty section padding bands) ── */
+    .deco {
+      position: absolute; z-index: 0; pointer-events: none; user-select: none;
+      fill: none; stroke: currentColor; stroke-width: 1.3;
+      stroke-linecap: round; stroke-linejoin: round;
+      color: var(--green); opacity: 0.15;
     }
-
-    .media {
-      position: relative;
-      overflow: hidden;
-      background: var(--green-mid);
-    }
-    .media img,
-    .media video {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    .deco--rickshaw { width: clamp(118px, 12vw, 196px); aspect-ratio: 130 / 100; }
+    .deco--metro    { width: clamp(150px, 17vw, 290px); aspect-ratio: 170 / 90; }
+    .deco--boat     { width: clamp(104px, 11vw, 176px); aspect-ratio: 130 / 110; }
+    .deco--lily     { width: clamp(84px, 9vw, 150px); aspect-ratio: 110 / 100; }
+    .deco--skyline  { width: clamp(170px, 20vw, 360px); aspect-ratio: 190 / 90; }
+    @media (max-width: 700px) {
+      .deco--metro, .deco--skyline { display: none; }
+      .deco { opacity: 0.12; }
+      .deco--rickshaw { width: 110px; }
+      .deco--boat { width: 96px; }
+      .deco--lily { width: 80px; }
     }
 
-    /* ── Type ── */
-    .eyebrow {
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 0.68rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--coral);
+    .media { position: relative; overflow: hidden; background: var(--green-mid); }
+    .media img, .media video {
+      position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
     }
-    .eyebrow--light { color: var(--mustard); }
+
+    /* ── Typography ── */
+    .kicker {
+      display: inline-flex; align-items: center; gap: 0.7rem;
+      font-family: var(--font-display); font-weight: 700; font-size: 0.7rem;
+      letter-spacing: 0.18em; text-transform: uppercase; color: var(--coral);
+    }
+    .kicker::before { content: ""; width: 1.75rem; height: 1.5px; background: currentColor; }
+    .kicker--light { color: var(--mustard); }
+    .kicker--plain::before { display: none; }
 
     .display {
-      font-family: var(--font-display);
-      font-weight: 900;
-      color: var(--green);
-      letter-spacing: -0.035em;
-      line-height: 0.95;
+      font-family: var(--font-display); font-weight: 900; color: var(--green);
+      letter-spacing: -0.04em; line-height: 0.95;
     }
-    .display--hero {
-      font-size: clamp(2.75rem, 8vw, 5.5rem);
-    }
-    .display--hero em {
-      font-style: normal;
-      color: var(--coral);
-    }
-    .display--section {
-      font-size: clamp(1.65rem, 3.2vw, 2.35rem);
-      line-height: 1.08;
-      letter-spacing: -0.025em;
-    }
-    .display--card {
-      font-size: 1.05rem;
-      line-height: 1.25;
-      letter-spacing: -0.01em;
-    }
-    .display--light { color: var(--linen); }
+    .display em { font-style: normal; color: var(--coral); }
+    .h-hero { font-size: clamp(3rem, 9.5vw, 7.5rem); line-height: 0.9; }
+    .h-sec  { font-size: clamp(2rem, 5.2vw, 3.6rem); }
+    .h-card { font-size: clamp(1.15rem, 2vw, 1.45rem); line-height: 1.15; letter-spacing: -0.02em; }
+    .light { color: var(--paper); }
 
     .lede {
-      font-size: clamp(1rem, 1.6vw, 1.125rem);
-      line-height: 1.7;
-      color: var(--ink-soft);
-      max-width: 36rem;
+      font-size: clamp(1.02rem, 1.4vw, 1.18rem); line-height: 1.7;
+      color: var(--ink-soft); max-width: 40rem;
     }
-    .lede--light {
-      color: rgba(244, 243, 239, 0.82);
-      max-width: 34rem;
-    }
+    .lede--light { color: rgba(244, 243, 239, 0.8); }
 
-    .sec-intro {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      align-items: end;
-      gap: 2rem;
-      margin-bottom: clamp(2rem, 4vw, 3rem);
-      padding-bottom: 1.25rem;
-      border-bottom: var(--rule-soft);
+    /* ── Section heads ── */
+    .head { margin-bottom: clamp(2.5rem, 5vw, 4rem); }
+    .head__top {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1.5rem; padding-bottom: 1.25rem; margin-bottom: clamp(1.5rem, 3vw, 2.25rem);
+      border-bottom: 1px solid var(--line);
     }
-    .sec-intro__idx {
-      font-family: var(--font-display);
-      font-weight: 900;
-      font-size: clamp(3rem, 5vw, 4.5rem);
-      line-height: 1;
-      color: var(--green);
-      opacity: 0.12;
+    .head--light .head__top { border-color: var(--line-light); }
+    .head__num {
+      font-family: var(--font-display); font-weight: 700; font-size: 0.72rem;
+      letter-spacing: 0.14em; color: var(--ink-soft); white-space: nowrap;
     }
+    .head--light .head__num { color: rgba(244, 243, 239, 0.55); }
+    .head__title { max-width: 24ch; }
 
     /* ── Buttons ── */
     .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      padding: 0.85rem 1.5rem;
-      border: var(--rule);
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 0.72rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      cursor: pointer;
-      background: var(--green);
-      color: var(--mustard);
-      transition: background 0.22s var(--ease), color 0.22s var(--ease), border-color 0.22s var(--ease);
+      position: relative; display: inline-flex; align-items: center; gap: 0.6rem;
+      padding: 1rem 1.7rem; font-family: var(--font-display); font-weight: 700;
+      font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
+      background: var(--green); color: var(--mustard); border: 1px solid var(--green);
+      transition: background 0.3s var(--ease), color 0.3s var(--ease), border-color 0.3s var(--ease), transform 0.3s var(--ease);
     }
-    .btn:hover { background: var(--ink); border-color: var(--ink); color: var(--mustard); }
+    .btn .arw { transition: transform 0.3s var(--ease); }
+    .btn:hover { background: var(--green-deep); border-color: var(--green-deep); }
+    .btn:hover .arw { transform: translateX(4px); }
+    .btn--mustard { background: var(--mustard); color: var(--green-deep); border-color: var(--mustard); }
+    .btn--mustard:hover { background: var(--paper); color: var(--green-deep); border-color: var(--paper); }
     .btn--line { background: transparent; color: var(--green); }
     .btn--line:hover { background: var(--green); color: var(--mustard); border-color: var(--green); }
-    .btn--mustard { background: var(--mustard); color: var(--green); border-color: var(--green); }
-    .btn--mustard:hover { background: var(--green); color: var(--mustard); }
-    .btn--sm { padding: 0.6rem 1.1rem; font-size: 0.65rem; }
+    .btn--line-light { background: transparent; color: var(--paper); border-color: rgba(244,243,239,0.4); }
+    .btn--line-light:hover { background: var(--mustard); color: var(--green-deep); border-color: var(--mustard); }
+    .btn--sm { padding: 0.65rem 1.2rem; font-size: 0.66rem; }
+
+    /* ── Scroll progress ── */
+    .progress {
+      position: fixed; top: 0; left: 0; height: 3px; width: 100%;
+      background: var(--coral); transform: scaleX(0); transform-origin: left;
+      z-index: 260; transition: transform 0.1s linear;
+    }
 
     /* ── Header ── */
     .site-header {
-      position: fixed;
-      inset: 0 0 auto 0;
-      z-index: 200;
-      height: var(--header);
-      background: rgba(244, 243, 239, 0.92);
-      backdrop-filter: blur(10px);
-      border-bottom: var(--rule-soft);
-      transition: border-color 0.25s var(--ease), background 0.25s var(--ease);
+      position: fixed; inset: 0 0 auto 0; z-index: 250; height: var(--header);
+      display: flex; align-items: center;
+      background: transparent; border-bottom: 1px solid transparent;
+      transition: height 0.4s var(--ease), background 0.45s var(--ease), border-color 0.45s var(--ease);
     }
     .site-header.is-scrolled {
-      background: rgba(244, 243, 239, 0.98);
-      border-bottom-color: var(--green);
+      height: 64px;
+      background: rgba(251, 250, 246, 0.88);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+      border-bottom-color: var(--line);
     }
+    .bar { display: flex; align-items: center; gap: clamp(1rem, 3vw, 2.5rem); }
 
-    .bar {
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1.5rem;
-    }
+    .logo { position: relative; display: inline-block; line-height: 0; flex-shrink: 0; }
+    .logo img { height: 34px; width: auto; transition: opacity 0.4s var(--ease); }
+    .logo__dark { position: absolute; inset: 0; opacity: 0; }
+    .is-scrolled .logo__light { opacity: 0; }
+    .is-scrolled .logo__dark { opacity: 1; }
+    .logo--foot img { height: 46px; }
 
-    .logo img { height: 34px; width: auto; }
-    .logo--foot img { height: 42px; }
-
-    .nav {
-      display: flex;
-      align-items: center;
-      gap: clamp(1rem, 2.2vw, 1.75rem);
-    }
+    .nav { display: flex; align-items: center; gap: clamp(0.85rem, 1.8vw, 1.6rem); margin-inline: auto; }
     .nav a {
-      font-family: var(--font-display);
-      font-weight: 500;
-      font-size: 0.72rem;
-      letter-spacing: 0.04em;
-      color: var(--green);
-      padding: 0.25rem 0;
-      border-bottom: 2px solid transparent;
-      transition: color 0.2s, border-color 0.2s;
+      position: relative; font-family: var(--font-display); font-weight: 500;
+      font-size: 0.78rem; letter-spacing: 0.01em; color: rgba(244,243,239,0.92);
+      padding: 0.4rem 0; transition: color 0.3s var(--ease);
     }
-    .nav a:hover,
-    .nav a.is-active { color: var(--coral); border-bottom-color: var(--coral); }
+    .nav a::after {
+      content: ""; position: absolute; left: 0; bottom: -2px; width: 100%; height: 1.5px;
+      background: var(--coral); transform: scaleX(0); transform-origin: left;
+      transition: transform 0.32s var(--ease);
+    }
+    .is-scrolled .nav a { color: var(--green); }
+    .nav a:hover { color: var(--coral); }
+    .nav a:hover::after, .nav a.is-active::after { transform: scaleX(1); }
+    .nav a.is-active { color: var(--coral); }
+
+    .bar__cta { display: flex; align-items: center; gap: 1.15rem; flex-shrink: 0; }
+    .bar__date {
+      font-family: var(--font-display); font-weight: 700; font-size: 0.7rem;
+      letter-spacing: 0.08em; text-transform: uppercase; color: rgba(244,243,239,0.85);
+      padding-right: 1.15rem; border-right: 1px solid rgba(244,243,239,0.28);
+      transition: color 0.4s var(--ease), border-color 0.4s var(--ease);
+    }
+    .is-scrolled .bar__date { color: var(--ink-soft); border-right-color: var(--line); }
 
     .menu-btn {
-      display: none;
-      background: none;
-      border: var(--rule);
-      width: 42px;
-      height: 38px;
-      cursor: pointer;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 5px;
+      display: none; background: none; border: 1px solid currentColor; color: var(--paper);
+      width: 46px; height: 42px; cursor: pointer; flex-direction: column;
+      align-items: center; justify-content: center; gap: 5px; flex-shrink: 0;
     }
-    .menu-btn span {
-      display: block;
-      width: 18px;
-      height: 1.5px;
-      background: var(--green);
-      transition: transform 0.2s, opacity 0.2s;
-    }
+    .is-scrolled .menu-btn { color: var(--green); }
+    .menu-btn span { display: block; width: 18px; height: 1.5px; background: currentColor; transition: transform 0.25s var(--ease), opacity 0.25s var(--ease); }
     .menu-btn.is-open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
     .menu-btn.is-open span:nth-child(2) { opacity: 0; }
     .menu-btn.is-open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
 
+    /* ── Mobile menu overlay ── */
+    .mobile-menu {
+      position: fixed; inset: 0; z-index: 240; display: none;
+      flex-direction: column; justify-content: center; gap: clamp(1.5rem, 5vw, 3rem);
+      padding: calc(var(--header) + 1.75rem) var(--px) 2.5rem;
+      background: var(--green-deep); color: var(--paper);
+      opacity: 0; visibility: hidden; transform: translateY(-10px);
+      transition: opacity 0.45s var(--ease), transform 0.45s var(--ease), visibility 0.45s;
+    }
+    .mobile-menu.is-open { opacity: 1; visibility: visible; transform: none; }
+    .mobile-menu__nav { display: flex; flex-direction: column; }
+    .mobile-menu__nav a {
+      font-family: var(--font-display); font-weight: 900; font-size: clamp(1.75rem, 8vw, 2.85rem);
+      letter-spacing: -0.03em; color: var(--paper); padding: 0.5rem 0;
+      border-bottom: 1px solid var(--line-light);
+      transition: color 0.25s var(--ease), padding-left 0.3s var(--ease);
+    }
+    .mobile-menu__nav a:hover { color: var(--mustard); padding-left: 0.6rem; }
+    .mobile-menu__nav a.mm-cta { color: var(--mustard); border-bottom: none; }
+    .mobile-menu__foot { display: flex; flex-wrap: wrap; gap: 1.75rem 3rem; }
+    .mobile-menu__foot .mm-label { display: block; font-family: var(--font-display); font-weight: 700; font-size: 0.64rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mustard); margin-bottom: 0.5rem; }
+    .mobile-menu__foot a, .mobile-menu__foot p { font-size: 0.92rem; color: rgba(244,243,239,0.74); line-height: 1.7; }
+    .mobile-menu__foot a:hover { color: var(--mustard); }
+
+    body.menu-open { overflow: hidden; }
+    body.menu-open .site-header { background: var(--paper); border-bottom-color: var(--line); }
+    body.menu-open .logo__light { opacity: 0; }
+    body.menu-open .logo__dark { opacity: 1; }
+    body.menu-open .menu-btn { color: var(--green); }
+
     /* ── Hero ── */
-    .hero {
-      margin-top: var(--top);
-      min-height: calc(100svh - var(--top));
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
-      border-bottom: var(--rule);
+    .hero { position: relative; min-height: 100svh; display: flex; align-items: flex-end; isolation: isolate; }
+    .hero__bg { position: absolute; inset: 0; z-index: -2; }
+    .hero__bg img { filter: saturate(1.03); transform-origin: 60% 40%; animation: kenburns 24s ease-in-out infinite alternate; }
+    @keyframes kenburns { from { transform: scale(1.001); } to { transform: scale(1.09); } }
+    .hero__scrim {
+      position: absolute; inset: 0; z-index: -1;
+      background:
+        linear-gradient(180deg, rgba(16,43,26,0.55) 0%, rgba(16,43,26,0) 28%),
+        linear-gradient(0deg, rgba(16,43,26,0.9) 4%, rgba(16,43,26,0.35) 38%, rgba(16,43,26,0) 64%),
+        linear-gradient(90deg, rgba(16,43,26,0.55) 0%, rgba(16,43,26,0) 55%);
     }
-
-    .hero__copy {
-      padding: clamp(3rem, 7vw, 6rem) var(--px);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 1.75rem;
-      border-right: var(--rule-soft);
-      background: var(--linen);
+    .hero__inner {
+      padding-top: calc(var(--header) + 2rem);
+      padding-bottom: clamp(2.5rem, 6vw, 4.5rem);
+      display: flex; flex-direction: column; gap: clamp(1.25rem, 2.5vw, 1.9rem);
     }
-
-    .hero__meta {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 0.75rem 1.25rem;
-    }
+    .hero__title { max-width: 16ch; }
+    .hero__lede { font-size: clamp(1.05rem, 1.6vw, 1.25rem); line-height: 1.6; color: rgba(244,243,239,0.9); max-width: 38rem; }
+    .hero__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.25rem; }
     .hero__date {
-      display: inline-flex;
-      align-items: center;
-      padding: 0.55rem 1rem;
-      background: var(--mustard);
-      color: var(--green);
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 0.72rem;
-      letter-spacing: 0.06em;
-      border: var(--rule);
+      display: inline-flex; align-items: center; padding: 0.55rem 1.05rem;
+      background: var(--mustard); color: var(--green-deep);
+      font-family: var(--font-display); font-weight: 700; font-size: 0.74rem; letter-spacing: 0.06em;
     }
-    .hero__loc {
-      font-family: var(--font-display);
-      font-size: 0.72rem;
-      font-weight: 500;
-      letter-spacing: 0.04em;
-      color: var(--ink-soft);
+    .hero__pill {
+      font-family: var(--font-display); font-size: 0.74rem; font-weight: 500; letter-spacing: 0.03em;
+      color: rgba(244,243,239,0.85); display: inline-flex; align-items: center; gap: 0.6rem;
     }
+    .hero__pill::before { content: ""; width: 6px; height: 6px; background: var(--coral); border-radius: 50%; }
+    .hero__actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.4rem; }
+    .hero__scroll {
+      position: absolute; right: var(--px); bottom: clamp(2.5rem, 6vw, 4.5rem); z-index: 1;
+      writing-mode: vertical-rl; font-family: var(--font-display); font-weight: 700;
+      font-size: 0.64rem; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(244,243,239,0.7);
+      display: inline-flex; align-items: center; gap: 0.8rem;
+    }
+    .hero__scroll::after { content: ""; width: 1px; height: 3rem; background: rgba(244,243,239,0.5); animation: cue 2s var(--ease) infinite; transform-origin: top; }
+    @keyframes cue { 0%,100% { transform: scaleY(0.3); opacity: 0.3; } 50% { transform: scaleY(1); opacity: 1; } }
 
-    .hero__actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      margin-top: 0.25rem;
+    /* ── Marquee ── */
+    .strip { background: var(--green-deep); overflow: hidden; }
+    .strip__row { display: flex; width: max-content; padding: 0.9rem 0; animation: slide 40s linear infinite; }
+    .strip span {
+      font-family: var(--font-display); font-weight: 700; font-size: 0.72rem; letter-spacing: 0.1em;
+      text-transform: uppercase; color: rgba(250, 197, 90, 0.92); white-space: nowrap;
+      display: inline-flex; align-items: center;
     }
+    .strip span::after { content: "✦"; color: var(--coral); font-size: 0.6rem; margin: 0 2.75rem; }
+    @keyframes slide { to { transform: translateX(-50%); } }
 
-    .hero__media {
-      display: grid;
-      grid-template-rows: 1fr auto;
-      background: var(--green);
+    /* ── Statement ── */
+    .statement { background: var(--paper); position: relative; overflow: hidden; }
+    .statement__inner {
+      padding: clamp(4rem, 9vw, 7rem) 0;
+      display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+      gap: clamp(2rem, 5vw, 5rem); align-items: start;
     }
-    .hero__media .media { min-height: 0; }
-    .hero__media video { object-position: center; }
-
-    .hero__caption {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 1.5rem;
-      align-items: center;
-      padding: 1.35rem 1.75rem;
-      border-top: var(--rule-soft);
-      background: var(--green);
+    .statement__big {
+      font-family: var(--font-display); font-weight: 700;
+      font-size: clamp(1.5rem, 3vw, 2.35rem); line-height: 1.28; letter-spacing: -0.02em; color: var(--ink);
     }
-    .hero__caption-num {
-      font-family: var(--font-display);
-      font-weight: 900;
-      font-size: 2.5rem;
-      line-height: 1;
-      color: var(--mustard);
-    }
-    .hero__caption p {
-      font-size: 0.9rem;
-      line-height: 1.55;
-      color: rgba(244, 243, 239, 0.88);
-      max-width: 28rem;
-    }
+    .statement__big b { color: var(--green); font-weight: 900; }
+    .statement__side { display: flex; flex-direction: column; align-items: flex-start; gap: 1.25rem; padding-top: 0.4rem; }
 
     /* ── Stats ── */
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      background: var(--white);
-      border-bottom: var(--rule);
-    }
-    .stats div {
-      padding: 1.75rem 1.25rem;
-      text-align: center;
-      border-right: var(--rule-soft);
-    }
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); }
+    .stats div { padding: clamp(2rem, 4vw, 3rem) 1.25rem; text-align: center; border-right: 1px solid var(--line); }
     .stats div:last-child { border-right: none; }
     .stats strong {
-      display: block;
-      font-family: var(--font-display);
-      font-weight: 900;
-      font-size: clamp(1.85rem, 3.5vw, 2.5rem);
-      color: var(--green);
-      line-height: 1;
-      letter-spacing: -0.03em;
+      display: block; font-family: var(--font-display); font-weight: 900;
+      font-size: clamp(2.25rem, 5vw, 3.5rem); color: var(--green); line-height: 1; letter-spacing: -0.04em;
     }
     .stats span {
-      display: block;
-      margin-top: 0.45rem;
-      font-family: var(--font-display);
-      font-size: 0.68rem;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--ink-soft);
+      display: block; margin-top: 0.7rem; font-family: var(--font-display); font-size: 0.68rem;
+      font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft);
     }
 
     /* ── Sections ── */
-    .sec {
-      padding: var(--section) 0;
-      scroll-margin-top: var(--top);
-    }
-    .sec--white { background: var(--white); border-bottom: var(--rule-soft); }
-    .sec--linen { background: var(--linen); border-bottom: var(--rule-soft); }
+    .sec { padding: var(--section) 0; scroll-margin-top: var(--header); position: relative; overflow: hidden; }
+    .sec--paper { background: var(--paper); }
+    .sec--linen { background: var(--linen); }
+    .sec--green { background: var(--green); color: var(--paper); }
 
     /* About */
-    .about {
-      display: grid;
-      grid-template-columns: 1.08fr 0.92fr;
-      gap: 0;
-      border: var(--rule-soft);
-      background: var(--white);
+    .about { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: clamp(2rem, 5vw, 5rem); align-items: center; }
+    .about__visual { position: relative; }
+    .about__img { aspect-ratio: 5 / 4; min-height: 320px; }
+    .about__badge {
+      position: absolute; right: clamp(-0.5rem, 1vw, -1.25rem); bottom: clamp(-1rem, -1vw, -1.5rem);
+      background: var(--mustard); color: var(--green-deep); padding: 1.15rem 1.4rem; max-width: 14rem;
     }
-    .about__img {
-      border-right: var(--rule-soft);
-      min-height: 460px;
-    }
-    .about__body {
-      padding: clamp(2.5rem, 5vw, 3.75rem);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 1.35rem;
-    }
-    .facts {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1.25rem;
-      margin-top: 0.5rem;
-      padding-top: 1.75rem;
-      border-top: var(--rule-soft);
-    }
-    .facts b {
-      display: block;
-      font-family: var(--font-display);
-      font-weight: 900;
-      font-size: 1.35rem;
-      color: var(--green);
-      letter-spacing: -0.02em;
-    }
-    .facts small {
-      display: block;
-      margin-top: 0.2rem;
-      font-size: 0.78rem;
-      color: var(--ink-soft);
-      line-height: 1.4;
-    }
+    .about__badge b { display: block; font-family: var(--font-display); font-weight: 900; font-size: 1.85rem; line-height: 1; letter-spacing: -0.03em; }
+    .about__badge span { font-family: var(--font-display); font-size: 0.66rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .about__body { display: flex; flex-direction: column; gap: 1.4rem; }
+    .facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 0.5rem; padding-top: 2rem; border-top: 1px solid var(--line); }
+    .facts b { display: block; font-family: var(--font-display); font-weight: 900; font-size: clamp(1.4rem, 2.5vw, 1.85rem); color: var(--green); letter-spacing: -0.03em; }
+    .facts small { display: block; margin-top: 0.3rem; font-size: 0.8rem; color: var(--ink-soft); line-height: 1.4; }
 
     /* Why */
-    .why {
-      display: grid;
-      grid-template-columns: 0.95fr 1.05fr;
-      border: var(--rule-soft);
-      overflow: hidden;
-    }
-    .why__text {
-      padding: clamp(2.75rem, 5vw, 4rem);
-      background: var(--green);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 1.35rem;
-    }
-    .why__visual {
-      position: relative;
-      min-height: 500px;
-    }
-    .why__visual .media { position: absolute; inset: 0; }
+    .why { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 5rem); align-items: center; }
+    .why__text { display: flex; flex-direction: column; gap: 1.4rem; }
+    .why__visual { position: relative; aspect-ratio: 4 / 5; min-height: 400px; }
     .why__quote {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      padding: 1.25rem 1.75rem;
-      background: var(--mustard);
-      color: var(--green);
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 0.78rem;
-      letter-spacing: 0.02em;
-      line-height: 1.5;
-      border-top: var(--rule);
+      position: absolute; left: clamp(1rem, 2vw, 1.5rem); right: clamp(1rem, 2vw, 1.5rem); bottom: clamp(1rem, 2vw, 1.5rem);
+      padding: 1.2rem 1.45rem; background: var(--mustard); color: var(--green-deep);
+      font-family: var(--font-display); font-weight: 700; font-size: 0.82rem; line-height: 1.45;
     }
 
     /* Themes */
-    .pillars {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      border: var(--rule-soft);
-      background: var(--white);
+    .pillars { border-top: 1px solid var(--line); }
+    .pillar {
+      display: grid; grid-template-columns: 4rem minmax(0, 1.1fr) minmax(0, 1.2fr) auto;
+      gap: clamp(1rem, 3vw, 2.5rem); align-items: center; padding: clamp(1.6rem, 3vw, 2.5rem) 0;
+      border-bottom: 1px solid var(--line); transition: padding 0.4s var(--ease), background 0.4s var(--ease);
     }
-    .pillars article {
-      display: flex;
-      flex-direction: column;
-      gap: 0.85rem;
-      padding: clamp(1.75rem, 3vw, 2.25rem);
-      border-right: var(--rule-soft);
-      border-bottom: var(--rule-soft);
-      transition: background 0.2s var(--ease);
-    }
-    .pillars article:nth-child(2n) { border-right: none; }
-    .pillars article:nth-last-child(-n+2) { border-bottom: none; }
-    .pillars article:hover { background: var(--green-faint); }
-    .pillars__n {
-      font-family: var(--font-display);
-      font-weight: 900;
-      font-size: 0.72rem;
-      letter-spacing: 0.12em;
-      color: var(--coral);
-    }
-    .pillars h3 {
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 1rem;
-      line-height: 1.3;
-      color: var(--green);
-      letter-spacing: -0.01em;
-    }
-    .pillars p {
-      font-size: 0.92rem;
-      color: var(--ink-soft);
-      line-height: 1.6;
-      max-width: 28rem;
-    }
+    .pillar:hover { padding-left: 1rem; padding-right: 1rem; background: var(--linen); }
+    .pillar__n { font-family: var(--font-display); font-weight: 900; font-size: 1.05rem; color: var(--coral); letter-spacing: 0.04em; }
+    .pillar h3 { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.15rem, 2vw, 1.5rem); line-height: 1.15; color: var(--green); letter-spacing: -0.02em; }
+    .pillar p { font-size: 0.96rem; color: var(--ink-soft); line-height: 1.6; }
+    .pillar__day { font-family: var(--font-display); font-weight: 700; font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); white-space: nowrap; }
 
-    /* Agenda */
-    .agenda {
-      border: var(--rule-soft);
-      background: var(--white);
-      padding: clamp(3rem, 6vw, 4.75rem);
-      text-align: center;
-    }
-    .agenda .lede { margin: 1rem auto 0; }
-    .locs {
-      display: inline-flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 2.25rem;
-      border: var(--rule-soft);
-    }
-    .locs span {
-      padding: 0.65rem 1.15rem;
-      font-family: var(--font-display);
-      font-size: 0.68rem;
-      font-weight: 500;
-      letter-spacing: 0.06em;
-      color: var(--green);
-      border-right: var(--rule-soft);
-      transition: background 0.15s, color 0.15s;
-    }
-    .locs span:last-child { border-right: none; }
-    .locs span:hover { background: var(--green); color: var(--mustard); }
+    /* Program / agenda */
+    .program { display: grid; grid-template-columns: repeat(5, 1fr); border: 1px solid var(--line); }
+    .program__day { padding: clamp(1.5rem, 2.5vw, 2.25rem) clamp(1.1rem, 1.8vw, 1.5rem); border-right: 1px solid var(--line); display: flex; flex-direction: column; gap: 1.5rem; min-height: 230px; transition: background 0.3s var(--ease); }
+    .program__day:last-child { border-right: none; }
+    .program__day:hover { background: var(--green); }
+    .program__day:hover * { color: var(--paper) !important; }
+    .program__num { font-family: var(--font-display); font-weight: 900; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--coral); }
+    .program__theme { margin-top: auto; font-family: var(--font-display); font-weight: 700; font-size: 0.98rem; line-height: 1.25; color: var(--green); letter-spacing: -0.01em; }
+    .program__tag { font-size: 0.78rem; color: var(--ink-soft); }
+    .locs { display: flex; flex-wrap: wrap; gap: 0.65rem; margin-top: 2rem; }
+    .locs span { padding: 0.6rem 1.2rem; font-family: var(--font-display); font-size: 0.72rem; font-weight: 500; letter-spacing: 0.05em; color: var(--green); border: 1px solid var(--line); transition: background 0.25s var(--ease), color 0.25s var(--ease), border-color 0.25s var(--ease); }
+    .locs span:hover { background: var(--green); color: var(--mustard); border-color: var(--green); }
 
     /* Team */
-    .team-block + .team-block { margin-top: 3.5rem; }
-    .team-block__label {
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 0.68rem;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--coral);
-      margin-bottom: 1rem;
-    }
-    .team-grid {
-      display: grid;
-      border: var(--rule-soft);
-      background: var(--white);
-    }
+    .team-block + .team-block { margin-top: clamp(2.75rem, 5vw, 4rem); }
+    .team-block__label { font-family: var(--font-display); font-weight: 700; font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--coral); padding-bottom: 1rem; margin-bottom: 1.75rem; border-bottom: 1px solid var(--line); }
+    .team-grid { display: grid; gap: clamp(1.25rem, 2.5vw, 2rem); }
     .team-grid--3 { grid-template-columns: repeat(3, 1fr); }
     .team-grid--4 { grid-template-columns: repeat(4, 1fr); }
-    .person {
-      border-right: var(--rule-soft);
-      border-bottom: var(--rule-soft);
-    }
-    .team-grid--3 .person:nth-child(3n) { border-right: none; }
-    .team-grid--3 .person:nth-last-child(-n+3) { border-bottom: none; }
-    .team-grid--4 .person:nth-child(4n) { border-right: none; }
-    .team-grid--4 .person:nth-last-child(-n+4) { border-bottom: none; }
-    .person__photo {
-      aspect-ratio: 4 / 5;
-      overflow: hidden;
-      background: var(--linen);
-      border-bottom: var(--rule-soft);
-    }
-    .person__photo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center top;
-    }
-    .person__name {
-      padding: 1.1rem 1rem 1.25rem;
-      font-family: var(--font-display);
-      font-weight: 600;
-      font-size: 0.78rem;
-      letter-spacing: 0.02em;
-      color: var(--green);
-      line-height: 1.4;
-      text-align: center;
-    }
+    .person__photo { aspect-ratio: 4 / 5; overflow: hidden; background: var(--linen); }
+    .person__photo img { width: 100%; height: 100%; object-fit: cover; object-position: center top; transition: transform 0.6s var(--ease), filter 0.4s var(--ease); filter: saturate(0.9); }
+    .person:hover .person__photo img { transform: scale(1.04); filter: saturate(1.05); }
+    .person__name { margin-top: 0.9rem; font-family: var(--font-display); font-weight: 700; font-size: 0.88rem; letter-spacing: -0.01em; color: var(--green); line-height: 1.3; }
 
     /* Partners */
-    .logos {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      border: var(--rule-soft);
-      background: var(--white);
-    }
-    .logos > div {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2.5rem 1.5rem;
-      min-height: 112px;
-      border-right: var(--rule-soft);
-      transition: background 0.2s;
-    }
+    .logos { display: grid; grid-template-columns: repeat(5, 1fr); border: 1px solid var(--line); }
+    .logos > div { display: flex; align-items: center; justify-content: center; padding: clamp(2rem, 4vw, 3rem) 1.5rem; min-height: 120px; border-right: 1px solid var(--line); transition: background 0.3s var(--ease); }
     .logos > div:last-child { border-right: none; }
     .logos > div:hover { background: var(--linen); }
-    .logos img {
-      max-width: 82%;
-      max-height: 48px;
-      width: auto;
-      height: auto;
-      object-fit: contain;
-      opacity: 0.88;
-      transition: opacity 0.2s;
-    }
-    .logos > div:hover img { opacity: 1; }
-    .logos img.wide { max-height: 32px; }
+    .logos img { max-width: 80%; max-height: 50px; width: auto; height: auto; object-fit: contain; opacity: 0.72; filter: grayscale(1); transition: opacity 0.3s var(--ease), filter 0.3s var(--ease); }
+    .logos > div:hover img { opacity: 1; filter: grayscale(0); }
+    .logos img.wide { max-height: 34px; }
 
-    /* Involve */
-    .involve {
-      border: var(--rule-soft);
-      background: var(--white);
-      overflow: hidden;
-    }
-    .involve-top {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-    }
-    .involve-copy {
-      padding: clamp(2.5rem, 4vw, 3.5rem);
-      border-right: var(--rule-soft);
-    }
-    .involve-form {
-      padding: clamp(2.5rem, 4vw, 3.5rem);
-      background: var(--green);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 0.85rem;
-    }
-    .involve-form input[type="email"] {
-      width: 100%;
-      padding: 0.9rem 1rem;
-      border: 1px solid rgba(250, 197, 90, 0.45);
-      background: rgba(0, 0, 0, 0.1);
-      color: var(--linen);
-      outline: none;
-      transition: border-color 0.2s, background 0.2s;
-    }
-    .involve-form input[type="email"]:focus {
-      border-color: var(--mustard);
-      background: rgba(0, 0, 0, 0.16);
-    }
-    .involve-form input::placeholder { color: rgba(244, 243, 239, 0.42); }
-    .involve-form label {
-      font-size: 0.76rem;
-      color: rgba(244, 243, 239, 0.72);
-      display: flex;
-      gap: 0.55rem;
-      align-items: flex-start;
-      cursor: pointer;
-    }
-
-    .involve-cta {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      border-top: var(--rule-soft);
-    }
-    .involve-cta > div {
-      padding: clamp(2.5rem, 4vw, 3.5rem);
-      border-right: var(--rule-soft);
-    }
-    .involve-cta > div:last-child {
-      border-right: none;
-      background: var(--mustard-soft);
-    }
-    .involve-cta .display--card { margin-bottom: 0.75rem; }
-    .involve-cta .btn { margin-top: 1.25rem; }
+    /* CTA / involve */
+    .involve { display: grid; grid-template-columns: 1.05fr 0.95fr; border: 1px solid var(--line); }
+    .involve__intro { padding: clamp(2.25rem, 4vw, 3.5rem); display: flex; flex-direction: column; gap: 1.1rem; border-right: 1px solid var(--line); }
+    .involve__form { padding: clamp(2.25rem, 4vw, 3.5rem); background: var(--green); display: flex; flex-direction: column; justify-content: center; gap: 0.9rem; }
+    .involve__form input[type="email"] { width: 100%; padding: 1rem 1.1rem; border: 1px solid rgba(250, 197, 90, 0.4); background: rgba(0, 0, 0, 0.14); color: var(--paper); outline: none; transition: border-color 0.25s var(--ease), background 0.25s var(--ease); }
+    .involve__form input[type="email"]:focus { border-color: var(--mustard); background: rgba(0, 0, 0, 0.22); }
+    .involve__form input::placeholder { color: rgba(244, 243, 239, 0.45); }
+    .involve__form label { font-size: 0.78rem; color: rgba(244, 243, 239, 0.72); display: flex; gap: 0.55rem; align-items: flex-start; cursor: pointer; }
+    .cards { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1.25rem, 2.5vw, 2rem); margin-top: clamp(1.25rem, 2.5vw, 2rem); }
+    .card { padding: clamp(1.75rem, 3vw, 2.5rem); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 0.85rem; align-items: flex-start; transition: background 0.3s var(--ease); }
+    .card:hover { background: var(--linen); }
+    .card--accent { background: var(--mustard); border-color: var(--mustard); }
+    .card--accent:hover { background: var(--mustard); }
+    .card .lede { font-size: 0.98rem; }
+    .card .btn { margin-top: 0.4rem; }
 
     /* Footer */
-    .foot {
-      background: var(--green);
-      color: var(--linen);
-    }
-    .foot__grid {
-      display: grid;
-      grid-template-columns: 1.4fr 1fr 1fr;
-      gap: 3rem;
-      padding: clamp(3rem, 6vw, 4.5rem) 0;
-      border-bottom: 1px solid rgba(250, 197, 90, 0.15);
-    }
-    .foot h4 {
-      font-family: var(--font-display);
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--mustard);
-      margin-bottom: 1rem;
-    }
-    .foot p, .foot a {
-      font-size: 0.88rem;
-      color: rgba(244, 243, 239, 0.72);
-      line-height: 1.8;
-      transition: color 0.2s;
-    }
+    .foot { background: var(--green-deep); color: var(--paper); }
+    .foot__grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 2.5rem; padding: clamp(3.5rem, 7vw, 5.5rem) 0 clamp(2.5rem, 5vw, 3.5rem); }
+    .foot h4 { font-family: var(--font-display); font-size: 0.68rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--mustard); margin-bottom: 1.1rem; }
+    .foot p, .foot a { font-size: 0.9rem; color: rgba(244, 243, 239, 0.66); line-height: 1.9; transition: color 0.2s var(--ease); }
     .foot a:hover { color: var(--mustard); }
-    .foot__tag {
-      margin-top: 1rem;
-      font-size: 0.9rem;
-      color: rgba(244, 243, 239, 0.55);
-      max-width: 22rem;
-    }
-    .foot__copy {
-      padding: 1rem 0;
-      text-align: center;
-      font-family: var(--font-display);
-      font-size: 0.65rem;
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      color: rgba(244, 243, 239, 0.38);
-    }
+    .foot__tag { margin-top: 1.1rem; font-size: 0.95rem; color: rgba(244, 243, 239, 0.55); max-width: 22rem; }
+    .foot__bottom { border-top: 1px solid var(--line-light); padding: 1.5rem 0; display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: space-between; align-items: center; }
+    .foot__copy { font-family: var(--font-display); font-size: 0.66rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(244, 243, 239, 0.42); }
 
-    .toast {
-      position: fixed;
-      bottom: 1.5rem;
-      right: 1.5rem;
-      background: var(--green);
-      color: var(--mustard);
-      padding: 0.9rem 1.35rem;
-      font-family: var(--font-display);
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      border: 1px solid var(--mustard);
-      transform: translateY(calc(100% + 2rem));
-      transition: transform 0.35s var(--ease);
-      z-index: 300;
-    }
+    .toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--green); color: var(--mustard); padding: 0.95rem 1.4rem; font-family: var(--font-display); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; border: 1px solid var(--mustard); transform: translateY(calc(100% + 2.5rem)); transition: transform 0.4s var(--ease); z-index: 300; }
     .toast.show { transform: translateY(0); }
 
+    /* Reveal */
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.8s var(--ease), transform 0.8s var(--ease); }
+    .reveal.in { opacity: 1; transform: none; }
+    .reveal[data-d="1"] { transition-delay: 0.08s; }
+    .reveal[data-d="2"] { transition-delay: 0.16s; }
+    .reveal[data-d="3"] { transition-delay: 0.24s; }
+
+    /* ── Film-grain texture ── */
+    body::after {
+      content: ""; position: fixed; inset: 0; z-index: 500; pointer-events: none;
+      opacity: 0.04; mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 160px 160px;
+    }
+
+    /* ── Image hover refinement ── */
+    .about__img img, .why__visual img { transition: transform 0.85s var(--ease), filter 0.5s var(--ease); }
+    .about__visual:hover .about__img img,
+    .why__visual:hover img { transform: scale(1.045); }
+
+    /* ── Pillar hover marker ── */
+    .pillar { position: relative; }
+    .pillar::before {
+      content: ""; position: absolute; left: -0.25rem; top: 50%; width: 3px; height: 0;
+      background: var(--coral); transform: translateY(-50%); transition: height 0.4s var(--ease);
+    }
+    .pillar:hover::before { height: 60%; }
+
+    @media (max-width: 1024px) {
+      .pillar { grid-template-columns: 3.5rem minmax(0,1fr) minmax(0,1.1fr); }
+      .pillar__day { display: none; }
+    }
+
     @media (max-width: 960px) {
-      :root { --header: 64px; }
+      :root { --header: 66px; }
 
-      .nav {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0; right: 0;
-        flex-direction: column;
-        align-items: stretch;
-        background: var(--linen);
-        padding: 1.25rem var(--px) 1.5rem;
-        border-bottom: var(--rule);
-        gap: 0;
-      }
-      .nav.is-open { display: flex; }
-      .nav a {
-        padding: 0.9rem 0;
-        border-bottom: 1px solid rgba(27, 77, 46, 0.1);
-      }
-      .nav a:last-of-type { border-bottom: none; }
-      .nav .btn--sm { margin-top: 1rem; width: 100%; }
-      .menu-btn { display: flex; }
+      .nav, .bar__cta { display: none; }
+      .menu-btn { display: flex; color: var(--green); }
+      .mobile-menu { display: flex; }
+      .site-header { background: rgba(251, 250, 246, 0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom-color: var(--line); }
+      .site-header.is-scrolled { height: var(--header); }
+      .logo__light { opacity: 0; }
+      .logo__dark { opacity: 1; }
 
-      .hero {
-        grid-template-columns: 1fr;
-        min-height: auto;
-      }
-      .hero__copy {
-        border-right: none;
-        border-bottom: var(--rule-soft);
-        order: 1;
-      }
-      .hero__media {
-        order: 0;
-      }
-      .hero__media .media { min-height: 52vw; min-height: max(280px, 52vw); }
-
+      .statement__inner { grid-template-columns: 1fr; gap: 2rem; }
       .stats { grid-template-columns: repeat(2, 1fr); }
       .stats div:nth-child(2) { border-right: none; }
-      .stats div:nth-child(3),
-      .stats div:nth-child(4) { border-top: var(--rule-soft); }
-      .stats div:nth-child(3) { border-right: var(--rule-soft); }
+      .stats div:nth-child(3), .stats div:nth-child(4) { border-top: 1px solid var(--line); }
+      .stats div:nth-child(3) { border-right: 1px solid var(--line); }
 
-      .about, .why, .involve-top, .involve-cta { grid-template-columns: 1fr; }
-      .about__img { border-right: none; border-bottom: var(--rule-soft); min-height: 320px; }
-      .why__text { order: 2; }
-      .why__visual { min-height: 340px; order: 1; }
-      .facts { grid-template-columns: 1fr; gap: 1rem; }
+      .about, .why, .involve, .cards { grid-template-columns: 1fr; }
+      .about__visual { order: -1; }
+      .about__badge { position: static; max-width: none; margin-top: -0.5rem; }
+      .why__visual { order: -1; }
+      .involve__intro { border-right: none; border-bottom: 1px solid var(--line); }
 
-      .pillars { grid-template-columns: 1fr; }
-      .pillars article { border-right: none !important; }
-      .pillars article:not(:last-child) { border-bottom: var(--rule-soft) !important; }
+      .program { grid-template-columns: 1fr 1fr; }
+      .program__day { border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); min-height: 180px; }
+      .program__day:nth-child(2n) { border-right: none; }
 
       .logos { grid-template-columns: repeat(2, 1fr); }
       .logos > div:nth-child(2n) { border-right: none; }
-      .logos > div { border-bottom: var(--rule-soft); }
+      .logos > div { border-bottom: 1px solid var(--line); }
       .logos > div:nth-last-child(-n+1) { border-bottom: none; }
 
-      .team-grid--3,
-      .team-grid--4 { grid-template-columns: repeat(2, 1fr); }
-      .team-grid--3 .person:nth-child(3n),
-      .team-grid--4 .person:nth-child(4n) { border-right: var(--rule-soft); }
-      .team-grid--3 .person:nth-child(2n),
-      .team-grid--4 .person:nth-child(2n) { border-right: none; }
-      .team-grid--3 .person:nth-last-child(-n+3),
-      .team-grid--4 .person:nth-last-child(-n+4) { border-bottom: var(--rule-soft); }
-      .team-grid--3 .person:last-child,
-      .team-grid--4 .person:last-child { border-bottom: none; }
+      .team-grid--3, .team-grid--4 { grid-template-columns: repeat(2, 1fr); }
+      .foot__grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+      .hero__scroll { display: none; }
+    }
 
-      .involve-copy { border-right: none; border-bottom: var(--rule-soft); }
-      .involve-cta > div { border-right: none; border-bottom: var(--rule-soft); }
-      .involve-cta > div:last-child { border-bottom: none; }
-
-      .foot__grid { grid-template-columns: 1fr; gap: 2.25rem; }
-      .sec-intro__idx { display: none; }
+    @media (max-width: 480px) {
+      .stats, .program, .team-grid--3, .team-grid--4, .foot__grid { grid-template-columns: 1fr; }
+      .stats div { border-right: none; border-top: 1px solid var(--line); }
+      .stats div:first-child { border-top: none; }
+      .program__day { border-right: none !important; }
+      .facts { grid-template-columns: 1fr; gap: 1.1rem; }
+      .pillar { grid-template-columns: 2.5rem 1fr; }
+      .pillar p { grid-column: 2; }
     }
 
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
+      .strip__row, .hero__scroll::after, .hero__bg img { animation: none; }
+      .reveal { opacity: 1; transform: none; transition: none; }
       *, *::before, *::after { transition-duration: 0.01ms !important; }
     }
   </style>
 </head>
 <body>
 
+  <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+    <defs>
+      <symbol id="ic-rickshaw" viewBox="0 0 130 100">
+        <circle cx="34" cy="74" r="18"/>
+        <circle cx="34" cy="74" r="4"/>
+        <circle cx="104" cy="78" r="13"/>
+        <circle cx="104" cy="78" r="3"/>
+        <path d="M14 54 C14 24 54 22 60 50"/>
+        <path d="M18 54 L60 54 L60 74"/>
+        <path d="M18 74 L18 54"/>
+        <path d="M60 66 L96 78"/>
+        <path d="M60 54 L92 66"/>
+        <path d="M92 66 L104 78 L96 78"/>
+        <path d="M92 66 L98 58"/>
+        <circle cx="66" cy="74" r="5"/>
+      </symbol>
+      <symbol id="ic-metro" viewBox="0 0 170 90">
+        <path d="M2 66 L168 66"/>
+        <path d="M24 88 L24 66 M146 88 L146 66"/>
+        <path d="M16 88 L32 88 M138 88 L154 88"/>
+        <path d="M30 60 L150 60 Q160 60 160 50 L160 26 Q160 18 150 18 L40 18 Q26 18 22 30 L18 50 Q18 60 30 60 Z"/>
+        <path d="M22 30 L40 30 L40 44 L19 44"/>
+        <path d="M52 28 L72 28 L72 40 L52 40 Z"/>
+        <path d="M82 28 L102 28 L102 40 L82 40 Z"/>
+        <path d="M112 28 L132 28 L132 40 L112 40 Z"/>
+        <circle cx="30" cy="52" r="2.5"/>
+      </symbol>
+      <symbol id="ic-boat" viewBox="0 0 130 110">
+        <path d="M14 74 Q65 100 116 74 L104 74 Q65 86 26 74 Z"/>
+        <path d="M62 74 L62 14"/>
+        <path d="M62 18 L104 70 L62 70 Z"/>
+        <path d="M58 70 L30 70 L58 30 Z"/>
+        <path d="M6 90 q12 -7 24 0 t24 0 t24 0 t24 0 t24 0"/>
+      </symbol>
+      <symbol id="ic-lily" viewBox="0 0 110 100">
+        <path d="M55 78 C42 50 48 28 55 14 C62 28 68 50 55 78 Z"/>
+        <path d="M55 78 C34 56 30 40 30 26 C46 34 56 54 55 78 Z"/>
+        <path d="M55 78 C76 56 80 40 80 26 C64 34 54 54 55 78 Z"/>
+        <path d="M55 80 C24 70 14 58 10 46 C30 48 50 62 55 80 Z"/>
+        <path d="M55 80 C86 70 96 58 100 46 C80 48 60 62 55 80 Z"/>
+        <path d="M14 86 q14 -6 28 0 t28 0 t28 0"/>
+      </symbol>
+      <symbol id="ic-skyline" viewBox="0 0 190 90">
+        <path d="M0 86 L190 86"/>
+        <path d="M10 86 L10 50 L34 50 L34 86"/>
+        <path d="M16 58 L16 50 M24 58 L24 50"/>
+        <path d="M44 86 L44 54 Q44 40 58 40 Q72 40 72 54 L72 86"/>
+        <path d="M58 40 L58 32"/>
+        <path d="M78 86 L78 30 Q82 22 86 30 L86 86"/>
+        <path d="M96 86 L96 24 L118 24 L118 86"/>
+        <path d="M102 34 L102 24 M110 34 L110 24 M102 46 L102 40 M110 46 L110 40"/>
+        <path d="M128 86 L128 56 Q128 44 140 44 Q152 44 152 56 L152 86"/>
+        <path d="M140 44 L140 36"/>
+        <path d="M160 86 L160 46 L182 46 L182 86"/>
+        <path d="M166 56 L166 46 M174 56 L174 46"/>
+      </symbol>
+    </defs>
+  </svg>
+
   <a class="skip" href="#main">Skip to content</a>
+
+  <div class="progress" id="progress" aria-hidden="true"></div>
 
   <header class="site-header" id="header">
     <div class="wrap bar">
       <a href="#" class="logo" aria-label="Dhaka Climate Week">
-        <img src="assets/logo/logo-primary-sm.png" alt="Dhaka Climate Week" width="800" height="270" />
+        <img class="logo__light" src="assets/logo/logo-white.png" alt="Dhaka Climate Week" width="804" height="273" />
+        <img class="logo__dark" src="assets/logo/logo-primary-sm.png" alt="" aria-hidden="true" width="800" height="270" />
       </a>
-      <button class="menu-btn" id="menu-btn" aria-label="Open menu" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
-      <nav class="nav" id="nav" aria-label="Primary">
+      <nav class="nav" aria-label="Primary">
         <a href="#about" data-nav>About</a>
         <a href="#themes" data-nav>Themes</a>
         <a href="#why-dhaka" data-nav>Why Dhaka</a>
-        <a href="#agenda" data-nav>Agenda</a>
+        <a href="#agenda" data-nav>Programme</a>
         <a href="#team" data-nav>Team</a>
         <a href="#partners" data-nav>Partners</a>
-        <a href="#get-involved" data-nav>Get involved</a>
         <a href="#contact" data-nav>Contact</a>
-        <a href="#newsletter" class="btn btn--sm">Stay updated</a>
       </nav>
+      <div class="bar__cta">
+        <span class="bar__date">17–21 Jan ’27</span>
+        <a href="#get-involved" class="btn btn--mustard btn--sm">Get involved</a>
+      </div>
+      <button class="menu-btn" id="menu-btn" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </header>
+
+  <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+    <nav class="mobile-menu__nav" aria-label="Mobile">
+      <a href="#about">About</a>
+      <a href="#themes">Themes</a>
+      <a href="#why-dhaka">Why Dhaka</a>
+      <a href="#agenda">Programme</a>
+      <a href="#team">Team</a>
+      <a href="#partners">Partners</a>
+      <a href="#contact">Contact</a>
+      <a href="#get-involved" class="mm-cta">Get involved →</a>
+    </nav>
+    <div class="mobile-menu__foot">
+      <div>
+        <span class="mm-label">Date &amp; place</span>
+        <p>January 17–21, 2027<br>Dhaka, Bangladesh</p>
+      </div>
+      <div>
+        <span class="mm-label">Contact</span>
+        <a href="mailto:hello@dhkclimateweek.org">hello@dhkclimateweek.org</a>
+      </div>
+    </div>
+  </div>
 
   <main id="main">
 
     <section class="hero" aria-label="Introduction">
-      <div class="hero__copy">
-        <p class="eyebrow">Global South · January 2027</p>
-        <h1 class="display display--hero">Dhaka<br>Climate <em>Week</em></h1>
-        <p class="lede">A 5-day platform to build the climate ecosystem Dhaka urgently needs — rooted in youth, collaboration, and global connection.</p>
+      <div class="hero__bg media">
+        <img src="assets/images/hero-delta.jpg" alt="Aerial view of the river delta in Dhaka at sunset" width="1024" height="927" fetchpriority="high" />
+      </div>
+      <div class="hero__scrim" aria-hidden="true"></div>
+      <div class="wrap hero__inner">
+        <span class="kicker kicker--light">Global South · Climate Week</span>
+        <h1 class="display h-hero hero__title light">Dhaka<br>Climate <em>Week</em></h1>
+        <p class="hero__lede">A 5-day platform to build the climate ecosystem Dhaka urgently needs — rooted in youth, collaboration, and global connection.</p>
         <div class="hero__meta">
-          <span class="hero__date">17 – 21 Jan 2027</span>
-          <span class="hero__loc">Dhaka, Bangladesh</span>
+          <span class="hero__date">17 – 21 JANUARY 2027</span>
+          <span class="hero__pill">Dhaka, Bangladesh</span>
         </div>
         <div class="hero__actions">
-          <a href="#newsletter" class="btn">Stay updated</a>
-          <a href="#about" class="btn btn--line">Learn more</a>
+          <a href="#get-involved" class="btn btn--mustard">Get involved <span class="arw">→</span></a>
+          <a href="#about" class="btn btn--line-light">Explore the week</a>
         </div>
       </div>
-      <div class="hero__media">
-        <div class="media">
-          <video id="hero-video" autoplay muted loop playsinline poster="assets/images/delta.jpg" aria-label="Dhaka Climate Week">
-            <source src="assets/video/hero.mp4" type="video/mp4" />
-          </video>
+      <span class="hero__scroll" aria-hidden="true">Scroll</span>
+    </section>
+
+    <div class="strip" aria-hidden="true">
+      <div class="strip__row">
+        <span>700+ Rivers</span><span>Sundarbans · 10,000 km²</span><span>20 Million People</span><span>Bay of Bengal</span><span>Climate Frontline</span><span>Youth-Led</span>
+        <span>700+ Rivers</span><span>Sundarbans · 10,000 km²</span><span>20 Million People</span><span>Bay of Bengal</span><span>Climate Frontline</span><span>Youth-Led</span>
+      </div>
+    </div>
+
+    <section class="statement">
+      <svg class="deco deco--lily" style="right:6%; top:0.5rem;" aria-hidden="true"><use href="#ic-lily"/></svg>
+      <div class="wrap">
+        <div class="statement__inner">
+          <p class="statement__big reveal">
+            The world's most climate-exposed megacity becomes a platform for action. <b>Five days of conferences, labs, and city-wide events</b> — connecting youth, government, and global partners around the future of the delta.
+          </p>
+          <div class="statement__side reveal">
+            <span class="kicker">The mission</span>
+            <p class="lede">Climate Week connects cities worldwide to accelerate action — New York, London, Medellín, and now Dhaka. We're building the network, the momentum, and the leadership the region needs.</p>
+            <a href="#about" class="btn btn--line">About the week <span class="arw">→</span></a>
+          </div>
         </div>
-        <div class="hero__caption">
-          <span class="hero__caption-num">5</span>
-          <p>Days to connect cities worldwide — New York, London, Medellín — now Dhaka.</p>
+      </div>
+      <div class="wrap">
+        <div class="stats" aria-label="Event statistics">
+          <div class="reveal"><strong data-count="5">5</strong><span>Days</span></div>
+          <div class="reveal" data-d="1"><strong data-count="120" data-suffix="+">120+</strong><span>Events</span></div>
+          <div class="reveal" data-d="2"><strong data-count="10" data-suffix="K+">10K+</strong><span>Attendees</span></div>
+          <div class="reveal" data-d="3"><strong data-count="5">5</strong><span>Themes</span></div>
         </div>
       </div>
     </section>
 
-    <div class="stats" aria-label="Event statistics">
-      <div><strong>5</strong><span>Days</span></div>
-      <div><strong>120+</strong><span>Events</span></div>
-      <div><strong>10+</strong><span>Attendees</span></div>
-      <div><strong>5</strong><span>Themes</span></div>
-    </div>
-
-    <section id="about" class="sec sec--white">
+    <section id="about" class="sec sec--paper">
+      <svg class="deco deco--metro" style="left:4%; top:0.6rem;" aria-hidden="true"><use href="#ic-metro"/></svg>
+      <svg class="deco deco--boat" style="right:5%; bottom:0.6rem;" aria-hidden="true"><use href="#ic-boat"/></svg>
       <div class="wrap">
-        <header class="sec-intro">
-          <div>
-            <p class="eyebrow">About</p>
-            <h2 class="display display--section">What is Dhaka Climate Week</h2>
+        <div class="head reveal">
+          <div class="head__top">
+            <span class="kicker">About</span>
+            <span class="head__num">01 — 05</span>
           </div>
-          <span class="sec-intro__idx" aria-hidden="true">01</span>
-        </header>
-        <div class="about">
-          <div class="about__img media">
-            <img src="assets/images/about-climate-week.png" alt="Collaborative planning session with Net Positive signage" width="1024" height="682" loading="lazy" />
+          <h2 class="display h-sec head__title">What is Dhaka Climate Week</h2>
+        </div>
+        <div class="about reveal">
+          <div class="about__visual">
+            <div class="about__img media">
+              <img src="assets/images/about-climate-week.png" alt="Collaborative planning session with Net Positive signage" width="1024" height="682" loading="lazy" />
+            </div>
+            <div class="about__badge">
+              <b>2027</b>
+              <span>First edition · Dhaka</span>
+            </div>
           </div>
           <div class="about__body">
-            <p class="lede">Climate Week connects cities worldwide to accelerate action. New York, London, Medellín — now Dhaka.</p>
-            <p class="lede">Five days of conferences, labs, and city-wide events. The world's most climate-exposed megacity as a platform for encounter and action.</p>
+            <p class="lede">Climate Week connects cities worldwide to accelerate action. New York, London, Medellín — now Dhaka takes its place on the global stage.</p>
+            <p class="lede">Five days of conferences, labs, and city-wide events position the world's most climate-exposed megacity as a platform for encounter and action.</p>
             <div class="facts">
               <div><b>700+</b><small>Rivers in the delta</small></div>
               <div><b>10K km²</b><small>Sundarbans forest</small></div>
@@ -901,144 +717,156 @@
       </div>
     </section>
 
-    <section id="why-dhaka" class="sec sec--linen">
+    <section id="themes" class="sec sec--linen">
+      <svg class="deco deco--lily" style="right:5%; top:0.6rem;" aria-hidden="true"><use href="#ic-lily"/></svg>
+      <svg class="deco deco--skyline" style="left:5%; bottom:0;" aria-hidden="true"><use href="#ic-skyline"/></svg>
       <div class="wrap">
-        <div class="why">
-          <div class="why__text">
-            <p class="eyebrow eyebrow--light">Why Dhaka</p>
-            <h2 class="display display--section display--light">Built on resilience</h2>
-            <p class="lede lede--light">Twenty million residents. Rising seas. Extreme monsoons. A megacity at the heart of the delta — where urgency and ingenuity meet every day.</p>
-            <p class="lede lede--light">From Korail to Hatirjheel, Dhaka's neighborhoods are living laboratories for urban climate adaptation.</p>
+        <div class="head reveal">
+          <div class="head__top">
+            <span class="kicker">Themes</span>
+            <span class="head__num">02 — 05</span>
           </div>
-          <div class="why__visual">
-            <div class="media">
-              <img src="assets/images/streets.jpg" alt="Dhaka streets" width="1200" height="800" loading="lazy" />
-            </div>
-            <p class="why__quote">The crisis is already here. The delta doesn't wait.</p>
-          </div>
+          <h2 class="display h-sec head__title">Five pillars shaping the week</h2>
         </div>
-      </div>
-    </section>
-
-    <section id="themes" class="sec sec--white">
-      <div class="wrap">
-        <header class="sec-intro">
-          <div>
-            <p class="eyebrow">Themes</p>
-            <h2 class="display display--section">Five pillars</h2>
-          </div>
-          <span class="sec-intro__idx" aria-hidden="true">02</span>
-        </header>
         <div class="pillars">
-          <article>
-            <span class="pillars__n">01</span>
-            <h3>Climate vulnerability to regional leadership</h3>
+          <article class="pillar reveal">
+            <span class="pillar__n">01</span>
+            <h3>Climate Leadership &amp; Policy</h3>
             <p>Position Dhaka and Bangladesh as a regional and global climate leader, not just a victim.</p>
+            <span class="pillar__day">Day 01</span>
           </article>
-          <article>
-            <span class="pillars__n">02</span>
-            <h3>Youth and academic collaboration</h3>
+          <article class="pillar reveal">
+            <span class="pillar__n">02</span>
+            <h3>Youth, Innovation &amp; Future Leaders</h3>
             <p>Celebrating the power of youth, engaging the academic ecosystem with youth-led startups.</p>
+            <span class="pillar__day">Day 02</span>
           </article>
-          <article>
-            <span class="pillars__n">03</span>
-            <h3>Public–private partnership</h3>
+          <article class="pillar reveal">
+            <span class="pillar__n">03</span>
+            <h3>Public–Private Partnerships for Climate Action</h3>
             <p>Bridging government, NGOs, and the private sector around shared commitments.</p>
+            <span class="pillar__day">Day 03</span>
           </article>
-          <article>
-            <span class="pillars__n">04</span>
-            <h3>Climate finance</h3>
-            <p>Engaging climate innovation with financial ecosystems.</p>
+          <article class="pillar reveal">
+            <span class="pillar__n">04</span>
+            <h3>Climate Finance &amp; Green Investment</h3>
+            <p>Engaging climate innovation with financial ecosystems and green investment.</p>
+            <span class="pillar__day">Day 04</span>
           </article>
-          <article>
-            <span class="pillars__n">05</span>
-            <h3>Celebrating nature and culture</h3>
-            <p>Hosting a colorful day with the citizens of Dhaka for celebrating nature, culture, and music.</p>
+          <article class="pillar reveal">
+            <span class="pillar__n">05</span>
+            <h3>Nature, Culture &amp; Community</h3>
+            <p>A colorful day with the citizens of Dhaka celebrating nature, culture, and music.</p>
+            <span class="pillar__day">Day 05</span>
           </article>
         </div>
       </div>
     </section>
 
-    <section id="agenda" class="sec sec--linen">
-      <div class="wrap">
-        <header class="sec-intro">
-          <div>
-            <p class="eyebrow">Coming soon</p>
-            <h2 class="display display--section">The agenda</h2>
-          </div>
-        </header>
-        <div class="agenda">
-          <p class="lede">Conversations and experiences across Dhaka — Parliament area to community hubs.</p>
-          <div class="locs">
-            <span>Hatirjheel</span>
-            <span>Korail</span>
-            <span>BUET</span>
-            <span>Botanical Garden</span>
-            <span>Sundarbans Hall</span>
-          </div>
+    <section id="why-dhaka" class="sec sec--green">
+      <div class="wrap why">
+        <div class="why__text reveal">
+          <span class="kicker kicker--light">Why Dhaka</span>
+          <h2 class="display h-sec light">Built on resilience</h2>
+          <p class="lede lede--light">Twenty million residents. Rising seas. Extreme monsoons. A megacity at the heart of the delta — where urgency and ingenuity meet every day.</p>
+          <p class="lede lede--light">From Korail to Hatirjheel, Dhaka's neighborhoods are living laboratories for urban climate adaptation.</p>
+        </div>
+        <div class="why__visual media reveal">
+          <img src="assets/images/resilience-boats.jpg" alt="Aerial view of traditional wooden boats fanned out on a Dhaka waterway" width="1024" height="922" loading="lazy" />
+          <p class="why__quote">The crisis is already here. The delta doesn't wait.</p>
         </div>
       </div>
     </section>
 
-    <section id="team" class="sec sec--white">
+    <section id="agenda" class="sec sec--paper">
+      <svg class="deco deco--boat" style="right:5%; top:0.6rem;" aria-hidden="true"><use href="#ic-boat"/></svg>
+      <svg class="deco deco--rickshaw" style="left:5%; bottom:0.6rem;" aria-hidden="true"><use href="#ic-rickshaw"/></svg>
       <div class="wrap">
-        <header class="sec-intro">
-          <div>
-            <p class="eyebrow">People</p>
-            <h2 class="display display--section">Our team</h2>
+        <div class="head reveal">
+          <div class="head__top">
+            <span class="kicker">Programme</span>
+            <span class="head__num">03 — 05</span>
           </div>
-          <span class="sec-intro__idx" aria-hidden="true">03</span>
-        </header>
+          <h2 class="display h-sec head__title">Five days, one delta</h2>
+        </div>
+        <div class="program reveal">
+          <div class="program__day">
+            <span class="program__num">Day 01</span>
+            <span class="program__theme">Climate Leadership &amp; Policy</span>
+          </div>
+          <div class="program__day">
+            <span class="program__num">Day 02</span>
+            <span class="program__theme">Youth, Innovation &amp; Future Leaders</span>
+          </div>
+          <div class="program__day">
+            <span class="program__num">Day 03</span>
+            <span class="program__theme">Public–Private Partnerships</span>
+          </div>
+          <div class="program__day">
+            <span class="program__num">Day 04</span>
+            <span class="program__theme">Climate Finance &amp; Green Investment</span>
+          </div>
+          <div class="program__day">
+            <span class="program__num">Day 05</span>
+            <span class="program__theme">Nature, Culture &amp; Community</span>
+          </div>
+        </div>
+        <p class="lede reveal" style="margin-top:2.25rem">Full speaker line-up and session times coming soon. Experiences will span the city — from the Parliament area to community hubs.</p>
+        <div class="locs reveal">
+          <span>Hatirjheel</span>
+          <span>Korail</span>
+          <span>BUET</span>
+          <span>Botanical Garden</span>
+          <span>Sundarbans Hall</span>
+        </div>
+      </div>
+    </section>
 
-        <div class="team-block">
+    <section id="team" class="sec sec--linen">
+      <div class="wrap">
+        <div class="head reveal">
+          <div class="head__top">
+            <span class="kicker">People</span>
+            <span class="head__num">04 — 05</span>
+          </div>
+          <h2 class="display h-sec head__title">The team behind the week</h2>
+        </div>
+
+        <div class="team-block reveal">
           <p class="team-block__label">Advisory panel</p>
           <div class="team-grid team-grid--3">
             <article class="person">
-              <div class="person__photo">
-                <img src="assets/team/dipesh-nag.jpg" alt="Dipesh Nag" width="400" height="400" loading="lazy" />
-              </div>
+              <div class="person__photo"><img src="assets/team/dipesh-nag.jpg" alt="Dipesh Nag" width="400" height="400" loading="lazy" /></div>
               <p class="person__name">Dipesh Nag</p>
             </article>
             <article class="person">
-              <div class="person__photo">
-                <img src="assets/team/munaf-chowdhury.jpg" alt="Munaf Chowdhury" width="400" height="400" loading="lazy" />
-              </div>
+              <div class="person__photo"><img src="assets/team/munaf-chowdhury.jpg" alt="Munaf Chowdhury" width="400" height="400" loading="lazy" /></div>
               <p class="person__name">Munaf Chowdhury</p>
             </article>
             <article class="person">
-              <div class="person__photo">
-                <img src="assets/team/wenda-gumulya.jpg" alt="Wenda Gumulya" width="400" height="400" loading="lazy" />
-              </div>
+              <div class="person__photo"><img src="assets/team/wenda-gumulya.jpg" alt="Wenda Gumulya" width="400" height="400" loading="lazy" /></div>
               <p class="person__name">Wenda Gumulya</p>
             </article>
           </div>
         </div>
 
-        <div class="team-block">
+        <div class="team-block reveal">
           <p class="team-block__label">Management team</p>
           <div class="team-grid team-grid--4">
             <article class="person">
-              <div class="person__photo">
-                <img src="assets/team/sharmin-akter-shakila.jpg" alt="Sharmin Akter Shakila" width="400" height="400" loading="lazy" />
-              </div>
+              <div class="person__photo"><img src="assets/team/sharmin-akter-shakila.jpg" alt="Sharmin Akter Shakila" width="400" height="400" loading="lazy" /></div>
               <p class="person__name">Sharmin Akter Shakila</p>
             </article>
             <article class="person">
-              <div class="person__photo">
-                <img src="assets/team/kevin.jpg" alt="Kevin Drolet" width="400" height="400" loading="lazy" />
-              </div>
+              <div class="person__photo"><img src="assets/team/kevin.jpg" alt="Kevin Drolet" width="400" height="400" loading="lazy" /></div>
               <p class="person__name">Kevin Drolet</p>
             </article>
             <article class="person">
-              <div class="person__photo">
-                <img src="assets/team/mustain-chowdhury.jpg" alt="Mustain Karim Chowdhury" width="400" height="400" loading="lazy" />
-              </div>
+              <div class="person__photo"><img src="assets/team/mustain-chowdhury.jpg" alt="Mustain Karim Chowdhury" width="400" height="400" loading="lazy" /></div>
               <p class="person__name">Mustain Karim Chowdhury</p>
             </article>
             <article class="person">
-              <div class="person__photo">
-                <img src="assets/team/wahid-hossain.jpg" alt="Wahid Hossain" width="400" height="400" loading="lazy" />
-              </div>
+              <div class="person__photo"><img src="assets/team/wahid-hossain.jpg" alt="Wahid Hossain" width="400" height="400" loading="lazy" /></div>
               <p class="person__name">Wahid Hossain</p>
             </article>
           </div>
@@ -1046,16 +874,17 @@
       </div>
     </section>
 
-    <section id="partners" class="sec sec--linen">
+    <section id="partners" class="sec sec--paper">
+      <svg class="deco deco--metro" style="left:6%; bottom:0.6rem;" aria-hidden="true"><use href="#ic-metro"/></svg>
       <div class="wrap">
-        <header class="sec-intro">
-          <div>
-            <p class="eyebrow">Partners</p>
-            <h2 class="display display--section">Supported by</h2>
+        <div class="head reveal">
+          <div class="head__top">
+            <span class="kicker">Partners</span>
+            <span class="head__num">05 — 05</span>
           </div>
-          <span class="sec-intro__idx" aria-hidden="true">04</span>
-        </header>
-        <div class="logos">
+          <h2 class="display h-sec head__title">Supported by</h2>
+        </div>
+        <div class="logos reveal">
           <div><img class="wide" src="assets/partners/mycellium.png?v=3" alt="Mycellium" loading="lazy" /></div>
           <div><img src="assets/partners/climate-week-network.png" alt="Climate Week Network" loading="lazy" /></div>
           <div><img src="assets/partners/climate-hive.png" alt="Climate Hive" loading="lazy" /></div>
@@ -1065,38 +894,39 @@
       </div>
     </section>
 
-    <section id="get-involved" class="sec sec--white">
+    <section id="get-involved" class="sec sec--linen">
+      <svg class="deco deco--lily" style="left:5%; top:0.6rem;" aria-hidden="true"><use href="#ic-lily"/></svg>
+      <svg class="deco deco--skyline" style="right:5%; bottom:0;" aria-hidden="true"><use href="#ic-skyline"/></svg>
       <div class="wrap">
-        <header class="sec-intro">
-          <div>
-            <p class="eyebrow">Get involved</p>
-            <h2 class="display display--section">Join the week</h2>
+        <div class="head reveal">
+          <div class="head__top">
+            <span class="kicker">Get involved</span>
+            <span class="head__num">Join us</span>
           </div>
-        </header>
-        <div class="involve">
-          <div class="involve-top">
-            <div class="involve-copy">
-              <p class="eyebrow">Newsletter</p>
-              <h3 class="display display--card">Get updates</h3>
-              <p class="lede">Speakers, events, and opportunities for Dhaka Climate Week 2027.</p>
-            </div>
-            <form id="newsletter" class="involve-form" onsubmit="handleSubscribe(event)" novalidate>
-              <input type="email" name="email" placeholder="Email address" required aria-label="Email address" autocomplete="email" />
-              <label><input type="checkbox" name="consent" required /> I agree to receive updates.</label>
-              <button type="submit" class="btn btn--mustard">Subscribe</button>
-            </form>
+          <h2 class="display h-sec head__title">Be part of Dhaka Climate Week</h2>
+        </div>
+        <div class="involve reveal">
+          <div class="involve__intro">
+            <span class="kicker kicker--plain">Newsletter</span>
+            <h3 class="display h-card">Get updates first</h3>
+            <p class="lede">Speakers, events, and opportunities for Dhaka Climate Week 2027 — straight to your inbox.</p>
           </div>
-          <div class="involve-cta">
-            <div>
-              <h3 class="display display--card">Propose an event</h3>
-              <p class="lede">Organizations and communities — shape the agenda through events across the city.</p>
-              <a href="mailto:events@dhkclimateweek.org" class="btn btn--line">Propose →</a>
-            </div>
-            <div>
-              <h3 class="display display--card">Become a partner</h3>
-              <p class="lede">Connect as an ally, partner, or experience host.</p>
-              <a href="mailto:partners@dhkclimateweek.org" class="btn">Connect →</a>
-            </div>
+          <form id="newsletter" class="involve__form" onsubmit="handleSubscribe(event)" novalidate>
+            <input type="email" name="email" placeholder="Email address" required aria-label="Email address" autocomplete="email" />
+            <label><input type="checkbox" name="consent" required /> I agree to receive updates.</label>
+            <button type="submit" class="btn btn--mustard">Subscribe <span class="arw">→</span></button>
+          </form>
+        </div>
+        <div class="cards reveal">
+          <div class="card">
+            <h3 class="display h-card">Propose an event</h3>
+            <p class="lede">Organizations and communities — shape the agenda through events across the city.</p>
+            <a href="mailto:events@dhkclimateweek.org" class="btn btn--line">Propose <span class="arw">→</span></a>
+          </div>
+          <div class="card card--accent">
+            <h3 class="display h-card">Become a partner</h3>
+            <p class="lede">Connect as an ally, partner, or experience host for the week.</p>
+            <a href="mailto:partners@dhkclimateweek.org" class="btn">Connect <span class="arw">→</span></a>
           </div>
         </div>
       </div>
@@ -1105,82 +935,112 @@
   </main>
 
   <footer id="contact" class="foot">
-    <div class="wrap foot__grid">
-      <div>
-        <a href="#" class="logo logo--foot" aria-label="Dhaka Climate Week">
-          <img src="assets/logo/logo-white.png" alt="Dhaka Climate Week" width="804" height="273" />
-        </a>
-        <p class="foot__tag">Climate action rooted in the Global South.</p>
+    <div class="wrap">
+      <div class="foot__grid">
+        <div>
+          <a href="#" class="logo logo--foot" aria-label="Dhaka Climate Week">
+            <img src="assets/logo/logo-white.png" alt="Dhaka Climate Week" width="804" height="273" />
+          </a>
+          <p class="foot__tag">Climate action rooted in the Global South. January 17–21, 2027.</p>
+        </div>
+        <div>
+          <h4>Explore</h4>
+          <p><a href="#about">About</a></p>
+          <p><a href="#themes">Themes</a></p>
+          <p><a href="#agenda">Programme</a></p>
+          <p><a href="#team">Team</a></p>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <p><a href="mailto:hello@dhkclimateweek.org">hello@dhkclimateweek.org</a></p>
+          <p><a href="tel:+8801764196044">+88 01764196044</a></p>
+          <p><a href="https://www.dhkclimateweek.org">dhkclimateweek.org</a></p>
+        </div>
+        <div>
+          <h4>Follow</h4>
+          <p><a href="#">LinkedIn</a></p>
+          <p><a href="#">Instagram</a></p>
+          <p><a href="#">X / Twitter</a></p>
+        </div>
       </div>
-      <div>
-        <h4>Contact</h4>
-        <p><a href="mailto:hello@dhkclimateweek.org">hello@dhkclimateweek.org</a></p>
-        <p><a href="tel:+8801764196044">+88 01764196044</a></p>
-        <p><a href="https://www.dhkclimateweek.org">dhkclimateweek.org</a></p>
-      </div>
-      <div>
-        <h4>Follow</h4>
-        <p><a href="#">LinkedIn</a></p>
-        <p><a href="#">Instagram</a></p>
-        <p><a href="#">X</a></p>
+      <div class="foot__bottom">
+        <p class="foot__copy">© 2027 Dhaka Climate Week</p>
+        <p class="foot__copy">January 17–21 · Dhaka, Bangladesh</p>
       </div>
     </div>
-    <p class="foot__copy wrap">© 2027 Dhaka Climate Week · January 17–21</p>
   </footer>
 
   <div class="toast" id="toast" role="status" aria-live="polite">Subscribed.</div>
 
   <script>
     const header = document.getElementById('header');
-    const nav = document.getElementById('nav');
     const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const progress = document.getElementById('progress');
     const navLinks = document.querySelectorAll('[data-nav]');
     const sections = [...navLinks].map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
 
-    function closeMenu() {
-      nav.classList.remove('is-open');
-      menuBtn.classList.remove('is-open');
-      menuBtn.setAttribute('aria-expanded', 'false');
-      menuBtn.setAttribute('aria-label', 'Open menu');
-    }
-
-    menuBtn.addEventListener('click', () => {
-      const open = nav.classList.toggle('is-open');
+    function setMenu(open) {
+      mobileMenu.classList.toggle('is-open', open);
       menuBtn.classList.toggle('is-open', open);
+      document.body.classList.toggle('menu-open', open);
       menuBtn.setAttribute('aria-expanded', open);
       menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-    });
-
-    nav.querySelectorAll('a').forEach(a => {
-      a.addEventListener('click', () => closeMenu());
-    });
-
-    function headerH() {
-      return header.offsetHeight;
+      mobileMenu.setAttribute('aria-hidden', open ? 'false' : 'true');
     }
+    menuBtn.addEventListener('click', () => setMenu(!mobileMenu.classList.contains('is-open')));
+    mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') setMenu(false); });
+    window.addEventListener('resize', () => { if (window.innerWidth > 960) setMenu(false); });
 
     function setActiveNav() {
-      const y = window.scrollY + headerH() + 100;
+      const y = window.scrollY + header.offsetHeight + 140;
       let current = sections[0];
-      sections.forEach(sec => {
-        if (sec && sec.offsetTop <= y) current = sec;
-      });
+      sections.forEach(sec => { if (sec && sec.offsetTop <= y) current = sec; });
       navLinks.forEach(a => {
         a.classList.toggle('is-active', current && a.getAttribute('href') === '#' + current.id);
       });
     }
-
-    window.addEventListener('scroll', () => {
-      header.classList.toggle('is-scrolled', window.scrollY > 8);
+    function onScroll() {
+      const sc = window.scrollY;
+      header.classList.toggle('is-scrolled', sc > 40);
+      const h = document.documentElement.scrollHeight - window.innerHeight;
+      progress.style.transform = 'scaleX(' + (h > 0 ? sc / h : 0) + ')';
       setActiveNav();
-    }, { passive: true });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
 
-    setActiveNav();
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    const heroVideo = document.getElementById('hero-video');
-    if (heroVideo && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      heroVideo.pause();
-      heroVideo.removeAttribute('autoplay');
+    function countUp(el) {
+      const target = parseFloat(el.getAttribute('data-count'));
+      const suffix = el.getAttribute('data-suffix') || '';
+      if (reduceMotion || isNaN(target)) { el.textContent = target + suffix; return; }
+      const dur = 1200, start = performance.now();
+      function step(now) {
+        const p = Math.min((now - start) / dur, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(target * eased) + suffix;
+        if (p < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    const reveals = document.querySelectorAll('.reveal');
+    if ('IntersectionObserver' in window && !reduceMotion) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('in');
+            e.target.querySelectorAll('[data-count]').forEach(countUp);
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+      reveals.forEach(el => io.observe(el));
+    } else {
+      reveals.forEach(el => el.classList.add('in'));
     }
 
     function handleSubscribe(e) {
