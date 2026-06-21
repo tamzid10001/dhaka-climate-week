@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dhaka Climate Week</title>
+  <meta name="description" content="Dhaka Climate Week — a 5-day platform to build the climate ecosystem Dhaka urgently needs. January 17–21, 2027." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&family=Roboto+Slab:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="icon" href="assets/logo/favicon.png" />
+  <style>
+    :root {
+      --green: #1B4D2E;
+      --green-soft: #245c38;
+      --mustard: #FAC55A;
+      --coral: #C84B2F;
+      --ink: #111111;
+      --linen: #F4F3EF;
+      --white: #ffffff;
+      --font-display: 'Roboto', sans-serif;
+      --font-body: 'Roboto Slab', serif;
+      --max: 1140px;
+      --px: clamp(1.25rem, 4vw, 2.5rem);
+      --rule: 1px solid var(--green);
+      --header: 68px;
+      --ticker: 30px;
+      --top: calc(var(--ticker) + var(--header));
+      --section: clamp(4.5rem, 9vw, 7rem);
+      --ease: cubic-bezier(0.25, 0.1, 0.25, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: calc(var(--top) + 1rem);
+    }
+    body {
+      font-family: var(--font-body);
+      color: var(--ink);
+      background: var(--linen);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    button, input { font: inherit; border-radius: 0; }
+
+    :focus-visible {
+      outline: 2px solid var(--mustard);
+      outline-offset: 2px;
+    }
+
+    .skip {
+      position: absolute;
+      top: -100%;
+      left: var(--px);
+      z-index: 999;
+      padding: 0.6rem 1rem;
+      background: var(--green);
+      color: var(--mustard);
+      font-family: var(--font-display);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .skip:focus { top: 0.5rem; }
+
+    .wrap {
+      width: min(calc(100% - 2 * var(--px)), var(--max));
+      margin-inline: auto;
+    }
+
+    .frame {
+      border: var(--rule);
+      background: var(--white);
+    }
+
+    .media {
+      position: relative;
+      overflow: hidden;
+      background: var(--green-soft);
+    }
+    .media img,
+    .media video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* ── Type ── */
+    .tag {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.6rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--coral);
+    }
+    .tag--gold { color: var(--mustard); }
+
+    .title {
+      font-family: var(--font-display);
+      font-weight: 900;
+      color: var(--green);
+      letter-spacing: -0.02em;
+      line-height: 1.05;
+    }
+    .title--xl { font-size: clamp(2.6rem, 7.5vw, 5rem); line-height: 0.92; text-transform: uppercase; }
+    .title--xl em { font-style: normal; color: var(--coral); }
+    .title--lg { font-size: clamp(1.4rem, 2.8vw, 2rem); }
+    .title--md { font-size: 1.15rem; line-height: 1.2; }
+    .title--light { color: var(--linen); }
+
+    .text {
+      font-size: 1rem;
+      line-height: 1.65;
+      color: rgba(17, 17, 17, 0.76);
+      max-width: 34rem;
+    }
+    .text--light { color: rgba(244, 243, 239, 0.84); max-width: 32rem; }
+
+    .sec-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+    .sec-head__num {
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: clamp(2.75rem, 5vw, 4rem);
+      line-height: 1;
+      color: var(--green);
+      opacity: 0.1;
+      flex-shrink: 0;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.8rem 1.4rem;
+      border: var(--rule);
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      background: var(--green);
+      color: var(--mustard);
+      transition: background 0.2s var(--ease), color 0.2s var(--ease), border-color 0.2s var(--ease);
+    }
+    .btn:hover { background: var(--ink); border-color: var(--ink); color: var(--mustard); }
+    .btn--ghost { background: transparent; color: var(--green); }
+    .btn--ghost:hover { background: var(--green); color: var(--mustard); border-color: var(--green); }
+    .btn--gold { background: var(--mustard); color: var(--green); border-color: var(--green); }
+    .btn--gold:hover { background: var(--green); color: var(--mustard); }
+    .btn--nav {
+      padding: 0.55rem 1rem;
+      font-size: 0.6rem;
+    }
+
+    /* ── Header ── */
+    .site-header {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 200;
+      background: var(--linen);
+      border-bottom: var(--rule);
+      transition: box-shadow 0.25s var(--ease);
+    }
+    .site-header.is-scrolled { box-shadow: 0 1px 0 var(--green); }
+
+    .ticker {
+      height: var(--ticker);
+      background: var(--green);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+    .ticker__inner {
+      display: flex;
+      gap: 3rem;
+      animation: marquee 42s linear infinite;
+      white-space: nowrap;
+    }
+    .ticker span {
+      font-family: var(--font-display);
+      font-size: 0.56rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--mustard);
+      flex-shrink: 0;
+    }
+    .ticker span::before {
+      content: '●';
+      color: var(--coral);
+      margin-right: 0.55rem;
+      font-size: 0.38rem;
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    .bar {
+      height: var(--header);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .logo img { height: 38px; width: auto; }
+    .logo--foot img { height: 44px; }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: clamp(0.75rem, 2vw, 1.5rem);
+    }
+    .nav a {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.6rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--green);
+      padding: 0.35rem 0;
+      border-bottom: 2px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .nav a:hover,
+    .nav a.is-active { color: var(--coral); border-bottom-color: var(--coral); }
+
+    .menu-btn {
+      display: none;
+      background: none;
+      border: var(--rule);
+      width: 40px;
+      height: 36px;
+      cursor: pointer;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+    .menu-btn span {
+      display: block;
+      width: 16px;
+      height: 1px;
+      background: var(--green);
+      transition: transform 0.2s;
+    }
+    .menu-btn.is-open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    .menu-btn.is-open span:nth-child(2) { opacity: 0; }
+    .menu-btn.is-open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+    /* ── Hero ── */
+    .hero {
+      margin-top: var(--top);
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      min-height: calc(100svh - var(--top));
+      border-bottom: var(--rule);
+    }
+
+    .hero__copy {
+      padding: clamp(2.5rem, 6vw, 5rem) var(--px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1.5rem;
+      border-right: var(--rule);
+    }
+
+    .hero__bar {
+      display: flex;
+      margin-top: 0.5rem;
+      max-width: 26rem;
+      border: var(--rule);
+    }
+    .hero__bar-date {
+      padding: 0.9rem 1.4rem;
+      background: var(--mustard);
+      color: var(--green);
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: 0.68rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-right: var(--rule);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+    }
+    .hero__bar .btn { flex: 1; border: none; }
+
+    .hero__media {
+      display: grid;
+      grid-template-rows: 1fr auto;
+    }
+    .hero__media .media { min-height: 0; }
+    .hero__media video { object-position: center; }
+
+    .hero__note {
+      padding: 1.5rem 1.75rem;
+      background: var(--green);
+      border-top: var(--rule);
+      display: grid;
+      grid-template-columns: 3.25rem 1fr;
+      gap: 1.25rem;
+      align-items: center;
+    }
+    .hero__note-num {
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: 2.75rem;
+      line-height: 1;
+      color: var(--mustard);
+      text-align: center;
+    }
+    .hero__note p {
+      font-size: 0.875rem;
+      line-height: 1.5;
+      color: rgba(244, 243, 239, 0.9);
+    }
+
+    /* ── Stats ── */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      background: var(--green);
+      border-bottom: var(--rule);
+    }
+    .stats div {
+      padding: 1.35rem 1rem;
+      text-align: center;
+      border-right: 1px solid rgba(250, 197, 90, 0.2);
+    }
+    .stats div:last-child { border-right: none; }
+    .stats strong {
+      display: block;
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: clamp(1.65rem, 3vw, 2.25rem);
+      color: var(--mustard);
+      line-height: 1;
+    }
+    .stats span {
+      display: block;
+      margin-top: 0.35rem;
+      font-family: var(--font-display);
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(250, 197, 90, 0.72);
+    }
+
+    /* ── Sections ── */
+    .sec {
+      padding: var(--section) 0;
+      border-bottom: var(--rule);
+      scroll-margin-top: var(--top);
+    }
+
+    /* About */
+    .about {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .about__img {
+      border-right: var(--rule);
+      min-height: 440px;
+    }
+    .about__body {
+      padding: clamp(2.5rem, 4vw, 3.25rem);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1.15rem;
+    }
+    .facts {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      border-top: var(--rule);
+      margin-top: 0.75rem;
+      padding-top: 1.5rem;
+    }
+    .facts div { padding-right: 1rem; border-right: var(--rule); }
+    .facts div:last-child { border-right: none; }
+    .facts b {
+      display: block;
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: 1.15rem;
+      color: var(--green);
+    }
+    .facts small {
+      font-size: 0.7rem;
+      color: rgba(17, 17, 17, 0.52);
+      line-height: 1.35;
+    }
+
+    /* Why */
+    .why {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .why__text {
+      padding: clamp(2.5rem, 5vw, 3.75rem);
+      background: var(--green);
+      border-right: var(--rule);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1.15rem;
+    }
+    .why__img {
+      position: relative;
+      min-height: 480px;
+    }
+    .why__img .media { position: absolute; inset: 0; }
+    .why__stamp {
+      position: absolute;
+      inset: auto 0 0 0;
+      padding: 1.1rem 1.5rem;
+      background: var(--mustard);
+      color: var(--green);
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.65rem;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      border-top: var(--rule);
+      line-height: 1.45;
+    }
+
+    /* Themes */
+    .pillars article {
+      display: grid;
+      grid-template-columns: 4.25rem 1fr;
+      border-bottom: var(--rule);
+      transition: background 0.2s var(--ease);
+    }
+    .pillars article:last-child { border-bottom: none; }
+    .pillars article:hover { background: rgba(244, 243, 239, 0.65); }
+    .pillars__n {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--green);
+      color: var(--mustard);
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: 0.75rem;
+      border-right: var(--rule);
+    }
+    .pillars__body {
+      padding: 1.5rem 1.75rem;
+    }
+    .pillars h3 {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.92rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 0.45rem;
+    }
+    .pillars p {
+      font-size: 0.9rem;
+      color: rgba(17, 17, 17, 0.65);
+      max-width: 42rem;
+    }
+
+    /* Agenda */
+    .agenda-card {
+      padding: clamp(3rem, 6vw, 4.5rem);
+      text-align: center;
+    }
+    .agenda-card .text { margin: 1rem auto 0; }
+    .locs {
+      display: inline-flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 2rem;
+      border: var(--rule);
+    }
+    .locs span {
+      padding: 0.55rem 1rem;
+      font-family: var(--font-display);
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--green);
+      border-right: var(--rule);
+      transition: background 0.15s, color 0.15s;
+    }
+    .locs span:last-child { border-right: none; }
+    .locs span:hover { background: var(--green); color: var(--mustard); }
+
+    /* Partners */
+    .logos {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+    }
+    .logos > div {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2.25rem 1.25rem;
+      min-height: 108px;
+      border-right: var(--rule);
+      transition: background 0.2s;
+    }
+    .logos > div:last-child { border-right: none; }
+    .logos > div:hover { background: var(--linen); }
+    .logos img {
+      max-width: 84%;
+      max-height: 50px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+    }
+    .logos img.wide { max-height: 34px; }
+
+    /* Team */
+    .team-block + .team-block { margin-top: 3rem; }
+    .team-block__label {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.62rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: var(--rule);
+    }
+    .team-grid {
+      display: grid;
+      border-top: var(--rule);
+    }
+    .team-grid--3 { grid-template-columns: repeat(3, 1fr); }
+    .team-grid--4 { grid-template-columns: repeat(4, 1fr); }
+    .person {
+      border-right: var(--rule);
+      border-bottom: var(--rule);
+      text-align: center;
+    }
+    .team-grid--3 .person:nth-child(3n) { border-right: none; }
+    .team-grid--3 .person:nth-last-child(-n+3) { border-bottom: none; }
+    .team-grid--4 .person:nth-child(4n) { border-right: none; }
+    .team-grid--4 .person:nth-last-child(-n+4) { border-bottom: none; }
+    .person__photo {
+      aspect-ratio: 1;
+      border-bottom: var(--rule);
+      overflow: hidden;
+      background: var(--linen);
+    }
+    .person__photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      filter: grayscale(15%);
+    }
+    .person__name {
+      padding: 1rem 0.75rem 1.15rem;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--green);
+      line-height: 1.35;
+    }
+
+    /* Involve */
+    .involve { overflow: hidden; }
+    .involve-top {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    .involve-copy {
+      padding: clamp(2.5rem, 4vw, 3.25rem);
+      border-right: var(--rule);
+    }
+    .involve-form {
+      padding: clamp(2.5rem, 4vw, 3.25rem);
+      background: var(--green);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+    .involve-form input[type="email"] {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      border: 1px solid rgba(250, 197, 90, 0.55);
+      background: rgba(0, 0, 0, 0.12);
+      color: var(--linen);
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .involve-form input[type="email"]:focus {
+      border-color: var(--mustard);
+      background: rgba(0, 0, 0, 0.2);
+    }
+    .involve-form input::placeholder { color: rgba(244, 243, 239, 0.38); }
+    .involve-form label {
+      font-size: 0.72rem;
+      color: rgba(244, 243, 239, 0.65);
+      display: flex;
+      gap: 0.5rem;
+      align-items: flex-start;
+      cursor: pointer;
+    }
+
+    .involve-cta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      border-top: var(--rule);
+    }
+    .involve-cta > div {
+      padding: clamp(2.5rem, 4vw, 3.25rem);
+      border-right: var(--rule);
+    }
+    .involve-cta > div:first-child { background: var(--linen); }
+    .involve-cta > div:last-child { border-right: none; background: var(--mustard); }
+    .involve-cta .title--md { margin-bottom: 0.65rem; }
+    .involve-cta .btn { margin-top: 1.15rem; }
+
+    /* Footer */
+    .foot {
+      background: var(--green);
+      color: var(--linen);
+    }
+    .foot__grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      gap: 2.5rem;
+      padding: 3rem 0;
+      border-bottom: 1px solid rgba(250, 197, 90, 0.18);
+    }
+    .foot h4 {
+      font-family: var(--font-display);
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--mustard);
+      margin-bottom: 0.85rem;
+    }
+    .foot p, .foot a {
+      font-size: 0.84rem;
+      color: rgba(244, 243, 239, 0.68);
+      line-height: 1.75;
+      transition: color 0.2s;
+    }
+    .foot a:hover { color: var(--mustard); }
+    .foot__tag { margin-top: 0.75rem; font-size: 0.82rem; }
+    .foot__copy {
+      padding: 0.85rem 0;
+      text-align: center;
+      font-family: var(--font-display);
+      font-size: 0.58rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(244, 243, 239, 0.38);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 1.25rem;
+      right: 1.25rem;
+      background: var(--green);
+      color: var(--mustard);
+      padding: 0.85rem 1.25rem;
+      font-family: var(--font-display);
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: 1px solid var(--mustard);
+      transform: translateY(calc(100% + 2rem));
+      transition: transform 0.3s var(--ease);
+      z-index: 300;
+    }
+    .toast.show { transform: translateY(0); }
+
+    @media (max-width: 960px) {
+      :root { --header: 60px; }
+
+      .nav {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0; right: 0;
+        flex-direction: column;
+        align-items: stretch;
+        background: var(--linen);
+        padding: 1rem var(--px) 1.25rem;
+        border-bottom: var(--rule);
+        gap: 0;
+      }
+      .nav.is-open { display: flex; }
+      .nav a {
+        padding: 0.85rem 0;
+        border-bottom: 1px solid rgba(27, 77, 46, 0.12);
+      }
+      .nav a:last-of-type { border-bottom: none; }
+      .nav .btn--nav { margin-top: 0.75rem; width: 100%; }
+      .menu-btn { display: flex; }
+
+      .hero { grid-template-columns: 1fr; min-height: auto; }
+      .hero__copy { border-right: none; border-bottom: var(--rule); min-height: auto; }
+      .hero__media .media { min-height: 280px; }
+      .hero__bar { max-width: none; }
+
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .stats div:nth-child(2) { border-right: none; }
+      .stats div:nth-child(3),
+      .stats div:nth-child(4) { border-top: 1px solid rgba(250, 197, 90, 0.2); }
+      .stats div:nth-child(3) { border-right: 1px solid rgba(250, 197, 90, 0.2); }
+
+      .about, .why, .involve-top, .involve-cta { grid-template-columns: 1fr; }
+      .about__img { border-right: none; border-bottom: var(--rule); min-height: 300px; }
+      .why__text { border-right: none; border-bottom: var(--rule); }
+      .why__img { min-height: 320px; }
+      .facts { grid-template-columns: 1fr; }
+      .facts div { border-right: none; border-bottom: var(--rule); padding: 0.75rem 0; }
+      .facts div:last-child { border-bottom: none; }
+
+      .logos { grid-template-columns: repeat(2, 1fr); }
+      .logos > div:nth-child(2n) { border-right: none; }
+      .logos > div { border-bottom: var(--rule); }
+      .logos > div:nth-last-child(-n+1) { border-bottom: none; }
+
+      .team-grid--3,
+      .team-grid--4 { grid-template-columns: repeat(2, 1fr); }
+      .team-grid--3 .person:nth-child(3n),
+      .team-grid--4 .person:nth-child(4n) { border-right: var(--rule); }
+      .team-grid--3 .person:nth-child(2n),
+      .team-grid--4 .person:nth-child(2n) { border-right: none; }
+      .team-grid--3 .person:nth-last-child(-n+3),
+      .team-grid--4 .person:nth-last-child(-n+4) { border-bottom: var(--rule); }
+      .team-grid--3 .person:last-child,
+      .team-grid--4 .person:last-child { border-bottom: none; }
+
+      .involve-copy { border-right: none; border-bottom: var(--rule); }
+      .involve-cta > div { border-right: none; border-bottom: var(--rule); }
+      .involve-cta > div:last-child { border-bottom: none; }
+
+      .foot__grid { grid-template-columns: 1fr; gap: 2rem; }
+      .sec-head__num { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .ticker__inner { animation: none; }
+      *, *::before, *::after { transition-duration: 0.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-header" id="header">
+    <div class="ticker" aria-hidden="true">
+      <div class="ticker__inner">
+        <span>Sea level +3.7mm/yr · Bay of Bengal</span>
+        <span>700+ rivers · Ganges-Brahmaputra Delta</span>
+        <span>Sundarbans · 10,000 km² mangrove</span>
+        <span>20 million · Dhaka</span>
+        <span>&lt;0.5% emissions · highest vulnerability</span>
+        <span>Sea level +3.7mm/yr · Bay of Bengal</span>
+        <span>700+ rivers · Ganges-Brahmaputra Delta</span>
+        <span>Sundarbans · 10,000 km² mangrove</span>
+        <span>20 million · Dhaka</span>
+        <span>&lt;0.5% emissions · highest vulnerability</span>
+      </div>
+    </div>
+    <div class="wrap bar">
+      <a href="#" class="logo" aria-label="Dhaka Climate Week">
+        <img src="assets/logo/logo-primary-sm.png" alt="Dhaka Climate Week" width="800" height="270" />
+      </a>
+      <button class="menu-btn" id="menu-btn" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="nav" id="nav" aria-label="Primary">
+        <a href="#about" data-nav>About</a>
+        <a href="#themes" data-nav>Themes</a>
+        <a href="#why-dhaka" data-nav>Why Dhaka</a>
+        <a href="#agenda" data-nav>Agenda</a>
+        <a href="#team" data-nav>Team</a>
+        <a href="#partners" data-nav>Partners</a>
+        <a href="#get-involved" data-nav>Get Involved</a>
+        <a href="#contact" data-nav>Contact</a>
+        <a href="#newsletter" class="btn btn--nav">Stay Updated</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <section class="hero" aria-label="Introduction">
+      <div class="hero__copy">
+        <p class="tag">Global South · January 2027</p>
+        <h1 class="title title--xl">Dhaka<br>Climate<br><em>Week</em></h1>
+        <p class="text">A 5-day platform to build the climate ecosystem Dhaka urgently needs — rooted in youth, collaboration, and global connection.</p>
+        <div class="hero__bar">
+          <span class="hero__bar-date">17 – 21 Jan</span>
+          <a href="#newsletter" class="btn">Stay Updated</a>
+        </div>
+      </div>
+      <div class="hero__media">
+        <div class="media">
+          <video id="hero-video" autoplay muted loop playsinline poster="assets/images/delta.jpg" aria-label="Dhaka Climate Week">
+            <source src="assets/video/hero.mp4" type="video/mp4" />
+          </video>
+        </div>
+        <div class="hero__note">
+          <span class="hero__note-num">5</span>
+          <p>days to connect cities worldwide — New York, London, Medellín — now Dhaka.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="stats" aria-label="Event statistics">
+      <div><strong>5</strong><span>Days</span></div>
+      <div><strong>120+</strong><span>Events</span></div>
+      <div><strong>10+</strong><span>Attendees</span></div>
+      <div><strong>5</strong><span>Themes</span></div>
+    </div>
+
+    <section id="about" class="sec">
+      <div class="wrap">
+        <header class="sec-head">
+          <div>
+            <p class="tag">About</p>
+            <h2 class="title title--lg">What is Dhaka Climate Week</h2>
+          </div>
+          <span class="sec-head__num" aria-hidden="true">01</span>
+        </header>
+        <div class="frame about">
+          <div class="about__img media">
+            <img src="assets/images/dhaka.jpg" alt="Dhaka skyline" width="1200" height="832" loading="lazy" />
+          </div>
+          <div class="about__body">
+            <p class="text">Climate Week connects cities worldwide to accelerate action. New York, London, Medellín — now Dhaka.</p>
+            <p class="text">Five days of conferences, labs, and city-wide events. The world's most climate-exposed megacity as a platform for encounter and action.</p>
+            <div class="facts">
+              <div><b>700+</b><small>Rivers in the delta</small></div>
+              <div><b>10K km²</b><small>Sundarbans forest</small></div>
+              <div><b>170M</b><small>On the frontline</small></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="why-dhaka" class="sec">
+      <div class="wrap">
+        <div class="frame why">
+          <div class="why__text">
+            <p class="tag tag--gold">Why Dhaka</p>
+            <h2 class="title title--lg title--light">Built on<br>Resilience</h2>
+            <p class="text text--light">Twenty million residents. Rising seas. Extreme monsoons. A megacity at the heart of the delta — where urgency and ingenuity meet every day.</p>
+            <p class="text text--light">From Korail to Hatirjheel, Dhaka's neighborhoods are living laboratories for urban climate adaptation.</p>
+          </div>
+          <div class="why__img">
+            <div class="media">
+              <img src="assets/images/streets.jpg" alt="Dhaka streets" width="1200" height="800" loading="lazy" />
+            </div>
+            <p class="why__stamp">The crisis is already here. The delta doesn't wait.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="themes" class="sec">
+      <div class="wrap">
+        <header class="sec-head">
+          <div>
+            <p class="tag">Themes</p>
+            <h2 class="title title--lg">Five pillars</h2>
+          </div>
+          <span class="sec-head__num" aria-hidden="true">02</span>
+        </header>
+        <div class="frame pillars">
+          <article>
+            <span class="pillars__n">01</span>
+            <div class="pillars__body">
+              <h3>Climate Vulnerability to Regional Leadership</h3>
+              <p>Position Dhaka and Bangladesh as a regional and global climate leader, not just a victim.</p>
+            </div>
+          </article>
+          <article>
+            <span class="pillars__n">02</span>
+            <div class="pillars__body">
+              <h3>Youth and Academic Collaboration</h3>
+              <p>Celebrating the power of youth, engaging the academic ecosystem with youth-led startups.</p>
+            </div>
+          </article>
+          <article>
+            <span class="pillars__n">03</span>
+            <div class="pillars__body">
+              <h3>Public–Private Partnership</h3>
+              <p>Bridging government, NGOs, and the private sector around shared commitments.</p>
+            </div>
+          </article>
+          <article>
+            <span class="pillars__n">04</span>
+            <div class="pillars__body">
+              <h3>Climate Finance</h3>
+              <p>Engaging climate innovation with financial ecosystems.</p>
+            </div>
+          </article>
+          <article>
+            <span class="pillars__n">05</span>
+            <div class="pillars__body">
+              <h3>Celebrating Nature and Culture</h3>
+              <p>Hosting a colorful day with the citizens of Dhaka for celebrating nature, culture, and music.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="agenda" class="sec">
+      <div class="wrap">
+        <header class="sec-head">
+          <div>
+            <p class="tag">Coming soon</p>
+            <h2 class="title title--lg">The agenda</h2>
+          </div>
+        </header>
+        <div class="frame agenda-card">
+          <p class="text">Conversations and experiences across Dhaka — Parliament area to community hubs.</p>
+          <div class="locs">
+            <span>Hatirjheel</span>
+            <span>Korail</span>
+            <span>BUET</span>
+            <span>Botanical Garden</span>
+            <span>Sundarbans Hall</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="team" class="sec">
+      <div class="wrap">
+        <header class="sec-head">
+          <div>
+            <p class="tag">People</p>
+            <h2 class="title title--lg">Our team</h2>
+          </div>
+          <span class="sec-head__num" aria-hidden="true">03</span>
+        </header>
+
+        <div class="team-block">
+          <p class="team-block__label">Advisory panel</p>
+          <div class="frame team-grid team-grid--3">
+            <article class="person">
+              <div class="person__photo">
+                <img src="assets/team/dipesh-nag.jpg" alt="Dipesh Nag" width="400" height="400" loading="lazy" />
+              </div>
+              <p class="person__name">Dipesh Nag</p>
+            </article>
+            <article class="person">
+              <div class="person__photo">
+                <img src="assets/team/munaf-chowdhury.jpg" alt="Munaf Chowdhury" width="400" height="400" loading="lazy" />
+              </div>
+              <p class="person__name">Munaf Chowdhury</p>
+            </article>
+            <article class="person">
+              <div class="person__photo">
+                <img src="assets/team/wenda-gumulya.jpg" alt="Wenda Gumulya" width="400" height="400" loading="lazy" />
+              </div>
+              <p class="person__name">Wenda Gumulya</p>
+            </article>
+          </div>
+        </div>
+
+        <div class="team-block">
+          <p class="team-block__label">Management team</p>
+          <div class="frame team-grid team-grid--4">
+            <article class="person">
+              <div class="person__photo">
+                <img src="assets/team/sharmin-akter-shakila.jpg" alt="Sharmin Akter Shakila" width="400" height="400" loading="lazy" />
+              </div>
+              <p class="person__name">Sharmin Akter Shakila</p>
+            </article>
+            <article class="person">
+              <div class="person__photo">
+                <img src="assets/team/kevin.jpg" alt="Kevin Drolet" width="400" height="400" loading="lazy" />
+              </div>
+              <p class="person__name">Kevin Drolet</p>
+            </article>
+            <article class="person">
+              <div class="person__photo">
+                <img src="assets/team/mustain-chowdhury.jpg" alt="Mustain Karim Chowdhury" width="400" height="400" loading="lazy" />
+              </div>
+              <p class="person__name">Mustain Karim Chowdhury</p>
+            </article>
+            <article class="person">
+              <div class="person__photo">
+                <img src="assets/team/wahid-hossain.jpg" alt="Wahid Hossain" width="400" height="400" loading="lazy" />
+              </div>
+              <p class="person__name">Wahid Hossain</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="partners" class="sec">
+      <div class="wrap">
+        <header class="sec-head">
+          <div>
+            <p class="tag">Partners</p>
+            <h2 class="title title--lg">Supported by</h2>
+          </div>
+          <span class="sec-head__num" aria-hidden="true">04</span>
+        </header>
+        <div class="frame logos">
+          <div><img class="wide" src="assets/partners/mycellium.png?v=3" alt="Mycellium" loading="lazy" /></div>
+          <div><img src="assets/partners/climate-week-network.png" alt="Climate Week Network" loading="lazy" /></div>
+          <div><img src="assets/partners/climate-hive.png" alt="Climate Hive" loading="lazy" /></div>
+          <div><img src="assets/partners/ekshathe-foundation.jpg" alt="Ekshathe Foundation" loading="lazy" /></div>
+          <div><img src="assets/partners/resolution-project.png?v=3" alt="Resolution Project" loading="lazy" /></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="get-involved" class="sec">
+      <div class="wrap">
+        <header class="sec-head">
+          <div>
+            <p class="tag">Get involved</p>
+            <h2 class="title title--lg">Join the week</h2>
+          </div>
+        </header>
+        <div class="frame involve">
+          <div class="involve-top">
+            <div class="involve-copy">
+              <p class="tag">Newsletter</p>
+              <h3 class="title title--md">Get updates</h3>
+              <p class="text">Speakers, events, and opportunities for Dhaka Climate Week 2027.</p>
+            </div>
+            <form id="newsletter" class="involve-form" onsubmit="handleSubscribe(event)" novalidate>
+              <input type="email" name="email" placeholder="Email address" required aria-label="Email address" autocomplete="email" />
+              <label><input type="checkbox" name="consent" required /> I agree to receive updates.</label>
+              <button type="submit" class="btn btn--gold">Subscribe</button>
+            </form>
+          </div>
+          <div class="involve-cta">
+            <div>
+              <h3 class="title title--md">Propose an event</h3>
+              <p class="text">Organizations and communities — shape the agenda through events across the city.</p>
+              <a href="mailto:events@dhkclimateweek.org" class="btn btn--ghost">Propose →</a>
+            </div>
+            <div>
+              <h3 class="title title--md">Become a partner</h3>
+              <p class="text">Connect as an ally, partner, or experience host.</p>
+              <a href="mailto:partners@dhkclimateweek.org" class="btn">Connect →</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer id="contact" class="foot">
+    <div class="wrap foot__grid">
+      <div>
+        <a href="#" class="logo logo--foot" aria-label="Dhaka Climate Week">
+          <img src="assets/logo/logo-white.png" alt="Dhaka Climate Week" width="804" height="273" />
+        </a>
+        <p class="foot__tag">Climate action rooted in the Global South.</p>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <p><a href="mailto:hello@dhkclimateweek.org">hello@dhkclimateweek.org</a></p>
+        <p><a href="tel:+8801764196044">+88 01764196044</a></p>
+        <p><a href="https://www.dhkclimateweek.org">dhkclimateweek.org</a></p>
+      </div>
+      <div>
+        <h4>Follow</h4>
+        <p><a href="#">LinkedIn</a></p>
+        <p><a href="#">Instagram</a></p>
+        <p><a href="#">X</a></p>
+      </div>
+    </div>
+    <p class="foot__copy wrap">© 2027 Dhaka Climate Week · January 17–21</p>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite">Subscribed.</div>
+
+  <script>
+    const header = document.getElementById('header');
+    const nav = document.getElementById('nav');
+    const menuBtn = document.getElementById('menu-btn');
+    const navLinks = document.querySelectorAll('[data-nav]');
+    const sections = [...navLinks].map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+
+    function closeMenu() {
+      nav.classList.remove('is-open');
+      menuBtn.classList.remove('is-open');
+      menuBtn.setAttribute('aria-expanded', 'false');
+      menuBtn.setAttribute('aria-label', 'Open menu');
+    }
+
+    menuBtn.addEventListener('click', () => {
+      const open = nav.classList.toggle('is-open');
+      menuBtn.classList.toggle('is-open', open);
+      menuBtn.setAttribute('aria-expanded', open);
+      menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    });
+
+    nav.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => closeMenu());
+    });
+
+    function headerH() {
+      return header.offsetHeight;
+    }
+
+    function setActiveNav() {
+      const y = window.scrollY + headerH() + 100;
+      let current = sections[0];
+      sections.forEach(sec => {
+        if (sec && sec.offsetTop <= y) current = sec;
+      });
+      navLinks.forEach(a => {
+        a.classList.toggle('is-active', current && a.getAttribute('href') === '#' + current.id);
+      });
+    }
+
+    window.addEventListener('scroll', () => {
+      header.classList.toggle('is-scrolled', window.scrollY > 8);
+      setActiveNav();
+    }, { passive: true });
+
+    setActiveNav();
+
+    const heroVideo = document.getElementById('hero-video');
+    if (heroVideo && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      heroVideo.pause();
+      heroVideo.removeAttribute('autoplay');
+    }
+
+    function handleSubscribe(e) {
+      e.preventDefault();
+      const form = e.target;
+      if (!form.checkValidity()) return;
+      document.getElementById('toast').classList.add('show');
+      form.reset();
+      setTimeout(() => document.getElementById('toast').classList.remove('show'), 3200);
+    }
+  </script>
+</body>
+</html>
