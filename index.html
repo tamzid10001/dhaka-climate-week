@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dhaka Climate Week — January 17–21, 2027</title>
-  <meta name="description" content="Dhaka Climate Week — a 5-day platform to build the climate ecosystem Dhaka urgently needs. January 17–21, 2027." />
+  <title>Dhaka Climate Week, January 17–21, 2027</title>
+  <meta name="description" content="Dhaka Climate Week, a 5-day platform to build the climate ecosystem Dhaka urgently needs. January 17–21, 2027." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Roboto+Slab:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -76,18 +76,13 @@
     .deco--boat     { width: clamp(104px, 11vw, 176px); aspect-ratio: 130 / 110; }
     .deco--lily     { width: clamp(84px, 9vw, 150px); aspect-ratio: 110 / 100; }
     .deco--skyline  { width: clamp(170px, 20vw, 360px); aspect-ratio: 190 / 90; }
-    .deco--tiger    { width: clamp(118px, 12vw, 190px); aspect-ratio: 130 / 90; }
-    .deco--minar    { width: clamp(72px, 8vw, 112px); aspect-ratio: 100 / 120; }
-    .deco--shoudho  { width: clamp(140px, 16vw, 260px); aspect-ratio: 160 / 100; }
     .sec--green .deco { color: var(--paper); opacity: 0.12; }
     @media (max-width: 700px) {
-      .deco--metro, .deco--skyline, .deco--shoudho { display: none; }
+      .deco--metro, .deco--skyline { display: none; }
       .deco { opacity: 0.12; }
       .deco--rickshaw { width: 110px; }
       .deco--boat { width: 96px; }
       .deco--lily { width: 80px; }
-      .deco--tiger { width: 100px; }
-      .deco--minar { width: 68px; }
     }
 
     .media { position: relative; overflow: hidden; background: var(--green-mid); }
@@ -252,7 +247,7 @@
     .hero { position: relative; min-height: 100svh; display: flex; align-items: flex-end; isolation: isolate; }
     .hero__bg { position: absolute; inset: 0; z-index: -2; }
     .hero__bg img { filter: saturate(1.03); transform-origin: 60% 40%; animation: kenburns 24s ease-in-out infinite alternate; }
-    @keyframes kenburns { from { transform: scale(1.001); } to { transform: scale(1.09); } }
+    @keyframes kenburns { from { transform: scale(1.08); } to { transform: scale(1.16); } }
     .hero__scrim {
       position: absolute; inset: 0; z-index: -1;
       background:
@@ -391,6 +386,24 @@
     }
     .subtheme h3 span { display: block; margin-top: 0.35rem; font-weight: 600; color: var(--ink); font-size: 0.92em; }
     .subtheme p { margin-top: 0.85rem; font-size: 0.9rem; color: var(--ink-soft); line-height: 1.55; }
+
+    /* Six pillars */
+    .pillars { border-top: 1px solid var(--line); }
+    .pillar {
+      position: relative;
+      display: grid; grid-template-columns: 4rem minmax(0, 1.1fr) minmax(0, 1.3fr);
+      gap: clamp(1rem, 3vw, 2.5rem); align-items: center; padding: clamp(1.6rem, 3vw, 2.5rem) 0;
+      border-bottom: 1px solid var(--line); transition: padding 0.4s var(--ease), background 0.4s var(--ease);
+    }
+    .pillar:hover { padding-left: 1rem; padding-right: 1rem; background: var(--paper); }
+    .pillar__n { font-family: var(--font-display); font-weight: 900; font-size: 1.05rem; color: var(--coral); letter-spacing: 0.04em; }
+    .pillar h3 { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.15rem, 2vw, 1.5rem); line-height: 1.15; color: var(--green); letter-spacing: -0.02em; }
+    .pillar p { font-size: 0.96rem; color: var(--ink-soft); line-height: 1.6; }
+    .pillar::before {
+      content: ""; position: absolute; left: 0; top: 50%; width: 3px; height: 0;
+      background: var(--coral); transform: translateY(-50%); transition: height 0.4s var(--ease);
+    }
+    .pillar:hover::before { height: 55%; }
 
     /* Signature framework */
     .framework-head {
@@ -531,6 +544,7 @@
       .subtheme:nth-child(2n) { border-right: none; }
       .subtheme:nth-child(n+4) { border-bottom: 1px solid var(--line); }
       .subtheme:nth-child(n+5) { border-bottom: none; }
+      .pillar { grid-template-columns: 3.5rem minmax(0, 1fr) minmax(0, 1.1fr); }
     }
 
     @media (max-width: 960px) {
@@ -579,6 +593,8 @@
       .subthemes { grid-template-columns: 1fr; }
       .subtheme { border-right: none !important; }
       .subtheme:not(:last-child) { border-bottom: 1px solid var(--line) !important; }
+      .pillar { grid-template-columns: 2.5rem 1fr; }
+      .pillar p { grid-column: 2; }
       .lenses { grid-template-columns: 1fr; }
     }
 
@@ -648,35 +664,6 @@
         <path d="M160 86 L160 46 L182 46 L182 86"/>
         <path d="M166 56 L166 46 M174 56 L174 46"/>
       </symbol>
-      <symbol id="ic-tiger" viewBox="0 0 130 90">
-        <path d="M18 72 Q32 48 52 40 Q72 32 92 38 L108 32"/>
-        <path d="M52 40 Q58 28 68 24 Q84 20 98 36"/>
-        <path d="M68 24 L70 14"/>
-        <path d="M38 58 L32 48"/>
-        <path d="M18 72 L8 80"/>
-        <path d="M98 36 L118 44 L114 58 L88 64 Q62 70 36 74"/>
-        <path d="M58 44 L56 52 M72 46 L70 54 M86 50 L84 58"/>
-        <circle cx="86" cy="30" r="2"/>
-        <path d="M112 46 L122 50"/>
-      </symbol>
-      <symbol id="ic-minar" viewBox="0 0 100 120">
-        <path d="M50 6 L56 108"/>
-        <path d="M44 108 L56 108"/>
-        <path d="M50 6 L36 26 Q18 50 10 108"/>
-        <path d="M50 6 L64 26 Q82 50 90 108"/>
-        <path d="M6 108 L94 108"/>
-        <path d="M46 6 L54 6"/>
-        <path d="M50 6 L50 18"/>
-      </symbol>
-      <symbol id="ic-shoudho" viewBox="0 0 160 100">
-        <path d="M8 88 L152 88"/>
-        <path d="M68 88 L68 42 L92 42 L92 88"/>
-        <path d="M68 58 Q28 62 12 88"/>
-        <path d="M68 50 Q24 52 8 78"/>
-        <path d="M92 58 Q132 62 148 88"/>
-        <path d="M92 50 Q136 52 152 78"/>
-        <path d="M72 42 L72 34 L88 34 L88 42"/>
-      </symbol>
     </defs>
   </svg>
 
@@ -729,7 +716,7 @@
       </div>
       <div>
         <span class="mm-label">Contact</span>
-        <a href="mailto:hello@dhkclimateweek.org">hello@dhkclimateweek.org</a>
+        <a href="mailto:wahid.hossain@mycellium.org">wahid.hossain@mycellium.org</a>
       </div>
     </div>
   </div>
@@ -744,7 +731,7 @@
       <div class="wrap hero__inner">
         <span class="kicker kicker--light">Global South · Climate Week</span>
         <h1 class="display h-hero hero__title light">Dhaka<br>Climate <em>Week</em></h1>
-        <p class="hero__lede">A 5-day platform to build the climate ecosystem Dhaka urgently needs — rooted in youth, collaboration, and global connection.</p>
+        <p class="hero__lede">A 5-day platform to build the climate ecosystem Dhaka urgently needs, rooted in youth, collaboration, and global connection.</p>
         <div class="hero__meta">
           <span class="hero__date">17 – 21 JANUARY 2027</span>
           <span class="hero__pill">Dhaka, Bangladesh</span>
@@ -769,7 +756,7 @@
       <div class="wrap">
         <div class="statement__inner">
           <p class="statement__big reveal">
-            The world's most climate-exposed megacity becomes a platform for action. <b>Five days of conferences, labs, and city-wide events</b> — connecting youth, government, and global partners around the future of the delta.
+            The world's most climate-exposed megacity becomes a platform for action. <b>Five days of conferences, labs, and city-wide events</b>, connecting youth, government, and global partners around the future of the delta.
           </p>
           <div class="statement__side reveal">
             <span class="kicker">The mission</span>
@@ -795,7 +782,7 @@
         <div class="head reveal">
           <div class="head__top">
             <span class="kicker">About</span>
-            <span class="head__num">01 — 05</span>
+            <span class="head__num">01 / 05</span>
           </div>
           <h2 class="display h-sec head__title">What is Dhaka Climate Week</h2>
         </div>
@@ -863,8 +850,52 @@
       </div>
     </section>
 
+    <section id="pillars" class="sec sec--paper">
+      <svg class="deco deco--metro" style="right:5%; top:0.6rem;" aria-hidden="true"><use href="#ic-metro"/></svg>
+      <div class="wrap">
+        <div class="head reveal">
+          <div class="head__top">
+            <span class="kicker">Programme</span>
+          </div>
+          <h2 class="display h-sec head__title">Six pillars</h2>
+        </div>
+        <div class="pillars reveal">
+          <article class="pillar">
+            <span class="pillar__n">01</span>
+            <h3>Global Climate Outlook</h3>
+            <p>COP outcomes, carbon markets, climate finance, AI for climate.</p>
+          </article>
+          <article class="pillar">
+            <span class="pillar__n">02</span>
+            <h3>South Asia</h3>
+            <p>Delta resilience, food security, migration, disaster preparedness.</p>
+          </article>
+          <article class="pillar">
+            <span class="pillar__n">03</span>
+            <h3>ASEAN</h3>
+            <p>Coastal adaptation, blue economy, smart cities, circular economy.</p>
+          </article>
+          <article class="pillar">
+            <span class="pillar__n">04</span>
+            <h3>Dhaka in Action</h3>
+            <p>Government, private sector, NGO and community solutions already working.</p>
+          </article>
+          <article class="pillar">
+            <span class="pillar__n">05</span>
+            <h3>Solutions Marketplace</h3>
+            <p>Startups, investors and universities matched into real partnerships.</p>
+          </article>
+          <article class="pillar">
+            <span class="pillar__n">06</span>
+            <h3>Future Generation</h3>
+            <p>Youth summit, innovation challenge, climate entrepreneurship.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
     <section id="framework" class="sec sec--paper">
-      <svg class="deco deco--tiger" style="left:5%; top:0.6rem;" aria-hidden="true"><use href="#ic-tiger"/></svg>
+      <svg class="deco deco--boat" style="left:5%; top:0.6rem;" aria-hidden="true"><use href="#ic-boat"/></svg>
       <div class="wrap">
         <div class="framework-head reveal">
           <h2 class="display h-sec">Signature framework</h2>
@@ -872,19 +903,19 @@
         </div>
         <div class="lenses reveal">
           <article class="lens">
-            <h3>Lens 1 — <em>Global</em></h3>
+            <h3>Lens 1: <em>Global</em></h3>
             <p>What trends, tech and policy are shaping the future?</p>
           </article>
           <article class="lens">
-            <h3>Lens 2 — <em>Regional</em></h3>
+            <h3>Lens 2: <em>Regional</em></h3>
             <p>What can South Asia and ASEAN learn from each other?</p>
           </article>
           <article class="lens">
-            <h3>Lens 3 — <em>Local</em></h3>
+            <h3>Lens 3: <em>Local</em></h3>
             <p>How is Dhaka innovating right now?</p>
           </article>
           <article class="lens">
-            <h3>Lens 4 — <em>Collaboration</em></h3>
+            <h3>Lens 4: <em>Collaboration</em></h3>
             <p>Which partnerships and investments can scale?</p>
           </article>
         </div>
@@ -892,7 +923,7 @@
     </section>
 
     <section id="why-dhaka" class="sec sec--green">
-      <svg class="deco deco--shoudho" style="right:4%; bottom:0.6rem;" aria-hidden="true"><use href="#ic-shoudho"/></svg>
+      <svg class="deco deco--lily" style="right:4%; bottom:0.6rem;" aria-hidden="true"><use href="#ic-lily"/></svg>
       <div class="wrap why">
         <div class="why__text reveal">
           <div class="why__point">
@@ -922,7 +953,7 @@
         <div class="head reveal">
           <div class="head__top">
             <span class="kicker">Programme</span>
-            <span class="head__num">03 — 05</span>
+            <span class="head__num">03 / 05</span>
           </div>
           <h2 class="display h-sec head__title">Five days, one delta</h2>
         </div>
@@ -979,7 +1010,7 @@
         <div class="head reveal">
           <div class="head__top">
             <span class="kicker">Speakers</span>
-            <span class="head__num">04 — 06</span>
+            <span class="head__num">04 / 06</span>
           </div>
           <h2 class="display h-sec head__title">Confirmed speakers</h2>
         </div>
@@ -1052,12 +1083,12 @@
     </section>
 
     <section id="team" class="sec sec--linen">
-      <svg class="deco deco--minar" style="right:5%; top:0.6rem;" aria-hidden="true"><use href="#ic-minar"/></svg>
+      <svg class="deco deco--rickshaw" style="right:5%; top:0.6rem;" aria-hidden="true"><use href="#ic-rickshaw"/></svg>
       <div class="wrap">
         <div class="head reveal">
           <div class="head__top">
             <span class="kicker">People</span>
-            <span class="head__num">05 — 06</span>
+            <span class="head__num">05 / 06</span>
           </div>
           <h2 class="display h-sec head__title">The team behind the week</h2>
         </div>
@@ -1110,7 +1141,7 @@
         <div class="head reveal">
           <div class="head__top">
             <span class="kicker">Partners</span>
-            <span class="head__num">06 — 06</span>
+            <span class="head__num">06 / 06</span>
           </div>
         </div>
 
@@ -1150,7 +1181,7 @@
           <div class="involve__intro">
             <span class="kicker kicker--plain">Newsletter</span>
             <h3 class="display h-card">Get updates first</h3>
-            <p class="lede">Speakers, events, and opportunities for Dhaka Climate Week 2027 — straight to your inbox.</p>
+            <p class="lede">Speakers, events, and opportunities for Dhaka Climate Week 2027, straight to your inbox.</p>
           </div>
           <form id="newsletter" class="involve__form" onsubmit="handleSubscribe(event)" novalidate>
             <input type="email" name="email" placeholder="Email address" required aria-label="Email address" autocomplete="email" />
@@ -1161,7 +1192,7 @@
         <div class="cards reveal">
           <div class="card">
             <h3 class="display h-card">Propose an event</h3>
-            <p class="lede">Organizations and communities — shape the agenda through events across the city.</p>
+            <p class="lede">Organizations and communities can shape the agenda through events across the city.</p>
             <a href="mailto:events@dhkclimateweek.org" class="btn btn--line">Propose <span class="arw">→</span></a>
           </div>
           <div class="card card--accent">
@@ -1194,7 +1225,7 @@
         </div>
         <div>
           <h4>Contact</h4>
-          <p><a href="mailto:hello@dhkclimateweek.org">hello@dhkclimateweek.org</a></p>
+          <p><a href="mailto:wahid.hossain@mycellium.org">wahid.hossain@mycellium.org</a></p>
           <p><a href="tel:+8801764196044">+88 01764196044</a></p>
           <p><a href="https://www.dhkclimateweek.org">dhkclimateweek.org</a></p>
         </div>
