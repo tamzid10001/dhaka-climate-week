@@ -345,7 +345,11 @@
 
     /* Why */
     .why { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 5rem); align-items: center; }
-    .why__text { display: flex; flex-direction: column; gap: 1.4rem; }
+    .why__text { display: flex; flex-direction: column; gap: 0; }
+    .why__point { padding: clamp(1.5rem, 3vw, 2rem) 0; border-top: 1px solid var(--line-light); }
+    .why__point:first-child { padding-top: 0; border-top: none; }
+    .why__point h3 { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.2rem, 2.2vw, 1.6rem); line-height: 1.2; color: var(--paper); letter-spacing: -0.02em; margin-bottom: 0.7rem; }
+    .why__point p { font-size: clamp(0.98rem, 1.4vw, 1.06rem); line-height: 1.65; color: rgba(244, 243, 239, 0.82); }
     .why__visual { position: relative; aspect-ratio: 4 / 5; min-height: 400px; }
     .why__quote {
       position: absolute; left: clamp(1rem, 2vw, 1.5rem); right: clamp(1rem, 2vw, 1.5rem); bottom: clamp(1rem, 2vw, 1.5rem);
@@ -354,17 +358,64 @@
     }
 
     /* Themes */
-    .pillars { border-top: 1px solid var(--line); }
-    .pillar {
-      display: grid; grid-template-columns: 4rem minmax(0, 1.1fr) minmax(0, 1.2fr) auto;
-      gap: clamp(1rem, 3vw, 2.5rem); align-items: center; padding: clamp(1.6rem, 3vw, 2.5rem) 0;
-      border-bottom: 1px solid var(--line); transition: padding 0.4s var(--ease), background 0.4s var(--ease);
+    .theme-core {
+      padding: clamp(2.5rem, 5vw, 3.75rem) 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      margin-bottom: clamp(2.5rem, 5vw, 3.5rem);
+      display: flex; flex-direction: column; gap: 1rem; max-width: 52rem;
     }
-    .pillar:hover { padding-left: 1rem; padding-right: 1rem; background: var(--linen); }
-    .pillar__n { font-family: var(--font-display); font-weight: 900; font-size: 1.05rem; color: var(--coral); letter-spacing: 0.04em; }
-    .pillar h3 { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.15rem, 2vw, 1.5rem); line-height: 1.15; color: var(--green); letter-spacing: -0.02em; }
-    .pillar p { font-size: 0.96rem; color: var(--ink-soft); line-height: 1.6; }
-    .pillar__day { font-family: var(--font-display); font-weight: 700; font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); white-space: nowrap; }
+    .theme-core__title { margin-top: 0.15rem; }
+    .theme-core__text { max-width: 46rem; }
+    .subthemes-block { display: flex; flex-direction: column; gap: 1.5rem; }
+    .subthemes {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      border: 1px solid var(--line); background: var(--paper);
+    }
+    .subtheme {
+      position: relative; padding: clamp(1.5rem, 2.5vw, 2.1rem);
+      border-right: 1px solid var(--line); border-bottom: 1px solid var(--line);
+      transition: background 0.35s var(--ease);
+    }
+    .subtheme:nth-child(3n) { border-right: none; }
+    .subtheme:nth-child(n+4) { border-bottom: none; }
+    .subtheme:hover { background: var(--linen); }
+    .subtheme h3 {
+      font-family: var(--font-display); font-weight: 700;
+      font-size: clamp(1.02rem, 1.6vw, 1.22rem); line-height: 1.28;
+      color: var(--green); letter-spacing: -0.02em;
+    }
+    .subtheme h3 span { display: block; margin-top: 0.35rem; font-weight: 600; color: var(--ink); font-size: 0.92em; }
+    .subtheme p { margin-top: 0.85rem; font-size: 0.9rem; color: var(--ink-soft); line-height: 1.55; }
+
+    /* Signature framework */
+    .framework-head {
+      display: flex; flex-direction: column; align-items: center; text-align: center;
+      gap: 1.15rem; margin-bottom: clamp(2.5rem, 5vw, 3.5rem);
+    }
+    .framework__pill {
+      display: inline-block; background: var(--coral); color: var(--paper);
+      font-family: var(--font-display); font-weight: 700;
+      font-size: clamp(0.92rem, 1.4vw, 1.08rem); line-height: 1.2;
+      padding: 0.7rem 1.6rem; border-radius: 999px; letter-spacing: -0.01em;
+    }
+    .lenses {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: clamp(0.85rem, 1.5vw, 1.1rem);
+    }
+    .lens {
+      background: var(--green); color: var(--paper);
+      padding: clamp(2rem, 3.5vw, 2.75rem);
+      display: flex; flex-direction: column; gap: 0.85rem; min-height: 168px;
+      transition: background 0.35s var(--ease), transform 0.35s var(--ease);
+    }
+    .lens:hover { background: var(--green-deep); transform: translateY(-2px); }
+    .lens h3 {
+      font-family: var(--font-display); font-weight: 700;
+      font-size: clamp(1.1rem, 1.8vw, 1.4rem); line-height: 1.2; color: var(--paper);
+    }
+    .lens h3 em { font-style: normal; color: var(--mustard); }
+    .lens p { font-size: clamp(0.94rem, 1.3vw, 1.02rem); line-height: 1.55; color: rgba(244, 243, 239, 0.88); max-width: 30rem; }
 
     /* Program / agenda */
     .program { display: grid; grid-template-columns: repeat(5, 1fr); border: 1px solid var(--line); }
@@ -379,6 +430,17 @@
     .locs { display: flex; flex-wrap: wrap; gap: 0.65rem; margin-top: 2rem; }
     .locs span { padding: 0.6rem 1.2rem; font-family: var(--font-display); font-size: 0.72rem; font-weight: 500; letter-spacing: 0.05em; color: var(--green); border: 1px solid var(--line); transition: background 0.25s var(--ease), color 0.25s var(--ease), border-color 0.25s var(--ease); }
     .locs span:hover { background: var(--green); color: var(--mustard); border-color: var(--green); }
+
+    /* Speakers */
+    .speakers-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: clamp(1.25rem, 2.5vw, 2rem);
+    }
+    .speaker__photo { aspect-ratio: 4 / 5; overflow: hidden; background: var(--linen); }
+    .speaker__photo img { width: 100%; height: 100%; object-fit: cover; object-position: center top; transition: transform 0.6s var(--ease), filter 0.4s var(--ease); filter: saturate(0.92); }
+    .speaker:hover .speaker__photo img { transform: scale(1.04); filter: saturate(1.05); }
+    .speaker__name { margin-top: 0.9rem; font-family: var(--font-display); font-weight: 700; font-size: 0.92rem; letter-spacing: -0.01em; color: var(--green); line-height: 1.3; }
+    .speaker__role { margin-top: 0.35rem; font-size: 0.82rem; line-height: 1.45; color: var(--ink-soft); }
 
     /* Team */
     .team-block + .team-block { margin-top: clamp(2.75rem, 5vw, 4rem); }
@@ -450,16 +512,19 @@
     .why__visual:hover img { transform: scale(1.045); }
 
     /* ── Pillar hover marker ── */
-    .pillar { position: relative; }
-    .pillar::before {
-      content: ""; position: absolute; left: -0.25rem; top: 50%; width: 3px; height: 0;
+    .subtheme::before {
+      content: ""; position: absolute; left: 0; top: 50%; width: 3px; height: 0;
       background: var(--coral); transform: translateY(-50%); transition: height 0.4s var(--ease);
     }
-    .pillar:hover::before { height: 60%; }
+    .subtheme:hover::before { height: 55%; }
 
     @media (max-width: 1024px) {
-      .pillar { grid-template-columns: 3.5rem minmax(0,1fr) minmax(0,1.1fr); }
-      .pillar__day { display: none; }
+      .subthemes { grid-template-columns: 1fr 1fr; }
+      .subtheme { border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+      .subtheme:nth-child(3n) { border-right: 1px solid var(--line); }
+      .subtheme:nth-child(2n) { border-right: none; }
+      .subtheme:nth-child(n+4) { border-bottom: 1px solid var(--line); }
+      .subtheme:nth-child(n+5) { border-bottom: none; }
     }
 
     @media (max-width: 960px) {
@@ -505,8 +570,10 @@
       .stats div:first-child { border-top: none; }
       .program__day { border-right: none !important; }
       .facts { grid-template-columns: 1fr; gap: 1.1rem; }
-      .pillar { grid-template-columns: 2.5rem 1fr; }
-      .pillar p { grid-column: 2; }
+      .subthemes { grid-template-columns: 1fr; }
+      .subtheme { border-right: none !important; }
+      .subtheme:not(:last-child) { border-bottom: 1px solid var(--line) !important; }
+      .lenses { grid-template-columns: 1fr; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -593,6 +660,7 @@
         <a href="#themes" data-nav>Themes</a>
         <a href="#why-dhaka" data-nav>Why Dhaka</a>
         <a href="#agenda" data-nav>Programme</a>
+        <a href="#speakers" data-nav>Speakers</a>
         <a href="#team" data-nav>Team</a>
         <a href="#partners" data-nav>Partners</a>
         <a href="#contact" data-nav>Contact</a>
@@ -613,6 +681,7 @@
       <a href="#themes">Themes</a>
       <a href="#why-dhaka">Why Dhaka</a>
       <a href="#agenda">Programme</a>
+      <a href="#speakers">Speakers</a>
       <a href="#team">Team</a>
       <a href="#partners">Partners</a>
       <a href="#contact">Contact</a>
@@ -655,8 +724,8 @@
 
     <div class="strip" aria-hidden="true">
       <div class="strip__row">
-        <span>700+ Rivers</span><span>Sundarbans · 10,000 km²</span><span>20 Million People</span><span>Bay of Bengal</span><span>Climate Frontline</span><span>Youth-Led</span>
-        <span>700+ Rivers</span><span>Sundarbans · 10,000 km²</span><span>20 Million People</span><span>Bay of Bengal</span><span>Climate Frontline</span><span>Youth-Led</span>
+        <span>Youth-Led</span><span>24 Millions</span><span>Climate Frontline</span><span>Digital Sustainability</span><span>Smart Cities</span><span>Blue Economy</span><span>Clean Energy</span><span>Green Mobility</span><span>Climate Leadership</span>
+        <span>Youth-Led</span><span>24 Millions</span><span>Climate Frontline</span><span>Digital Sustainability</span><span>Smart Cities</span><span>Blue Economy</span><span>Clean Energy</span><span>Green Mobility</span><span>Climate Leadership</span>
       </div>
     </div>
 
@@ -669,7 +738,7 @@
           </p>
           <div class="statement__side reveal">
             <span class="kicker">The mission</span>
-            <p class="lede">Climate Week connects cities worldwide to accelerate action — New York, London, Medellín, and now Dhaka. We're building the network, the momentum, and the leadership the region needs.</p>
+            <p class="lede">Positioning Dhaka as the leading convening platform for climate resilience, adaptation and practical solutions across the Global South, the bridge where South Asia and ASEAN meet.</p>
             <a href="#about" class="btn btn--line">About the week <span class="arw">→</span></a>
           </div>
         </div>
@@ -678,8 +747,8 @@
         <div class="stats" aria-label="Event statistics">
           <div class="reveal"><strong data-count="5">5</strong><span>Days</span></div>
           <div class="reveal" data-d="1"><strong data-count="120" data-suffix="+">120+</strong><span>Events</span></div>
-          <div class="reveal" data-d="2"><strong data-count="10" data-suffix="K+">10K+</strong><span>Attendees</span></div>
-          <div class="reveal" data-d="3"><strong data-count="5">5</strong><span>Themes</span></div>
+          <div class="reveal" data-d="2"><strong data-count="10" data-suffix="K+">10K+</strong><span>Participants</span></div>
+          <div class="reveal" data-d="3"><strong data-count="150" data-suffix="+">150+</strong><span>Speakers</span></div>
         </div>
       </div>
     </section>
@@ -706,12 +775,11 @@
             </div>
           </div>
           <div class="about__body">
-            <p class="lede">Climate Week connects cities worldwide to accelerate action. New York, London, Medellín — now Dhaka takes its place on the global stage.</p>
-            <p class="lede">Five days of conferences, labs, and city-wide events position the world's most climate-exposed megacity as a platform for encounter and action.</p>
+            <p class="lede">Dhaka is often described through the lens of risk. We see something different. We see a city that continues to grow, adapt, and innovate despite some of the world's most complex climate challenges. Dhaka Climate Week exists because the future of climate action will not be built only in wealthy capitals. It will also be built in cities like Dhaka, where resilience is practiced every day and where the Global South is shaping solutions for the world.</p>
             <div class="facts">
-              <div><b>700+</b><small>Rivers in the delta</small></div>
-              <div><b>10K km²</b><small>Sundarbans forest</small></div>
-              <div><b>170M</b><small>On the frontline</small></div>
+              <div><b>1,500+ km²</b><small>Dhaka Metropolitan Area</small></div>
+              <div><b>24 Millions</b><small>Populations on the frontline</small></div>
+              <div><b>4.25 million</b><small>Youth in Dhaka</small></div>
             </div>
           </div>
         </div>
@@ -724,41 +792,72 @@
       <div class="wrap">
         <div class="head reveal">
           <div class="head__top">
-            <span class="kicker">Themes</span>
+            <span class="kicker">Dhaka Climate Week</span>
             <span class="head__num">02 — 05</span>
           </div>
-          <h2 class="display h-sec head__title">Five pillars shaping the week</h2>
+          <h2 class="display h-sec head__title">Theme &amp; sub-themes</h2>
         </div>
-        <div class="pillars">
-          <article class="pillar reveal">
-            <span class="pillar__n">01</span>
-            <h3>Climate Leadership &amp; Policy</h3>
-            <p>Position Dhaka and Bangladesh as a regional and global climate leader, not just a victim.</p>
-            <span class="pillar__day">Day 01</span>
+
+        <div class="theme-core reveal">
+          <span class="kicker">Core theme</span>
+          <h3 class="display h-sec theme-core__title">From Frontline to Frontrunner</h3>
+          <p class="lede theme-core__text">Positioning Dhaka as the leading convening platform for climate resilience, adaptation and practical solutions across the Global South, the bridge where South Asia and ASEAN meet.</p>
+        </div>
+
+        <div class="subthemes-block reveal">
+          <span class="kicker">Sub themes</span>
+          <div class="subthemes">
+            <article class="subtheme">
+              <h3>Electric Vehicles<span>Roads to Zero</span></h3>
+              <p>Dhaka drives the clean mobility shift</p>
+            </article>
+            <article class="subtheme">
+              <h3>AI &amp; Data<span>Intelligence for the Planet</span></h3>
+              <p>Data-driven decisions for climate survival</p>
+            </article>
+            <article class="subtheme">
+              <h3>Agriculture<span>Growing Through Change</span></h3>
+              <p>Climate-smart food systems from the delta</p>
+            </article>
+            <article class="subtheme">
+              <h3>Circularity<span>Nothing Wasted, Everything Valued</span></h3>
+              <p>Dhaka drives the clean mobility shift</p>
+            </article>
+            <article class="subtheme">
+              <h3>Blue Economy &amp; Water<span>Living with Water</span></h3>
+              <p>Turning the delta's greatest threat into its strength</p>
+            </article>
+            <article class="subtheme">
+              <h3>Urban Planning<span>Cities Built to Last</span></h3>
+              <p>Designing Dhaka for the climate century</p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="framework" class="sec sec--paper">
+      <div class="wrap">
+        <div class="framework-head reveal">
+          <h2 class="display h-sec">Signature framework</h2>
+          <span class="framework__pill">Every topic, four lenses</span>
+        </div>
+        <div class="lenses reveal">
+          <article class="lens">
+            <h3>Lens 1 — <em>Global</em></h3>
+            <p>What trends, tech and policy are shaping the future?</p>
           </article>
-          <article class="pillar reveal">
-            <span class="pillar__n">02</span>
-            <h3>Youth, Innovation &amp; Future Leaders</h3>
-            <p>Celebrating the power of youth, engaging the academic ecosystem with youth-led startups.</p>
-            <span class="pillar__day">Day 02</span>
+          <article class="lens">
+            <h3>Lens 2 — <em>Regional</em></h3>
+            <p>What can South Asia and ASEAN learn from each other?</p>
           </article>
-          <article class="pillar reveal">
-            <span class="pillar__n">03</span>
-            <h3>Public–Private Partnerships for Climate Action</h3>
-            <p>Bridging government, NGOs, and the private sector around shared commitments.</p>
-            <span class="pillar__day">Day 03</span>
+          <article class="lens">
+            <h3>Lens 3 — <em>Local</em></h3>
+            <p>How is Dhaka innovating right now?</p>
           </article>
-          <article class="pillar reveal">
-            <span class="pillar__n">04</span>
-            <h3>Climate Finance &amp; Green Investment</h3>
-            <p>Engaging climate innovation with financial ecosystems and green investment.</p>
-            <span class="pillar__day">Day 04</span>
-          </article>
-          <article class="pillar reveal">
-            <span class="pillar__n">05</span>
-            <h3>Nature, Culture &amp; Community</h3>
-            <p>A colorful day with the citizens of Dhaka celebrating nature, culture, and music.</p>
-            <span class="pillar__day">Day 05</span>
+          <article class="lens">
+            <h3>Lens 4 — <em>Collaboration</em></h3>
+            <p>Which partnerships and investments can scale?</p>
           </article>
         </div>
       </div>
@@ -767,10 +866,18 @@
     <section id="why-dhaka" class="sec sec--green">
       <div class="wrap why">
         <div class="why__text reveal">
-          <span class="kicker kicker--light">Why Dhaka</span>
-          <h2 class="display h-sec light">Built on resilience</h2>
-          <p class="lede lede--light">Twenty million residents. Rising seas. Extreme monsoons. A megacity at the heart of the delta — where urgency and ingenuity meet every day.</p>
-          <p class="lede lede--light">From Korail to Hatirjheel, Dhaka's neighborhoods are living laboratories for urban climate adaptation.</p>
+          <div class="why__point">
+            <h3>Why Dhaka?</h3>
+            <p>Bangladesh carries lived experience across nearly every major climate challenge. Dhaka Climate Week reframes that experience as exportable, practical knowledge not a cautionary tale.</p>
+          </div>
+          <div class="why__point">
+            <h3>Why Global South</h3>
+            <p>Fast-growing economies and the greatest climate exposure both sit in the Global South yet no single platform exists for peer-to-peer, implementation-focused exchange.</p>
+          </div>
+          <div class="why__point">
+            <h3>South Asia ⇄ ASEAN</h3>
+            <p>Bangladesh sits geographically in South Asia, and economically and culturally close to ASEAN, a rare natural connector few other cities can credibly claim.</p>
+          </div>
         </div>
         <div class="why__visual media reveal">
           <img src="assets/images/resilience-boats.jpg" alt="Aerial view of traditional wooden boats fanned out on a Dhaka waterway" width="1024" height="922" loading="lazy" />
@@ -835,7 +942,7 @@
             <span class="program__theme">Nature, Culture &amp; Community</span>
           </div>
         </div>
-        <p class="lede reveal" style="margin-top:2.25rem">Full speaker line-up and session times coming soon. Experiences will span the city — from the Parliament area to community hubs.</p>
+        <p class="lede reveal" style="margin-top:2.25rem">Experiences will span the city — from the Parliament area to community hubs. See confirmed speakers below.</p>
         <div class="locs reveal">
           <span>Hatirjheel</span>
           <span>Korail</span>
@@ -846,12 +953,40 @@
       </div>
     </section>
 
+    <section id="speakers" class="sec sec--paper">
+      <div class="wrap">
+        <div class="head reveal">
+          <div class="head__top">
+            <span class="kicker">Speakers</span>
+            <span class="head__num">04 — 06</span>
+          </div>
+          <h2 class="display h-sec head__title">Confirmed speakers</h2>
+        </div>
+        <div class="speakers-grid reveal">
+          <article class="speaker">
+            <div class="speaker__photo">
+              <img src="assets/speakers/peter-c-goldmark.webp" alt="Peter C. Goldmark Jr" width="400" height="500" loading="lazy" />
+            </div>
+            <p class="speaker__name">Peter C. Goldmark Jr</p>
+            <p class="speaker__role">Former President, Rockefeller Foundation</p>
+          </article>
+          <article class="speaker">
+            <div class="speaker__photo">
+              <img src="assets/speakers/katie-baillie.jpg" alt="Katie Baillie" width="400" height="500" loading="lazy" />
+            </div>
+            <p class="speaker__name">Katie Baillie</p>
+            <p class="speaker__role">Director of University and Community Engagement, University of Pennsylvania</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
     <section id="team" class="sec sec--linen">
       <div class="wrap">
         <div class="head reveal">
           <div class="head__top">
             <span class="kicker">People</span>
-            <span class="head__num">04 — 05</span>
+            <span class="head__num">05 — 06</span>
           </div>
           <h2 class="display h-sec head__title">The team behind the week</h2>
         </div>
@@ -904,7 +1039,7 @@
         <div class="head reveal">
           <div class="head__top">
             <span class="kicker">Partners</span>
-            <span class="head__num">05 — 05</span>
+            <span class="head__num">06 — 06</span>
           </div>
           <h2 class="display h-sec head__title">Supported by</h2>
         </div>
@@ -972,6 +1107,7 @@
           <p><a href="#about">About</a></p>
           <p><a href="#themes">Themes</a></p>
           <p><a href="#agenda">Programme</a></p>
+          <p><a href="#speakers">Speakers</a></p>
           <p><a href="#team">Team</a></p>
         </div>
         <div>
