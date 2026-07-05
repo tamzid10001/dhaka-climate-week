@@ -76,12 +76,18 @@
     .deco--boat     { width: clamp(104px, 11vw, 176px); aspect-ratio: 130 / 110; }
     .deco--lily     { width: clamp(84px, 9vw, 150px); aspect-ratio: 110 / 100; }
     .deco--skyline  { width: clamp(170px, 20vw, 360px); aspect-ratio: 190 / 90; }
+    .deco--tiger    { width: clamp(118px, 12vw, 190px); aspect-ratio: 130 / 90; }
+    .deco--minar    { width: clamp(72px, 8vw, 112px); aspect-ratio: 100 / 120; }
+    .deco--shoudho  { width: clamp(140px, 16vw, 260px); aspect-ratio: 160 / 100; }
+    .sec--green .deco { color: var(--paper); opacity: 0.12; }
     @media (max-width: 700px) {
-      .deco--metro, .deco--skyline { display: none; }
+      .deco--metro, .deco--skyline, .deco--shoudho { display: none; }
       .deco { opacity: 0.12; }
       .deco--rickshaw { width: 110px; }
       .deco--boat { width: 96px; }
       .deco--lily { width: 80px; }
+      .deco--tiger { width: 100px; }
+      .deco--minar { width: 68px; }
     }
 
     .media { position: relative; overflow: hidden; background: var(--green-mid); }
@@ -95,9 +101,7 @@
       font-family: var(--font-display); font-weight: 700; font-size: 0.7rem;
       letter-spacing: 0.18em; text-transform: uppercase; color: var(--coral);
     }
-    .kicker::before { content: ""; width: 1.75rem; height: 1.5px; background: currentColor; }
     .kicker--light { color: var(--mustard); }
-    .kicker--plain::before { display: none; }
 
     .display {
       font-family: var(--font-display); font-weight: 900; color: var(--green);
@@ -397,7 +401,7 @@
       display: inline-block; background: var(--coral); color: var(--paper);
       font-family: var(--font-display); font-weight: 700;
       font-size: clamp(0.92rem, 1.4vw, 1.08rem); line-height: 1.2;
-      padding: 0.7rem 1.6rem; border-radius: 999px; letter-spacing: -0.01em;
+      padding: 0.7rem 1.6rem; border-radius: 0; letter-spacing: -0.01em;
     }
     .lenses {
       display: grid; grid-template-columns: repeat(2, 1fr);
@@ -427,9 +431,6 @@
     .program__num { font-family: var(--font-display); font-weight: 900; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--coral); }
     .program__theme { margin-top: auto; font-family: var(--font-display); font-weight: 700; font-size: 0.98rem; line-height: 1.25; color: var(--green); letter-spacing: -0.01em; }
     .program__tag { font-size: 0.78rem; color: var(--ink-soft); }
-    .locs { display: flex; flex-wrap: wrap; gap: 0.65rem; margin-top: 2rem; }
-    .locs span { padding: 0.6rem 1.2rem; font-family: var(--font-display); font-size: 0.72rem; font-weight: 500; letter-spacing: 0.05em; color: var(--green); border: 1px solid var(--line); transition: background 0.25s var(--ease), color 0.25s var(--ease), border-color 0.25s var(--ease); }
-    .locs span:hover { background: var(--green); color: var(--mustard); border-color: var(--green); }
 
     /* Speakers */
     .speakers-grid {
@@ -438,6 +439,7 @@
     }
     .speaker__photo { aspect-ratio: 4 / 5; overflow: hidden; background: var(--linen); }
     .speaker__photo img { width: 100%; height: 100%; object-fit: cover; object-position: center top; transition: transform 0.6s var(--ease), filter 0.4s var(--ease); filter: saturate(0.92); }
+    .speaker__photo--right img { object-position: right 28%; }
     .speaker:hover .speaker__photo img { transform: scale(1.04); filter: saturate(1.05); }
     .speaker__name { margin-top: 0.9rem; font-family: var(--font-display); font-weight: 700; font-size: 0.92rem; letter-spacing: -0.01em; color: var(--green); line-height: 1.3; }
     .speaker__role { margin-top: 0.35rem; font-size: 0.82rem; line-height: 1.45; color: var(--ink-soft); }
@@ -455,12 +457,16 @@
 
     /* Partners */
     .logos { display: grid; grid-template-columns: repeat(5, 1fr); border: 1px solid var(--line); }
+    .logos--2 { grid-template-columns: repeat(2, 1fr); }
+    .logos--5 { grid-template-columns: repeat(5, 1fr); }
+    .partner-block + .partner-block { margin-top: clamp(2.75rem, 5vw, 4rem); }
     .logos > div { display: flex; align-items: center; justify-content: center; padding: clamp(2rem, 4vw, 3rem) 1.5rem; min-height: 120px; border-right: 1px solid var(--line); transition: background 0.3s var(--ease); }
     .logos > div:last-child { border-right: none; }
     .logos > div:hover { background: var(--linen); }
     .logos img { max-width: 80%; max-height: 50px; width: auto; height: auto; object-fit: contain; opacity: 0.72; filter: grayscale(1); transition: opacity 0.3s var(--ease), filter 0.3s var(--ease); }
     .logos > div:hover img { opacity: 1; filter: grayscale(0); }
     .logos img.wide { max-height: 34px; }
+    .logos img.tall { max-height: 58px; }
 
     /* CTA / involve */
     .involve { display: grid; grid-template-columns: 1.05fr 0.95fr; border: 1px solid var(--line); }
@@ -642,6 +648,35 @@
         <path d="M160 86 L160 46 L182 46 L182 86"/>
         <path d="M166 56 L166 46 M174 56 L174 46"/>
       </symbol>
+      <symbol id="ic-tiger" viewBox="0 0 130 90">
+        <path d="M18 72 Q32 48 52 40 Q72 32 92 38 L108 32"/>
+        <path d="M52 40 Q58 28 68 24 Q84 20 98 36"/>
+        <path d="M68 24 L70 14"/>
+        <path d="M38 58 L32 48"/>
+        <path d="M18 72 L8 80"/>
+        <path d="M98 36 L118 44 L114 58 L88 64 Q62 70 36 74"/>
+        <path d="M58 44 L56 52 M72 46 L70 54 M86 50 L84 58"/>
+        <circle cx="86" cy="30" r="2"/>
+        <path d="M112 46 L122 50"/>
+      </symbol>
+      <symbol id="ic-minar" viewBox="0 0 100 120">
+        <path d="M50 6 L56 108"/>
+        <path d="M44 108 L56 108"/>
+        <path d="M50 6 L36 26 Q18 50 10 108"/>
+        <path d="M50 6 L64 26 Q82 50 90 108"/>
+        <path d="M6 108 L94 108"/>
+        <path d="M46 6 L54 6"/>
+        <path d="M50 6 L50 18"/>
+      </symbol>
+      <symbol id="ic-shoudho" viewBox="0 0 160 100">
+        <path d="M8 88 L152 88"/>
+        <path d="M68 88 L68 42 L92 42 L92 88"/>
+        <path d="M68 58 Q28 62 12 88"/>
+        <path d="M68 50 Q24 52 8 78"/>
+        <path d="M92 58 Q132 62 148 88"/>
+        <path d="M92 50 Q136 52 152 78"/>
+        <path d="M72 42 L72 34 L88 34 L88 42"/>
+      </symbol>
     </defs>
   </svg>
 
@@ -790,14 +825,6 @@
       <svg class="deco deco--lily" style="right:5%; top:0.6rem;" aria-hidden="true"><use href="#ic-lily"/></svg>
       <svg class="deco deco--skyline" style="left:5%; bottom:0;" aria-hidden="true"><use href="#ic-skyline"/></svg>
       <div class="wrap">
-        <div class="head reveal">
-          <div class="head__top">
-            <span class="kicker">Dhaka Climate Week</span>
-            <span class="head__num">02 — 05</span>
-          </div>
-          <h2 class="display h-sec head__title">Theme &amp; sub-themes</h2>
-        </div>
-
         <div class="theme-core reveal">
           <span class="kicker">Core theme</span>
           <h3 class="display h-sec theme-core__title">From Frontline to Frontrunner</h3>
@@ -837,6 +864,7 @@
     </section>
 
     <section id="framework" class="sec sec--paper">
+      <svg class="deco deco--tiger" style="left:5%; top:0.6rem;" aria-hidden="true"><use href="#ic-tiger"/></svg>
       <div class="wrap">
         <div class="framework-head reveal">
           <h2 class="display h-sec">Signature framework</h2>
@@ -864,6 +892,7 @@
     </section>
 
     <section id="why-dhaka" class="sec sec--green">
+      <svg class="deco deco--shoudho" style="right:4%; bottom:0.6rem;" aria-hidden="true"><use href="#ic-shoudho"/></svg>
       <div class="wrap why">
         <div class="why__text reveal">
           <div class="why__point">
@@ -942,14 +971,6 @@
             <span class="program__theme">Nature, Culture &amp; Community</span>
           </div>
         </div>
-        <p class="lede reveal" style="margin-top:2.25rem">Experiences will span the city — from the Parliament area to community hubs. See confirmed speakers below.</p>
-        <div class="locs reveal">
-          <span>Hatirjheel</span>
-          <span>Korail</span>
-          <span>BUET</span>
-          <span>Botanical Garden</span>
-          <span>Sundarbans Hall</span>
-        </div>
       </div>
     </section>
 
@@ -971,7 +992,7 @@
             <p class="speaker__role">Former President, Rockefeller Foundation</p>
           </article>
           <article class="speaker">
-            <div class="speaker__photo">
+            <div class="speaker__photo speaker__photo--right">
               <img src="assets/speakers/george-deriso.jpg" alt="George Deriso" width="400" height="500" loading="lazy" />
             </div>
             <p class="speaker__name">George Deriso</p>
@@ -983,13 +1004,6 @@
             </div>
             <p class="speaker__name">Sherry Xue</p>
             <p class="speaker__role">Director, Mycellium</p>
-          </article>
-          <article class="speaker">
-            <div class="speaker__photo">
-              <img src="assets/speakers/katie-baillie.jpg" alt="Katie Baillie" width="400" height="500" loading="lazy" />
-            </div>
-            <p class="speaker__name">Katie Baillie</p>
-            <p class="speaker__role">Director of University and Community Engagement, University of Pennsylvania</p>
           </article>
           <article class="speaker">
             <div class="speaker__photo">
@@ -1038,6 +1052,7 @@
     </section>
 
     <section id="team" class="sec sec--linen">
+      <svg class="deco deco--minar" style="right:5%; top:0.6rem;" aria-hidden="true"><use href="#ic-minar"/></svg>
       <div class="wrap">
         <div class="head reveal">
           <div class="head__top">
@@ -1097,14 +1112,25 @@
             <span class="kicker">Partners</span>
             <span class="head__num">06 — 06</span>
           </div>
-          <h2 class="display h-sec head__title">Supported by</h2>
         </div>
-        <div class="logos reveal">
-          <div><img class="wide" src="assets/partners/mycellium.png?v=3" alt="Mycellium" loading="lazy" /></div>
-          <div><img src="assets/partners/climate-week-network.png" alt="Climate Week Network" loading="lazy" /></div>
-          <div><img src="assets/partners/climate-hive.png" alt="Climate Hive" loading="lazy" /></div>
-          <div><img src="assets/partners/ekshathe-foundation.jpg" alt="Ekshathe Foundation" loading="lazy" /></div>
-          <div><img src="assets/partners/resolution-project.png?v=3" alt="Resolution Project" loading="lazy" /></div>
+
+        <div class="partner-block reveal">
+          <p class="team-block__label">Organized by</p>
+          <div class="logos logos--2">
+            <div><img class="wide" src="assets/partners/mycellium.png?v=3" alt="Mycellium" loading="lazy" /></div>
+            <div><img src="assets/partners/climate-week-network.png" alt="Climate Week Network" loading="lazy" /></div>
+          </div>
+        </div>
+
+        <div class="partner-block reveal">
+          <p class="team-block__label">Supported by</p>
+          <div class="logos logos--5">
+            <div><img src="assets/partners/climate-hive.png" alt="Climate Hive" loading="lazy" /></div>
+            <div><img src="assets/partners/ekshathe-foundation.jpg" alt="Ekshathe Foundation" loading="lazy" /></div>
+            <div><img src="assets/partners/resolution-project.png?v=3" alt="Resolution Project" loading="lazy" /></div>
+            <div><img src="assets/partners/enactus.png" alt="Enactus" loading="lazy" /></div>
+            <div><img class="tall" src="assets/partners/siklab.png" alt="Siklab" loading="lazy" /></div>
+          </div>
         </div>
       </div>
     </section>
