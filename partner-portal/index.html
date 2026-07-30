@@ -348,13 +348,7 @@
     .tag--cm { background: var(--linen); color: var(--ink); }
     .modal__foot { display: flex; flex-wrap: wrap; gap: 0.75rem; padding: 1rem 1.6rem 1.5rem; border-top: 1px solid var(--line); }
     .modal__hint { flex-basis: 100%; font-size: 0.78rem; color: var(--ink-soft); }
-    .btn .spin {
-      width: 0.85em; height: 0.85em; border: 2px solid currentColor; border-top-color: transparent;
-      border-radius: 50%; display: inline-block; animation: btnspin 0.7s linear infinite;
-    }
-    @keyframes btnspin { to { transform: rotate(360deg); } }
     .btn.is-sent { background: var(--green); color: var(--mustard); border-color: var(--green); pointer-events: none; }
-    .btn[disabled] { opacity: 0.75; cursor: default; }
 
     /* ── Footer ── */
     .foot {
@@ -533,8 +527,8 @@
       <div class="modal__body" id="review-body"></div>
       <div class="modal__foot">
         <button type="button" class="btn btn--line btn--sm" id="export-pdf">Export as PDF</button>
-        <button type="button" class="btn btn--mustard btn--sm" id="email-copy">Email a copy</button>
-        <p class="modal__hint" id="email-hint">Export as PDF creates a branded summary via your browser's print dialog — choose "Save as PDF" as the destination. Email a copy sends your selections (with your submission code) to the DCW team. Selections also stay saved on this device.</p>
+        <button type="button" class="btn btn--mustard btn--sm" id="do-submit">Submit</button>
+        <p class="modal__hint" id="submit-hint"></p>
       </div>
     </div>
   </div>
@@ -571,13 +565,6 @@
 
     var TIMES = DCW.TIMES;
     var SESSIONS = DCW.SESSIONS;
-    var ADMIN_EMAILS = ['wahid.hossain@mycellium.org'];
-
-    // Direct in-page sending uses Web3Forms (https://web3forms.com — free).
-    // Create an access key for wahid.hossain@mycellium.org and paste it here.
-    // While this is empty, "Email a copy" opens the partner's mail app instead.
-    var EMAIL_API_KEY = '';
-
     var STORE_KEY = "dcwDay1Selections";
 
     function esc(t) {
@@ -732,7 +719,7 @@
     var modal = document.getElementById('review-modal');
     var lastFocus = null;
     var pendingSubmission = null;
-    var reviewEmail = null;
+    var SUBMIT_HINT = 'Export as PDF creates a branded summary via your browser\'s print dialog — choose "Save as PDF" as the destination. Submit records your selections for the DCW team\'s tracking panel; they also stay saved on this device.';
 
     function openReview() {
       var groups = gatherSelections();
@@ -747,36 +734,16 @@
             }).join('') + '</ul></div>';
         }).join('');
       }
-      var lines = ['Partner: ' + (partnerEmail || 'unknown'), 'Day 1 Partnership Scope selections:', ''];
-      groups.forEach(function (g) {
-        lines.push(g.session.num + ' - ' + g.session.title);
-        g.items.forEach(function (it) { lines.push('  * ' + it.text); });
-        lines.push('');
-      });
-      var code = '';
       if (groups.length) {
-        var rec = {
+        pendingSubmission = {
           e: partnerEmail || 'unknown@unknown.org',
           t: Date.now(),
           s: allBoxes().filter(function (cb) { return cb.checked; }).map(function (cb) { return cb.id; })
         };
-        code = DCW.encodeSubmission(rec);
-        lines.push('Submission code (please keep this line in your email):');
-        lines.push('DCW1:' + code);
-        pendingSubmission = rec;
       } else {
         pendingSubmission = null;
       }
-      var subjBase = 'Day 1 Partnership Scope selections — ' + (partnerEmail || 'partner');
-      var subjectText = code ? subjBase + ' — DCW1:' + code : subjBase;
-      var bodyLines = lines.join('\n');
-      reviewEmail = {
-        subject: subjectText,
-        body: bodyLines,
-        mailto: 'mailto:' + encodeURIComponent(ADMIN_EMAILS.join(',')) +
-          '?cc=' + encodeURIComponent(partnerEmail || '') +
-          '&subject=' + encodeURIComponent(subjectText) + '&body=' + encodeURIComponent(bodyLines)
-      };
+      document.getElementById('submit-hint').textContent = SUBMIT_HINT;
       lastFocus = document.activeElement;
       modal.classList.add('is-open');
       document.getElementById('close-review').focus();
@@ -787,52 +754,22 @@
     }
     document.getElementById('open-review').addEventListener('click', openReview);
     document.getElementById('close-review').addEventListener('click', closeReview);
-    // sending the email is the submission — record it locally at that moment
-    document.getElementById('email-copy').addEventListener('click', function () {
-      if (!pendingSubmission || !reviewEmail) return;
+    // submitting records the selections for the DCW team's tracking panel
+    document.getElementById('do-submit').addEventListener('click', function () {
+      if (!pendingSubmission) return;
       var btn = this;
-      if (!EMAIL_API_KEY) {
-        // no direct-send key configured: open the partner's mail app pre-filled
-        DCW.recordSubmission(pendingSubmission);
-        refresh();
-        location.href = reviewEmail.mailto;
-        return;
-      }
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spin" aria-hidden="true"></span> Sending…';
-      fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({
-          access_key: EMAIL_API_KEY,
-          subject: reviewEmail.subject,
-          from_name: 'DCW Partner Portal',
-          email: partnerEmail,
-          message: reviewEmail.body
-        })
-      }).then(function (r) { return r.json(); }).then(function (res) {
-        if (!res.success) throw new Error(res.message || 'send failed');
-        DCW.recordSubmission(pendingSubmission);
-        refresh();
-        btn.classList.add('is-sent');
-        btn.textContent = 'Sent ✓';
-        document.getElementById('email-hint').textContent =
-          'Sent to the DCW team. Your selections are recorded — you can keep editing and resubmit any time.';
-        setTimeout(function () {
-          btn.classList.remove('is-sent');
-          btn.disabled = false;
-          btn.textContent = 'Email a copy';
-        }, 4000);
-      }).catch(function () {
-        // service unreachable: record and fall back to the mail app
-        btn.disabled = false;
-        btn.textContent = 'Email a copy';
-        document.getElementById('email-hint').textContent =
-          'Direct sending failed — opening your mail app instead. Your selections are still recorded on this device.';
-        DCW.recordSubmission(pendingSubmission);
-        refresh();
-        location.href = reviewEmail.mailto;
-      });
+      pendingSubmission.t = Date.now();
+      DCW.recordSubmission(pendingSubmission);
+      refresh();
+      btn.classList.add('is-sent');
+      btn.textContent = 'Submitted ✓';
+      document.getElementById('submit-hint').textContent =
+        'Submitted — your selections now appear in the DCW team\'s tracking panel. You can keep editing and resubmit any time.';
+      setTimeout(function () {
+        btn.classList.remove('is-sent');
+        btn.textContent = 'Submit';
+        closeReview();
+      }, 1500);
     });
     modal.addEventListener('click', function (e) { if (e.target === modal) closeReview(); });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && modal.classList.contains('is-open')) closeReview(); });

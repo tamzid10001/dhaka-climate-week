@@ -237,6 +237,62 @@
       font-family: var(--font-display); font-size: 0.72rem; letter-spacing: 0.04em;
     }
 
+    /* ── Completed-PDF preview overlay ── */
+    .pdfview {
+      position: fixed; inset: 0; z-index: 320; display: none; flex-direction: column;
+      background: rgba(16, 43, 26, 0.85);
+    }
+    .pdfview.is-open { display: flex; }
+    .pdfview__bar { display: flex; justify-content: flex-end; gap: 0.75rem; padding: 0.9rem clamp(1rem, 4vw, 2rem); }
+    .btn--line-light { background: transparent; color: var(--paper); border-color: rgba(244,243,239,0.4); }
+    .btn--line-light:hover { background: var(--paper); color: var(--green-deep); border-color: var(--paper); }
+    .pdfview__scroll { overflow: auto; flex: 1; padding: 0 clamp(1rem, 4vw, 2rem) 2rem; }
+    .pdfview__page { width: min(100%, 52rem); margin-inline: auto; box-shadow: 0 12px 44px rgba(0, 0, 0, 0.4); }
+
+    /* the branded summary document (same layout the partner exports) */
+    .export-view { background: var(--white); color: var(--ink); }
+    .export-view .ex-strip { display: flex; height: 10px; }
+    .export-view .ex-strip i { flex: 1; background: var(--green); }
+    .export-view .ex-strip i:first-child { flex: 0 0 30%; background: var(--mustard); }
+    .export-view .ex-page { padding: 2.2rem 2.4rem; }
+    .export-view .ex-logo { height: 44px; width: auto; margin-bottom: 1.6rem; }
+    .export-view h1 {
+      font-family: var(--font-display); font-weight: 900; font-size: 1.9rem;
+      color: var(--green); letter-spacing: -0.03em; line-height: 1.05;
+    }
+    .export-view .ex-sub {
+      font-family: var(--font-display); font-weight: 700; font-size: 0.72rem;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--coral);
+      margin: 0.4rem 0 1.2rem;
+    }
+    .export-view .ex-meta {
+      display: flex; flex-wrap: wrap; gap: 0.4rem 2rem; margin-bottom: 1.6rem;
+      padding: 0.8rem 1rem; background: var(--linen);
+      font-family: var(--font-display); font-size: 0.78rem; color: var(--ink);
+    }
+    .export-view .ex-meta b { font-weight: 700; }
+    .export-view .ex-group { margin-bottom: 1.4rem; break-inside: avoid; }
+    .export-view .ex-group h2 {
+      font-family: var(--font-display); font-weight: 700; font-size: 0.86rem;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      background: var(--green); color: var(--white); padding: 0.5rem 0.9rem;
+    }
+    .export-view .ex-group table { width: 100%; border-collapse: collapse; }
+    .export-view .ex-group td {
+      border: 1px solid rgba(22,22,22,0.18); padding: 0.5rem 0.9rem;
+      font-size: 0.84rem; vertical-align: top;
+    }
+    .export-view .ex-group td.sc {
+      width: 8.5rem; font-family: var(--font-display); font-weight: 700; font-size: 0.66rem;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--green); white-space: nowrap;
+    }
+    .export-view .ex-group td.sc::before { content: "✓ "; color: var(--coral); }
+    .export-view .ex-foot {
+      margin-top: 2rem; padding-top: 0.9rem; border-top: 1px solid rgba(22,22,22,0.18);
+      font-family: var(--font-display); font-size: 0.68rem; color: var(--ink-soft);
+      display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+    }
+
     @media (max-width: 900px) { .tiles { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 700px) {
       .crow { grid-template-columns: 1fr; gap: 0.3rem; }
@@ -245,6 +301,16 @@
       .chart__axis { display: none; }
       .ttable .hide-sm { display: none; }
       .bar__user { display: none; }
+    }
+
+    @media print {
+      body.exporting .site-header, body.exporting main, body.exporting .foot,
+      body.exporting .tooltip, body.exporting .modal, body.exporting .skip { display: none !important; }
+      body.exporting { background: var(--white); }
+      body.exporting .pdfview { position: static; display: block; background: none; }
+      body.exporting .pdfview__bar { display: none; }
+      body.exporting .pdfview__scroll { overflow: visible; padding: 0; }
+      body.exporting .pdfview__page { width: auto; margin: 0; box-shadow: none; }
     }
   </style>
 </head>
@@ -271,7 +337,7 @@
       <div class="head">
         <span class="kicker">Partner portal analytics</span>
         <h1 class="display">Day 1 · <em>Partnership tracking</em></h1>
-        <p class="sub">Partner selections submitted from the Day 1 Partnership Scope portal. Every submission email also carries a <b>DCW1 submission code</b> in its subject line for the DCW team's records.</p>
+        <p class="sub">Partner selections submitted from the Day 1 Partnership Scope portal. Open any partner's completed summary with the <b>PDF</b> button in the Submissions table — you can save it from there.</p>
       </div>
 
       <div class="tiles" id="tiles" aria-label="Key figures"></div>
@@ -316,6 +382,31 @@
         <button type="button" class="modal__close" id="detail-close" aria-label="Close">✕</button>
       </div>
       <div class="modal__body" id="detail-body"></div>
+    </div>
+  </div>
+
+  <div class="pdfview" id="pdfview" role="dialog" aria-modal="true" aria-label="Partner submission summary">
+    <div class="pdfview__bar">
+      <button type="button" class="btn btn--mustard" id="pdf-save">Save as PDF</button>
+      <button type="button" class="btn btn--line-light" id="pdf-close">Close</button>
+    </div>
+    <div class="pdfview__scroll">
+      <div class="pdfview__page">
+        <div class="export-view">
+          <div class="ex-strip" aria-hidden="true"><i></i><i></i></div>
+          <div class="ex-page">
+            <img class="ex-logo" src="../assets/logo/logo-primary-sm.png" alt="Dhaka Climate Week" />
+            <h1>Day 1 · Partnership Scope</h1>
+            <p class="ex-sub">Partner selections · 17 – 21 January 2027 · Dhaka, Bangladesh</p>
+            <div class="ex-meta" id="ex-meta"></div>
+            <div id="ex-groups"></div>
+            <div class="ex-foot">
+              <span>Organized by Mycellium · Climate Week Network · Climate Hive · dhkclimateweek.org</span>
+              <span>Confidential — for partners only</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -440,6 +531,7 @@
           '<td class="hide-sm">' + chips + '</td>' +
           '<td class="num"><b>' + rec.s.length + '</b></td>' +
           '<td class="num"><button type="button" class="rowbtn" data-view="' + i + '">View</button> ' +
+          '<button type="button" class="rowbtn" data-pdf="' + i + '" aria-label="Open PDF summary for ' + esc(rec.e) + '">PDF</button> ' +
           '<button type="button" class="rowbtn rowbtn--x" data-del="' + i + '" aria-label="Remove submission from ' + esc(rec.e) + '">✕</button></td></tr>';
       }).join('');
       document.getElementById('subs').innerHTML =
@@ -461,13 +553,55 @@
       tooltip.style.display = 'none';
     });
 
+    // ── Completed-PDF preview (same branded layout the partner exports) ──
+    var pdfview = document.getElementById('pdfview');
+
+    function groupSelections(rec) {
+      var groups = {};
+      rec.s.forEach(function (id) {
+        var lab = DCW.labelForId(id);
+        if (!lab) return;
+        (groups[lab.session.id] = groups[lab.session.id] || { s: lab.session, items: [] }).items.push(lab);
+      });
+      return DCW.SESSIONS.filter(function (s) { return groups[s.id]; }).map(function (s) { return groups[s.id]; });
+    }
+
+    function openPdfPreview(rec) {
+      var groups = groupSelections(rec);
+      document.getElementById('ex-meta').innerHTML =
+        '<span><b>Partner:</b> ' + esc(rec.e) + '</span>' +
+        '<span><b>Selections:</b> ' + rec.s.length + ' across ' + groups.length + ' session' + (groups.length === 1 ? '' : 's') + '</span>' +
+        '<span><b>Submitted:</b> ' + esc(fmtWhen(rec.t)) + '</span>';
+      document.getElementById('ex-groups').innerHTML = groups.map(function (g) {
+        return '<div class="ex-group"><h2>' + g.s.num + ' · ' + esc(g.s.title) + '</h2><table>' +
+          g.items.map(function (lab) {
+            return '<tr><td class="sc">' + lab.scope + '</td><td>' + esc(lab.text) + '</td></tr>';
+          }).join('') + '</table></div>';
+      }).join('');
+      pdfview.classList.add('is-open');
+      document.getElementById('pdf-close').focus();
+    }
+
+    function stopExporting() { document.body.classList.remove('exporting'); }
+    window.addEventListener('afterprint', stopExporting);
+    document.getElementById('pdf-save').addEventListener('click', function () {
+      document.body.classList.add('exporting');
+      window.print();
+      setTimeout(stopExporting, 500);
+    });
+    document.getElementById('pdf-close').addEventListener('click', function () { pdfview.classList.remove('is-open'); });
+
     // ── Submissions table actions ──
     var detailModal = document.getElementById('detail-modal');
     document.getElementById('subs').addEventListener('click', function (e) {
       var view = e.target.closest('[data-view]');
+      var pdf = e.target.closest('[data-pdf]');
       var del = e.target.closest('[data-del]');
       var subs = DCW.getSubmissions();
-      if (view) {
+      if (pdf) {
+        var recP = subs[+pdf.getAttribute('data-pdf')];
+        if (recP) openPdfPreview(recP);
+      } else if (view) {
         var rec = subs[+view.getAttribute('data-view')];
         if (!rec) return;
         document.getElementById('detail-title').textContent = rec.e;
@@ -499,7 +633,12 @@
     });
     document.getElementById('detail-close').addEventListener('click', function () { detailModal.classList.remove('is-open'); });
     detailModal.addEventListener('click', function (e) { if (e.target === detailModal) detailModal.classList.remove('is-open'); });
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') detailModal.classList.remove('is-open'); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') {
+        detailModal.classList.remove('is-open');
+        pdfview.classList.remove('is-open');
+      }
+    });
 
     document.getElementById('signout').addEventListener('click', function () {
       sessionStorage.removeItem('dcwAdminEmail');
