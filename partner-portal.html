@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Day 1 · Partnership Scope, Dhaka Climate Week</title>
+  <meta name="description" content="Partner selection portal for Day 1 of Dhaka Climate Week. Choose sessions to co-design, support with experts, and communicate to your networks." />
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Roboto+Slab:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="icon" href="assets/logo/favicon.png" />
+  <style>
+    :root {
+      --green: #1B4D2E;
+      --green-deep: #102B1A;
+      --green-mid: #245c38;
+      --mustard: #FAC55A;
+      --coral: #C84B2F;
+      --ink: #161616;
+      --ink-soft: rgba(22, 22, 22, 0.6);
+      --linen: #EFEDE6;
+      --paper: #FBFAF6;
+      --white: #ffffff;
+      --line: rgba(22, 22, 22, 0.12);
+      --line-light: rgba(244, 243, 239, 0.16);
+
+      --font-display: 'Roboto', sans-serif;
+      --font-body: 'Roboto Slab', serif;
+
+      --max: 1080px;
+      --px: clamp(1.25rem, 5vw, 4rem);
+      --header: 72px;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; scroll-padding-top: calc(var(--header) + 4.5rem); -webkit-text-size-adjust: 100%; }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+    }
+    body {
+      font-family: var(--font-body);
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    button, input { font: inherit; border-radius: 0; }
+    ::selection { background: var(--mustard); color: var(--green-deep); }
+    :focus-visible { outline: 2px solid var(--coral); outline-offset: 3px; }
+
+    .skip {
+      position: absolute; top: -200%; left: var(--px); z-index: 999;
+      padding: 0.7rem 1.2rem; background: var(--green); color: var(--mustard);
+      font-family: var(--font-display); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em;
+    }
+    .skip:focus { top: 1rem; }
+
+    .wrap { width: min(calc(100% - 2 * var(--px)), var(--max)); margin-inline: auto; position: relative; z-index: 1; }
+
+    .kicker {
+      display: inline-flex; align-items: center; gap: 0.7rem;
+      font-family: var(--font-display); font-weight: 700; font-size: 0.7rem;
+      letter-spacing: 0.18em; text-transform: uppercase; color: var(--coral);
+    }
+    .display {
+      font-family: var(--font-display); font-weight: 900; color: var(--green);
+      letter-spacing: -0.04em; line-height: 0.98;
+    }
+    .display em { font-style: normal; color: var(--coral); }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem;
+      padding: 0.85rem 1.5rem; font-family: var(--font-display); font-weight: 700;
+      font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
+      background: var(--green); color: var(--mustard); border: 1px solid var(--green);
+      transition: background 0.3s var(--ease), color 0.3s var(--ease), border-color 0.3s var(--ease);
+    }
+    .btn:hover { background: var(--green-deep); border-color: var(--green-deep); }
+    .btn--mustard { background: var(--mustard); color: var(--green-deep); border-color: var(--mustard); }
+    .btn--mustard:hover { background: var(--green); color: var(--mustard); border-color: var(--green); }
+    .btn--line { background: transparent; color: var(--green); border-color: rgba(22,22,22,0.3); }
+    .btn--line:hover { background: var(--green); color: var(--mustard); border-color: var(--green); }
+    .btn--sm { padding: 0.55rem 1rem; font-size: 0.64rem; }
+
+    /* ── Header ── */
+    .site-header {
+      position: sticky; top: 0; z-index: 250; height: var(--header);
+      display: flex; align-items: center;
+      background: var(--green-deep); border-bottom: 1px solid var(--line-light);
+    }
+    .bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+    .logo { display: inline-block; line-height: 0; flex-shrink: 0; }
+    .logo img { height: 30px; width: auto; }
+    .bar__side { display: flex; align-items: center; gap: 0.9rem; min-width: 0; }
+    .bar__user {
+      font-family: var(--font-display); font-weight: 500; font-size: 0.74rem;
+      color: rgba(244,243,239,0.8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      max-width: 34vw;
+    }
+    .bar__signout {
+      background: none; border: 1px solid rgba(244,243,239,0.35); color: var(--paper);
+      font-family: var(--font-display); font-weight: 700; font-size: 0.62rem;
+      letter-spacing: 0.1em; text-transform: uppercase; padding: 0.5rem 0.9rem; cursor: pointer;
+      transition: background 0.3s var(--ease), color 0.3s var(--ease), border-color 0.3s var(--ease);
+      flex-shrink: 0;
+    }
+    .bar__signout:hover { background: var(--mustard); color: var(--green-deep); border-color: var(--mustard); }
+
+    /* ── Session chip nav ── */
+    .chipnav {
+      position: sticky; top: var(--header); z-index: 240;
+      background: rgba(251, 250, 246, 0.94); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+    }
+    .chipnav__row {
+      display: flex; gap: 0.5rem; overflow-x: auto; padding: 0.65rem 0;
+      scrollbar-width: none;
+    }
+    .chipnav__row::-webkit-scrollbar { display: none; }
+    .chipnav a {
+      flex-shrink: 0; padding: 0.45rem 0.9rem;
+      font-family: var(--font-display); font-weight: 700; font-size: 0.64rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--green); border: 1px solid var(--line);
+      transition: background 0.25s var(--ease), color 0.25s var(--ease), border-color 0.25s var(--ease);
+      display: inline-flex; align-items: center; gap: 0.45rem;
+    }
+    .chipnav a:hover { background: var(--green); color: var(--mustard); border-color: var(--green); }
+    .chipnav .chip__dot {
+      min-width: 1.15rem; height: 1.15rem; padding: 0 0.25rem; border-radius: 999px;
+      background: var(--linen); color: var(--ink-soft);
+      display: none; align-items: center; justify-content: center; font-size: 0.6rem;
+    }
+    .chipnav .chip__dot.has { display: inline-flex; background: var(--mustard); color: var(--green-deep); }
+
+    /* ── Intro ── */
+    .intro { padding: clamp(2.5rem, 6vw, 4.5rem) 0 clamp(1.5rem, 3vw, 2.5rem); }
+    .intro h1 { font-size: clamp(2.2rem, 6vw, 3.8rem); margin: 0.9rem 0 0.9rem; }
+    .intro__date {
+      font-family: var(--font-display); font-weight: 700; font-size: 0.74rem;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft);
+      margin-bottom: 1.75rem;
+    }
+    .intro__note {
+      background: var(--green); color: var(--paper);
+      padding: 1.15rem 1.5rem; border-radius: 10px;
+      font-size: 0.95rem; line-height: 1.7; max-width: 56rem;
+    }
+    .intro__note b { color: var(--white); }
+    .intro__note span { color: var(--mustard); }
+
+    /* ── Scopes ── */
+    .scopes { padding: clamp(1.5rem, 3vw, 2.5rem) 0 0; }
+    .scopes__band {
+      background: var(--green); color: var(--paper); border-radius: 8px;
+      padding: 0.75rem 1.5rem; font-family: var(--font-display); font-weight: 700;
+      font-size: 0.86rem; letter-spacing: 0.08em; text-transform: uppercase;
+      margin-bottom: 1.25rem;
+    }
+    .scopes__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .scope {
+      background: var(--white); border: 1px solid var(--line); padding: 1.4rem 1.4rem 1.5rem;
+      display: flex; flex-direction: column; gap: 0.6rem;
+    }
+    .scope h3 {
+      font-family: var(--font-display); font-weight: 900; font-size: 1.02rem;
+      letter-spacing: -0.01em; color: var(--green); display: flex; align-items: center; gap: 0.55rem;
+    }
+    .scope h3 .tick {
+      width: 1.35rem; height: 1.35rem; border-radius: 999px; background: var(--mustard);
+      color: var(--green-deep); display: inline-flex; align-items: center; justify-content: center;
+      font-size: 0.8rem; flex-shrink: 0;
+    }
+    .scope p { font-size: 0.9rem; color: var(--ink-soft); line-height: 1.65; }
+    .scope .commit {
+      margin-top: auto; padding-top: 0.75rem; border-top: 1px dashed var(--line);
+      font-family: var(--font-display); font-weight: 500; font-size: 0.76rem; color: var(--ink);
+    }
+    .scope .commit b {
+      display: block; font-weight: 700; font-size: 0.62rem; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--coral); margin-bottom: 0.25rem;
+    }
+    .scopes__note {
+      margin-top: 1.1rem; color: var(--coral); font-size: 0.9rem;
+      font-family: var(--font-display); font-weight: 500;
+    }
+
+    /* ── Legend ── */
+    .legend { padding: 1.6rem 0 0.4rem; }
+    .legend__row { display: flex; flex-wrap: wrap; gap: 0.6rem 1.6rem; }
+    .legend__row span {
+      font-family: var(--font-display); font-size: 0.74rem; color: var(--ink-soft);
+    }
+    .legend__row b { color: var(--green); font-weight: 700; }
+    .legend__row .tk { color: var(--coral); margin-right: 0.3rem; }
+
+    /* ── Sessions ── */
+    .sessions { padding: 1.25rem 0 4rem; display: flex; flex-direction: column; gap: clamp(2.5rem, 5vw, 3.75rem); }
+    .session { scroll-margin-top: calc(var(--header) + 4.5rem); }
+    .session__band {
+      background: var(--green); color: var(--white); border-radius: 8px;
+      padding: 0.9rem 1.5rem; display: flex; align-items: center; gap: 1rem;
+    }
+    .session__num {
+      font-family: var(--font-display); font-weight: 900; font-size: 0.8rem;
+      color: var(--mustard); letter-spacing: 0.08em;
+    }
+    .session__band h2 {
+      font-family: var(--font-display); font-weight: 700; font-size: clamp(1.05rem, 2.4vw, 1.35rem);
+      letter-spacing: 0.04em; text-transform: uppercase; margin-right: auto;
+    }
+    .session__count {
+      font-family: var(--font-display); font-weight: 700; font-size: 0.64rem;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      background: rgba(244,243,239,0.14); color: rgba(244,243,239,0.85);
+      padding: 0.35rem 0.7rem; border-radius: 999px; white-space: nowrap;
+    }
+    .session__count.has { background: var(--mustard); color: var(--green-deep); }
+    .session__obj { margin: 1.1rem 0 1.2rem; font-size: 0.93rem; color: var(--ink-soft); max-width: 60rem; }
+    .session__obj b { color: var(--ink); font-family: var(--font-display); font-weight: 700; font-size: 0.82rem; }
+
+    /* checkbox */
+    .cb { position: absolute; opacity: 0; width: 1px; height: 1px; }
+    .cbx {
+      width: 1.3rem; height: 1.3rem; border: 1.5px solid rgba(22,22,22,0.4); border-radius: 6px;
+      background: var(--white); flex-shrink: 0; position: relative; pointer-events: none;
+      transition: background 0.2s var(--ease), border-color 0.2s var(--ease);
+    }
+    .cbx::after {
+      content: ""; position: absolute; left: 0.36rem; top: 0.12rem;
+      width: 0.36rem; height: 0.68rem;
+      border: solid var(--green-deep); border-width: 0 2px 2px 0;
+      transform: rotate(45deg) scale(0); transform-origin: center;
+      transition: transform 0.18s var(--ease);
+    }
+    .cb:checked + .cbx { background: var(--mustard); border-color: var(--mustard); }
+    .cb:checked + .cbx::after { transform: rotate(45deg) scale(1); }
+    .cb:focus-visible + .cbx { outline: 2px solid var(--coral); outline-offset: 2px; }
+
+    /* co-design row */
+    .codesign {
+      display: flex; align-items: center; gap: 0.9rem; cursor: pointer;
+      background: var(--white); border: 1px solid var(--line); border-left: 4px solid var(--mustard);
+      padding: 0.95rem 1.2rem; margin-bottom: 1.4rem; user-select: none;
+      transition: background 0.25s var(--ease);
+    }
+    .codesign:hover { background: var(--linen); }
+    .codesign .txt { font-size: 0.9rem; color: var(--ink-soft); }
+    .codesign .txt b { font-family: var(--font-display); font-weight: 700; font-size: 0.8rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--green); display: block; }
+
+    /* slot heading */
+    .slot {
+      text-align: right; font-family: var(--font-display); font-weight: 700;
+      font-size: 0.78rem; letter-spacing: 0.06em; color: var(--green);
+      margin: 1.5rem 0 0.5rem;
+    }
+
+    /* tables */
+    .tbl { border: 1px solid var(--line); background: var(--white); }
+    .tbl__head, .tbl .row { display: grid; align-items: center; gap: 1rem; padding: 0.8rem 1.2rem; }
+    .tbl__head {
+      background: var(--linen);
+      font-family: var(--font-display); font-weight: 700; font-size: 0.7rem;
+      letter-spacing: 0.06em; color: var(--ink-soft);
+    }
+    .tbl__head .r, .tbl .row .r { justify-self: end; text-align: right; }
+    .tbl .row { border-top: 1px solid var(--line); cursor: pointer; transition: background 0.2s var(--ease); user-select: none; }
+    .tbl .row:hover { background: rgba(250, 197, 90, 0.12); }
+    .tbl .row:nth-child(odd) { background: rgba(239, 237, 230, 0.45); }
+    .tbl .row:nth-child(odd):hover { background: rgba(250, 197, 90, 0.14); }
+    .tbl .row .name { font-family: var(--font-display); font-weight: 500; font-size: 0.86rem; color: var(--green); }
+    .tbl .row .ex { font-size: 0.85rem; color: var(--ink-soft); }
+    .tbl .row .who { font-size: 0.88rem; color: var(--ink); line-height: 1.55; }
+    .tbl .row .who small { display: block; font-size: 0.8rem; color: var(--ink-soft); }
+    .tbl--aud .tbl__head, .tbl--aud .row { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr) auto; }
+    .tbl--one .tbl__head, .tbl--one .row { grid-template-columns: minmax(0, 1fr) auto; }
+    .tbl--two .tbl__head, .tbl--two .row { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr) auto; }
+
+    .panelgrid { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.6fr); gap: 1rem; align-items: start; }
+
+    /* ── Summary bar ── */
+    .sumbar {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 260;
+      background: var(--green-deep); color: var(--paper);
+      border-top: 1px solid var(--line-light);
+      transform: translateY(100%); transition: transform 0.35s var(--ease);
+    }
+    .sumbar.is-on { transform: none; }
+    .sumbar__in { display: flex; align-items: center; gap: 1rem; padding: 0.8rem 0; }
+    .sumbar__txt { font-family: var(--font-display); font-size: 0.78rem; color: rgba(244,243,239,0.85); margin-right: auto; }
+    .sumbar__txt b { color: var(--mustard); font-weight: 900; }
+    .sumbar__clear {
+      background: none; border: none; color: rgba(244,243,239,0.6); cursor: pointer;
+      font-family: var(--font-display); font-weight: 700; font-size: 0.62rem;
+      letter-spacing: 0.1em; text-transform: uppercase; padding: 0.5rem;
+    }
+    .sumbar__clear:hover { color: var(--coral); }
+    body.has-sumbar { padding-bottom: 4.5rem; }
+
+    /* ── Review modal ── */
+    .modal {
+      position: fixed; inset: 0; z-index: 300; display: none;
+      align-items: center; justify-content: center; padding: 1.25rem;
+      background: rgba(16, 43, 26, 0.72);
+    }
+    .modal.is-open { display: flex; }
+    .modal__card {
+      background: var(--paper); width: min(100%, 44rem); max-height: 86svh;
+      display: flex; flex-direction: column; border-top: 4px solid var(--mustard);
+    }
+    .modal__head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.4rem 1.6rem 0.9rem; }
+    .modal__head h2 { font-family: var(--font-display); font-weight: 900; font-size: 1.35rem; color: var(--green); letter-spacing: -0.02em; }
+    .modal__close { background: none; border: 1px solid var(--line); width: 38px; height: 38px; cursor: pointer; font-size: 1rem; color: var(--ink-soft); flex-shrink: 0; }
+    .modal__close:hover { background: var(--linen); }
+    .modal__body { padding: 0.25rem 1.6rem 1.25rem; overflow-y: auto; }
+    .modal__body .empty { color: var(--ink-soft); font-size: 0.92rem; padding: 0.75rem 0 1rem; }
+    .sumgroup { margin-bottom: 1.1rem; }
+    .sumgroup h3 {
+      font-family: var(--font-display); font-weight: 700; font-size: 0.72rem;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--green);
+      padding-bottom: 0.35rem; border-bottom: 1px solid var(--line); margin-bottom: 0.5rem;
+    }
+    .sumgroup li { list-style: none; font-size: 0.88rem; color: var(--ink-soft); padding: 0.22rem 0; display: flex; gap: 0.55rem; align-items: baseline; }
+    .sumgroup li .tag {
+      flex-shrink: 0; font-family: var(--font-display); font-weight: 700; font-size: 0.58rem;
+      letter-spacing: 0.1em; text-transform: uppercase; padding: 0.18rem 0.5rem; border-radius: 999px;
+    }
+    .tag--cd { background: var(--green); color: var(--mustard); }
+    .tag--ex { background: var(--mustard); color: var(--green-deep); }
+    .tag--cm { background: var(--linen); color: var(--ink); }
+    .modal__foot { display: flex; flex-wrap: wrap; gap: 0.75rem; padding: 1rem 1.6rem 1.5rem; border-top: 1px solid var(--line); }
+    .modal__hint { flex-basis: 100%; font-size: 0.78rem; color: var(--ink-soft); }
+
+    /* ── Footer ── */
+    .foot {
+      background: var(--green-deep); color: rgba(244,243,239,0.6);
+      padding: 1.6rem 0; text-align: center;
+      font-family: var(--font-display); font-size: 0.72rem; letter-spacing: 0.04em;
+    }
+
+    @media (max-width: 860px) {
+      .scopes__grid { grid-template-columns: 1fr; }
+      .panelgrid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 700px) {
+      .tbl--aud .tbl__head { display: none; }
+      .tbl--aud .row { grid-template-columns: minmax(0, 1fr) auto; }
+      .tbl--aud .row .ex { grid-column: 1; }
+      .tbl--aud .row .cbx { grid-column: 2; grid-row: 1 / span 2; }
+      .tbl--two .tbl__head { display: none; }
+      .tbl--two .row { grid-template-columns: minmax(0, 1fr) auto; }
+      .tbl--two .row .who { grid-column: 1; }
+      .tbl--two .row .cbx { grid-column: 2; grid-row: 1 / span 2; }
+      .sumbar__txt { font-size: 0.7rem; }
+      .bar__user { display: none; }
+    }
+
+    /* ── PDF export view (shown only while printing an export) ── */
+    .export-view { display: none; background: var(--white); color: var(--ink); }
+    .export-view .ex-strip { display: flex; height: 10px; }
+    .export-view .ex-strip i { flex: 1; background: var(--green); }
+    .export-view .ex-strip i:first-child { flex: 0 0 30%; background: var(--mustard); }
+    .export-view .ex-page { padding: 2.2rem 2.4rem; }
+    .export-view .ex-logo { height: 44px; width: auto; margin-bottom: 1.6rem; }
+    .export-view h1 {
+      font-family: var(--font-display); font-weight: 900; font-size: 1.9rem;
+      color: var(--green); letter-spacing: -0.03em; line-height: 1.05;
+    }
+    .export-view .ex-sub {
+      font-family: var(--font-display); font-weight: 700; font-size: 0.72rem;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--coral);
+      margin: 0.4rem 0 1.2rem;
+    }
+    .export-view .ex-meta {
+      display: flex; flex-wrap: wrap; gap: 0.4rem 2rem; margin-bottom: 1.6rem;
+      padding: 0.8rem 1rem; background: var(--linen);
+      font-family: var(--font-display); font-size: 0.78rem; color: var(--ink);
+    }
+    .export-view .ex-meta b { font-weight: 700; }
+    .export-view .ex-group { margin-bottom: 1.4rem; break-inside: avoid; }
+    .export-view .ex-group h2 {
+      font-family: var(--font-display); font-weight: 700; font-size: 0.86rem;
+      letter-spacing: 0.06em; text-transform: uppercase;
+      background: var(--green); color: var(--white); padding: 0.5rem 0.9rem;
+    }
+    .export-view .ex-group table { width: 100%; border-collapse: collapse; }
+    .export-view .ex-group td {
+      border: 1px solid rgba(22,22,22,0.18); padding: 0.5rem 0.9rem;
+      font-size: 0.84rem; vertical-align: top;
+    }
+    .export-view .ex-group td.sc {
+      width: 8.5rem; font-family: var(--font-display); font-weight: 700; font-size: 0.66rem;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--green); white-space: nowrap;
+    }
+    .export-view .ex-group td.sc::before { content: "✓ "; color: var(--coral); }
+    .export-view .ex-empty { font-size: 0.9rem; color: var(--ink-soft); padding: 0.6rem 0 1.2rem; }
+    .export-view .ex-foot {
+      margin-top: 2rem; padding-top: 0.9rem; border-top: 1px solid rgba(22,22,22,0.18);
+      font-family: var(--font-display); font-size: 0.68rem; color: var(--ink-soft);
+      display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+    }
+
+    @media print {
+      .site-header, .chipnav, .sumbar, .modal, .skip { display: none !important; }
+      body { background: var(--white); padding-bottom: 0 !important; }
+      .session, .tbl, .scope { break-inside: avoid; }
+      .cbx { border-color: var(--ink); }
+      body.exporting main, body.exporting .foot { display: none !important; }
+      body.exporting .export-view { display: block; }
+    }
+  </style>
+</head>
+<body>
+
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap bar">
+      <a href="index.html" class="logo" aria-label="Dhaka Climate Week home">
+        <img src="assets/logo/logo-white.png" alt="Dhaka Climate Week" width="804" height="273" />
+      </a>
+      <div class="bar__side">
+        <span class="bar__user" id="bar-user"></span>
+        <button type="button" class="bar__signout" id="signout">Sign out</button>
+      </div>
+    </div>
+  </header>
+
+  <nav class="chipnav" aria-label="Day 1 sessions">
+    <div class="wrap">
+      <div class="chipnav__row" id="chipnav-row"></div>
+    </div>
+  </nav>
+
+  <main id="main">
+
+    <section class="intro">
+      <div class="wrap">
+        <span class="kicker">Partners portal</span>
+        <h1 class="display">Day 1 · <em>Partnership Scope</em></h1>
+        <p class="intro__date">17 – 21 January 2027 · Dhaka, Bangladesh</p>
+        <div class="intro__note">
+          <b>Six Masterclass &amp; Panel sessions are planned for Day 1 of Dhaka Climate Week.</b>
+          <span>Choose which session(s) to co-design, support with experts, and communicate to your networks — tick your selections below and submit.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="scopes" aria-labelledby="scopes-title">
+      <div class="wrap">
+        <h2 class="scopes__band" id="scopes-title">How partners can get involved</h2>
+        <div class="scopes__grid">
+          <article class="scope">
+            <h3><span class="tick" aria-hidden="true">✓</span> Co-Design the Session</h3>
+            <p>Work with the DCW team to shape the agenda, speakers, and format of the session.</p>
+            <p class="commit"><b>Your commitment</b> 1–2 planning calls, content input, speaker suggestions</p>
+          </article>
+          <article class="scope">
+            <h3><span class="tick" aria-hidden="true">✓</span> Support with a High-Profile Expert</h3>
+            <p>Nominate or fund a globally recognized speaker, panelist, or keynote voice for the session.</p>
+            <p class="commit"><b>Your commitment</b> Identify &amp; confirm speaker, coordinate logistics</p>
+          </article>
+          <article class="scope">
+            <h3><span class="tick" aria-hidden="true">✓</span> Communicate with Participants</h3>
+            <p>Co-brand outreach to your network — members, employees, communities — to drive attendance.</p>
+            <p class="commit"><b>Your commitment</b> 2–3 co-branded emails or social posts to your audience</p>
+          </article>
+        </div>
+        <p class="scopes__note">Partners may choose one or more scopes per session. Multiple partners can collaborate on the same session.</p>
+      </div>
+    </section>
+
+    <section class="legend" aria-label="Selection legend">
+      <div class="wrap">
+        <div class="legend__row">
+          <span><span class="tk" aria-hidden="true">✓</span><b>Co-Design</b> = shape the session agenda</span>
+          <span><span class="tk" aria-hidden="true">✓</span><b>Expert</b> = provide one high-profile speaker</span>
+          <span><span class="tk" aria-hidden="true">✓</span><b>Communicate</b> = outreach to your network</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="wrap">
+      <div class="sessions" id="sessions"></div>
+    </div>
+
+  </main>
+
+  <footer class="foot">
+    <div class="wrap">Organized by Mycellium · Climate Week Network · Climate Hive · dhkclimateweek.org · Confidential — for partners only</div>
+  </footer>
+
+  <div class="sumbar" id="sumbar">
+    <div class="wrap sumbar__in">
+      <span class="sumbar__txt" id="sumbar-txt" role="status" aria-live="polite"></span>
+      <button type="button" class="sumbar__clear" id="clear-all">Clear all</button>
+      <button type="button" class="btn btn--mustard btn--sm" id="open-review">Review &amp; submit</button>
+    </div>
+  </div>
+
+  <div class="modal" id="review-modal" role="dialog" aria-modal="true" aria-labelledby="review-title">
+    <div class="modal__card">
+      <div class="modal__head">
+        <h2 id="review-title">Your selections</h2>
+        <button type="button" class="modal__close" id="close-review" aria-label="Close">✕</button>
+      </div>
+      <div class="modal__body" id="review-body"></div>
+      <div class="modal__foot">
+        <a class="btn btn--mustard btn--sm" id="submit-email" href="#">Submit by email</a>
+        <button type="button" class="btn btn--line btn--sm" id="export-pdf">Export as PDF</button>
+        <p class="modal__hint">Submitting opens a pre-filled email to <b>partners@dhkclimateweek.org</b> with your selections. Export as PDF creates a branded summary via your browser's print dialog — choose "Save as PDF" as the destination. Selections also stay saved on this device.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="export-view" id="export-view" aria-hidden="true">
+    <div class="ex-strip" aria-hidden="true"><i></i><i></i></div>
+    <div class="ex-page">
+      <img class="ex-logo" src="assets/logo/logo-primary-sm.png" alt="Dhaka Climate Week" />
+      <h1>Day 1 · Partnership Scope</h1>
+      <p class="ex-sub">Partner selections · 17 – 21 January 2027 · Dhaka, Bangladesh</p>
+      <div class="ex-meta" id="ex-meta"></div>
+      <div id="ex-groups"></div>
+      <div class="ex-foot">
+        <span>Organized by Mycellium · Climate Week Network · Climate Hive · dhkclimateweek.org</span>
+        <span>Confidential — for partners only</span>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/portal-data.js"></script>
+  <script>
+    // ── Access guard (front-end only; portal content is pre-launch, not secret infra) ──
+    var partnerEmail = sessionStorage.getItem("dcwPartnerEmail");
+    if (!partnerEmail) {
+      try {
+        var remembered = JSON.parse(localStorage.getItem("dcwRemember"));
+        if (remembered && remembered.role === "partner" && remembered.email) {
+          partnerEmail = remembered.email;
+          sessionStorage.setItem("dcwPartnerEmail", partnerEmail);
+        }
+      } catch (e) { /* fall through to redirect */ }
+    }
+    if (!partnerEmail) { location.replace("partner-login.html"); }
+
+    var TIMES = DCW.TIMES;
+    var SESSIONS = DCW.SESSIONS;
+
+    var STORE_KEY = "dcwDay1Selections";
+
+    function esc(t) {
+      return t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    function checkboxRow(id, label) {
+      return '<input type="checkbox" class="cb" id="' + id + '" aria-label="' + esc(label) + '" /><span class="cbx" aria-hidden="true"></span>';
+    }
+
+    function renderSession(s) {
+      var h = '';
+      h += '<section class="session" id="' + s.id + '" aria-labelledby="' + s.id + '-title">';
+      h += '<header class="session__band"><span class="session__num">' + s.num + '</span>';
+      h += '<h2 id="' + s.id + '-title">' + esc(s.title) + '</h2>';
+      h += '<span class="session__count" id="' + s.id + '-count">0 selected</span></header>';
+      h += '<p class="session__obj"><b>Objectives:</b> ' + esc(s.objectives) + '</p>';
+
+      h += '<label class="codesign">' + checkboxRow(s.id + '-cd', 'Co-design the ' + s.title + ' session');
+      h += '<span class="txt"><b>Co-Design this session</b>Shape the agenda, speakers, and format with the DCW team.</span></label>';
+
+      h += '<div class="tbl tbl--aud"><div class="tbl__head"><span>Target audience</span><span>Examples</span><span class="r">Communicate</span></div>';
+      s.audiences.forEach(function (a, i) {
+        h += '<label class="row"><span class="name">' + esc(a[0]) + '</span><span class="ex">' + esc(a[1]) + '</span>';
+        h += checkboxRow(s.id + '-a' + i, 'Communicate with ' + a[0] + ' for ' + s.title) + '</label>';
+      });
+      h += '</div>';
+
+      h += '<h3 class="slot">' + TIMES.mc + '</h3>';
+      h += '<div class="tbl tbl--one"><div class="tbl__head"><span>Masterclass facilitator</span><span class="r">Expert</span></div>';
+      h += '<label class="row"><span class="who">' + esc(s.masterclass.role) + '<small>' + esc(s.masterclass.eg) + '</small></span>';
+      h += checkboxRow(s.id + '-mc', 'Provide the masterclass facilitator for ' + s.title) + '</label></div>';
+
+      h += '<h3 class="slot">' + TIMES.panel + '</h3>';
+      h += '<div class="panelgrid">';
+      h += '<div class="tbl tbl--one"><div class="tbl__head"><span>Type of moderator</span><span class="r">Expert</span></div>';
+      h += '<label class="row"><span class="who">' + esc(s.moderator) + '</span>' + checkboxRow(s.id + '-mod', 'Provide the panel moderator for ' + s.title) + '</label></div>';
+      h += '<div class="tbl tbl--one"><div class="tbl__head"><span>Type of panelist</span><span class="r">Expert</span></div>';
+      s.panelists.forEach(function (p, i) {
+        h += '<label class="row"><span class="who">' + esc(p) + '</span>' + checkboxRow(s.id + '-p' + i, 'Provide a panelist for ' + s.title + ': ' + p) + '</label>';
+      });
+      h += '</div></div>';
+
+      h += '<h3 class="slot">' + TIMES.story + '</h3>';
+      h += '<div class="tbl tbl--two"><div class="tbl__head"><span>Type of organizations</span><span>Type of storyteller</span><span class="r">Expert</span></div>';
+      h += '<label class="row"><span class="who">' + esc(s.storyteller.orgs) + '</span><span class="who">' + esc(s.storyteller.who) + '</span>';
+      h += checkboxRow(s.id + '-st', 'Provide the storyteller for ' + s.title) + '</label></div>';
+
+      h += '</section>';
+      return h;
+    }
+
+    document.getElementById('sessions').innerHTML = SESSIONS.map(renderSession).join('');
+    document.getElementById('chipnav-row').innerHTML = SESSIONS.map(function (s) {
+      return '<a href="#' + s.id + '">' + s.num + ' · ' + esc(s.title) + '<span class="chip__dot" id="' + s.id + '-dot">0</span></a>';
+    }).join('');
+
+    document.getElementById('bar-user').textContent = partnerEmail || '';
+
+    // ── Selection labels for the summary / email (shared with admin) ──
+    function selectionLabel(s, suffix) {
+      return DCW.selectionLabel(s, suffix) || { tag: 'cm', text: suffix };
+    }
+
+    function allBoxes() { return Array.prototype.slice.call(document.querySelectorAll('.cb')); }
+
+    function gatherSelections() {
+      var out = [];
+      SESSIONS.forEach(function (s) {
+        var items = [];
+        allBoxes().forEach(function (cb) {
+          if (cb.checked && cb.id.indexOf(s.id + '-') === 0) {
+            items.push(selectionLabel(s, cb.id.slice(s.id.length + 1)));
+          }
+        });
+        if (items.length) out.push({ session: s, items: items });
+      });
+      return out;
+    }
+
+    function refresh() {
+      var total = 0, sessionsWith = 0;
+      SESSIONS.forEach(function (s) {
+        var n = allBoxes().filter(function (cb) { return cb.checked && cb.id.indexOf(s.id + '-') === 0; }).length;
+        total += n; if (n) sessionsWith++;
+        var badge = document.getElementById(s.id + '-count');
+        badge.textContent = n + ' selected';
+        badge.classList.toggle('has', n > 0);
+        var dot = document.getElementById(s.id + '-dot');
+        dot.textContent = n;
+        dot.classList.toggle('has', n > 0);
+      });
+      var bar = document.getElementById('sumbar');
+      bar.classList.toggle('is-on', total > 0);
+      document.body.classList.toggle('has-sumbar', total > 0);
+      document.getElementById('sumbar-txt').innerHTML =
+        '<b>' + total + '</b> selection' + (total === 1 ? '' : 's') + ' across <b>' + sessionsWith + '</b> session' + (sessionsWith === 1 ? '' : 's') + ' · saved on this device';
+      try {
+        localStorage.setItem(STORE_KEY, JSON.stringify(allBoxes().filter(function (cb) { return cb.checked; }).map(function (cb) { return cb.id; })));
+      } catch (e) { /* private mode: selections just don't persist */ }
+    }
+
+    // restore
+    try {
+      (JSON.parse(localStorage.getItem(STORE_KEY)) || []).forEach(function (id) {
+        var cb = document.getElementById(id);
+        if (cb) cb.checked = true;
+      });
+    } catch (e) { /* ignore corrupt state */ }
+    refresh();
+
+    document.getElementById('sessions').addEventListener('change', refresh);
+
+    document.getElementById('clear-all').addEventListener('click', function () {
+      allBoxes().forEach(function (cb) { cb.checked = false; });
+      refresh();
+    });
+
+    // ── Review modal ──
+    var modal = document.getElementById('review-modal');
+    var lastFocus = null;
+    var pendingSubmission = null;
+
+    function openReview() {
+      var groups = gatherSelections();
+      var body = document.getElementById('review-body');
+      if (!groups.length) {
+        body.innerHTML = '<p class="empty">Nothing selected yet — tick the Co-Design, Expert, or Communicate boxes in any session first.</p>';
+      } else {
+        body.innerHTML = groups.map(function (g) {
+          return '<div class="sumgroup"><h3>' + g.session.num + ' · ' + esc(g.session.title) + '</h3><ul>' +
+            g.items.map(function (it) {
+              return '<li><span class="tag tag--' + it.tag + '">' + (it.tag === 'cd' ? 'Co-Design' : it.tag === 'ex' ? 'Expert' : 'Communicate') + '</span><span>' + esc(it.text) + '</span></li>';
+            }).join('') + '</ul></div>';
+        }).join('');
+      }
+      var lines = ['Partner: ' + (partnerEmail || 'unknown'), 'Day 1 Partnership Scope selections:', ''];
+      groups.forEach(function (g) {
+        lines.push(g.session.num + ' - ' + g.session.title);
+        g.items.forEach(function (it) { lines.push('  * ' + it.text); });
+        lines.push('');
+      });
+      if (groups.length) {
+        var rec = {
+          e: partnerEmail || 'unknown@unknown.org',
+          t: Date.now(),
+          s: allBoxes().filter(function (cb) { return cb.checked; }).map(function (cb) { return cb.id; })
+        };
+        lines.push('Submission code (please keep this line in your email):');
+        lines.push('DCW1:' + DCW.encodeSubmission(rec));
+        pendingSubmission = rec;
+      } else {
+        pendingSubmission = null;
+      }
+      document.getElementById('submit-email').href =
+        'mailto:partners@dhkclimateweek.org?subject=' + encodeURIComponent('Day 1 Partnership Scope selections — ' + (partnerEmail || 'partner')) +
+        '&body=' + encodeURIComponent(lines.join('\n'));
+      lastFocus = document.activeElement;
+      modal.classList.add('is-open');
+      document.getElementById('close-review').focus();
+    }
+    function closeReview() {
+      modal.classList.remove('is-open');
+      if (lastFocus) lastFocus.focus();
+    }
+    document.getElementById('open-review').addEventListener('click', openReview);
+    document.getElementById('close-review').addEventListener('click', closeReview);
+    // record the submission locally the moment the partner sends it
+    document.getElementById('submit-email').addEventListener('click', function () {
+      if (pendingSubmission) DCW.recordSubmission(pendingSubmission);
+    });
+    modal.addEventListener('click', function (e) { if (e.target === modal) closeReview(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && modal.classList.contains('is-open')) closeReview(); });
+
+    // ── PDF export: branded summary rendered through the browser's print-to-PDF ──
+    function scopeName(tag) { return tag === 'cd' ? 'Co-Design' : tag === 'ex' ? 'Expert' : 'Communicate'; }
+
+    function buildExportView() {
+      var groups = gatherSelections();
+      var total = groups.reduce(function (n, g) { return n + g.items.length; }, 0);
+      document.getElementById('ex-meta').innerHTML =
+        '<span><b>Partner:</b> ' + esc(partnerEmail || 'unknown') + '</span>' +
+        '<span><b>Selections:</b> ' + total + ' across ' + groups.length + ' session' + (groups.length === 1 ? '' : 's') + '</span>' +
+        '<span><b>Generated:</b> ' + new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) + '</span>';
+      document.getElementById('ex-groups').innerHTML = groups.length
+        ? groups.map(function (g) {
+            return '<div class="ex-group"><h2>' + g.session.num + ' · ' + esc(g.session.title) + '</h2><table>' +
+              g.items.map(function (it) {
+                return '<tr><td class="sc">' + scopeName(it.tag) + '</td><td>' + esc(it.text) + '</td></tr>';
+              }).join('') + '</table></div>';
+          }).join('')
+        : '<p class="ex-empty">No selections have been made yet.</p>';
+    }
+
+    function stopExporting() { document.body.classList.remove('exporting'); }
+    window.addEventListener('afterprint', stopExporting);
+
+    document.getElementById('export-pdf').addEventListener('click', function () {
+      buildExportView();
+      closeReview();
+      document.body.classList.add('exporting');
+      window.print();
+      setTimeout(stopExporting, 500);
+    });
+
+    document.getElementById('signout').addEventListener('click', function () {
+      sessionStorage.removeItem('dcwPartnerEmail');
+      try { localStorage.removeItem('dcwRemember'); } catch (e) { /* ignore */ }
+      location.href = 'partner-login.html';
+    });
+  </script>
+
+</body>
+</html>

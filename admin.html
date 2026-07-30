@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin · Partner Portal Analytics, Dhaka Climate Week</title>
+  <meta name="description" content="Admin analytics for the Dhaka Climate Week partner portal." />
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Roboto+Slab:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="icon" href="assets/logo/favicon.png" />
+  <style>
+    :root {
+      --green: #1B4D2E;
+      --green-deep: #102B1A;
+      --green-mid: #245c38;
+      --mustard: #FAC55A;
+      --coral: #C84B2F;
+      --ink: #161616;
+      --ink-soft: rgba(22, 22, 22, 0.6);
+      --linen: #EFEDE6;
+      --paper: #FBFAF6;
+      --white: #ffffff;
+      --line: rgba(22, 22, 22, 0.12);
+      --line-light: rgba(244, 243, 239, 0.16);
+
+      /* chart series — validated for CVD + lightness (see portal docs) */
+      --viz-cd: #2F7A4A;
+      --viz-ex: #D99A1B;
+      --viz-cm: #C84B2F;
+
+      --font-display: 'Roboto', sans-serif;
+      --font-body: 'Roboto Slab', serif;
+
+      --max: 1080px;
+      --px: clamp(1.25rem, 5vw, 4rem);
+      --header: 72px;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: var(--font-body); color: var(--ink); background: var(--paper);
+      line-height: 1.6; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    button, input, textarea { font: inherit; border-radius: 0; }
+    ::selection { background: var(--mustard); color: var(--green-deep); }
+    :focus-visible { outline: 2px solid var(--coral); outline-offset: 3px; }
+
+    .skip {
+      position: absolute; top: -200%; left: var(--px); z-index: 999;
+      padding: 0.7rem 1.2rem; background: var(--green); color: var(--mustard);
+      font-family: var(--font-display); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em;
+    }
+    .skip:focus { top: 1rem; }
+
+    .wrap { width: min(calc(100% - 2 * var(--px)), var(--max)); margin-inline: auto; position: relative; z-index: 1; }
+
+    .kicker {
+      display: inline-flex; align-items: center; gap: 0.7rem;
+      font-family: var(--font-display); font-weight: 700; font-size: 0.7rem;
+      letter-spacing: 0.18em; text-transform: uppercase; color: var(--coral);
+    }
+    .display {
+      font-family: var(--font-display); font-weight: 900; color: var(--green);
+      letter-spacing: -0.04em; line-height: 0.98;
+    }
+    .display em { font-style: normal; color: var(--coral); }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem;
+      padding: 0.7rem 1.2rem; font-family: var(--font-display); font-weight: 700;
+      font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
+      background: var(--green); color: var(--mustard); border: 1px solid var(--green);
+      transition: background 0.3s var(--ease), color 0.3s var(--ease), border-color 0.3s var(--ease);
+    }
+    .btn:hover { background: var(--green-deep); border-color: var(--green-deep); }
+    .btn--mustard { background: var(--mustard); color: var(--green-deep); border-color: var(--mustard); }
+    .btn--mustard:hover { background: var(--green); color: var(--mustard); border-color: var(--green); }
+    .btn--line { background: transparent; color: var(--green); border-color: rgba(22,22,22,0.3); }
+    .btn--line:hover { background: var(--green); color: var(--mustard); border-color: var(--green); }
+    .btn--danger { background: transparent; color: var(--coral); border-color: rgba(200,75,47,0.45); }
+    .btn--danger:hover { background: var(--coral); color: var(--paper); border-color: var(--coral); }
+
+    /* ── Header ── */
+    .site-header {
+      position: sticky; top: 0; z-index: 250; height: var(--header);
+      display: flex; align-items: center;
+      background: var(--green-deep); border-bottom: 1px solid var(--line-light);
+    }
+    .bar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+    .logo { display: inline-block; line-height: 0; flex-shrink: 0; }
+    .logo img { height: 30px; width: auto; }
+    .bar__side { display: flex; align-items: center; gap: 0.9rem; min-width: 0; }
+    .bar__badge {
+      font-family: var(--font-display); font-weight: 700; font-size: 0.6rem;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      background: var(--mustard); color: var(--green-deep); padding: 0.3rem 0.6rem; border-radius: 999px;
+    }
+    .bar__user {
+      font-family: var(--font-display); font-weight: 500; font-size: 0.74rem;
+      color: rgba(244,243,239,0.8); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      max-width: 30vw;
+    }
+    .bar__signout {
+      background: none; border: 1px solid rgba(244,243,239,0.35); color: var(--paper);
+      font-family: var(--font-display); font-weight: 700; font-size: 0.62rem;
+      letter-spacing: 0.1em; text-transform: uppercase; padding: 0.5rem 0.9rem; cursor: pointer;
+      transition: background 0.3s var(--ease), color 0.3s var(--ease), border-color 0.3s var(--ease);
+      flex-shrink: 0;
+    }
+    .bar__signout:hover { background: var(--mustard); color: var(--green-deep); border-color: var(--mustard); }
+
+    /* ── Layout ── */
+    .head { padding: clamp(2rem, 5vw, 3.5rem) 0 1.5rem; }
+    .head h1 { font-size: clamp(1.9rem, 5vw, 3rem); margin-top: 0.8rem; }
+    .head .sub { margin-top: 0.6rem; font-size: 0.92rem; color: var(--ink-soft); max-width: 46rem; }
+
+    .card {
+      background: var(--white); border: 1px solid var(--line); padding: clamp(1.2rem, 3vw, 1.75rem);
+    }
+    .card + .card { margin-top: 1.25rem; }
+    .card h2 {
+      font-family: var(--font-display); font-weight: 900; font-size: 1.05rem;
+      color: var(--green); letter-spacing: -0.01em; margin-bottom: 0.35rem;
+    }
+    .card .note { font-size: 0.82rem; color: var(--ink-soft); margin-bottom: 1.1rem; }
+
+    /* ── Stat tiles ── */
+    .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 1.25rem; }
+    .tile { background: var(--white); border: 1px solid var(--line); padding: 1.1rem 1.25rem; }
+    .tile b {
+      display: block; font-family: var(--font-display); font-weight: 900;
+      font-size: clamp(1.6rem, 3.4vw, 2.2rem); color: var(--green); letter-spacing: -0.03em; line-height: 1.1;
+    }
+    .tile span {
+      font-family: var(--font-display); font-weight: 700; font-size: 0.62rem;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft);
+    }
+    .tile small { display: block; font-size: 0.74rem; color: var(--ink-soft); margin-top: 0.2rem; }
+
+    /* ── Chart ── */
+    .legend { display: flex; flex-wrap: wrap; gap: 0.4rem 1.25rem; margin-bottom: 1.1rem; }
+    .legend span {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      font-family: var(--font-display); font-size: 0.72rem; color: var(--ink);
+    }
+    .legend i { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+    .crow { display: grid; grid-template-columns: 11.5rem 1fr 2.5rem; align-items: center; gap: 0.9rem; padding: 0.4rem 0; }
+    .crow__lab { font-family: var(--font-display); font-size: 0.76rem; font-weight: 500; color: var(--ink); text-align: right; line-height: 1.3; }
+    .crow__lab small { color: var(--ink-soft); font-weight: 400; }
+    .crow__track { display: flex; gap: 2px; height: 18px; align-items: stretch; }
+    .crow__track .seg { position: relative; min-width: 4px; cursor: default; transition: opacity 0.15s var(--ease); }
+    .crow__track:hover .seg:not(:hover) { opacity: 0.55; }
+    .crow__track .seg:last-child { border-radius: 0 4px 4px 0; }
+    .seg--cd { background: var(--viz-cd); }
+    .seg--ex { background: var(--viz-ex); }
+    .seg--cm { background: var(--viz-cm); }
+    .crow__val { font-family: var(--font-display); font-weight: 700; font-size: 0.78rem; color: var(--ink); }
+    .chart__axis {
+      display: grid; grid-template-columns: 11.5rem 1fr 2.5rem; gap: 0.9rem; margin-top: 0.35rem;
+      font-family: var(--font-display); font-size: 0.64rem; color: var(--ink-soft);
+    }
+    .chart__axis div { display: flex; justify-content: space-between; }
+
+    .tooltip {
+      position: fixed; z-index: 400; pointer-events: none; display: none;
+      background: var(--green-deep); color: var(--paper); padding: 0.45rem 0.7rem;
+      font-family: var(--font-display); font-size: 0.72rem; line-height: 1.45;
+      border-radius: 6px; max-width: 16rem;
+    }
+    .tooltip b { color: var(--mustard); }
+
+    /* ── Tables ── */
+    .ttable { width: 100%; border-collapse: collapse; }
+    .ttable th {
+      text-align: left; font-family: var(--font-display); font-weight: 700; font-size: 0.64rem;
+      letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft);
+      padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--line); background: var(--linen);
+    }
+    .ttable td { padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--line); font-size: 0.85rem; vertical-align: top; }
+    .ttable td.num, .ttable th.num { text-align: right; }
+    .ttable .mail { font-family: var(--font-display); font-weight: 500; color: var(--green); word-break: break-all; }
+    .ttable .when { color: var(--ink-soft); font-size: 0.78rem; white-space: nowrap; }
+    .scope-chip {
+      display: inline-flex; align-items: center; gap: 0.35rem; margin-right: 0.6rem;
+      font-family: var(--font-display); font-size: 0.72rem; color: var(--ink); white-space: nowrap;
+    }
+    .scope-chip i { width: 9px; height: 9px; border-radius: 3px; }
+    .rowbtn {
+      background: none; border: 1px solid var(--line); cursor: pointer; color: var(--ink-soft);
+      font-family: var(--font-display); font-weight: 700; font-size: 0.6rem;
+      letter-spacing: 0.08em; text-transform: uppercase; padding: 0.35rem 0.6rem;
+    }
+    .rowbtn:hover { background: var(--linen); color: var(--ink); }
+    .rowbtn--x:hover { background: var(--coral); border-color: var(--coral); color: var(--paper); }
+
+    .empty {
+      padding: 1.5rem; background: var(--linen); border-left: 3px solid var(--mustard);
+      font-size: 0.9rem; color: var(--ink-soft);
+    }
+
+    /* ── Import ── */
+    .import__row { display: flex; gap: 0.75rem; align-items: stretch; flex-wrap: wrap; }
+    .import__row textarea {
+      flex: 1; min-width: 16rem; min-height: 3.2rem; resize: vertical;
+      padding: 0.7rem 0.9rem; border: 1px solid var(--line); background: var(--white);
+      font-family: var(--font-display); font-size: 0.78rem; color: var(--ink);
+    }
+    .import__row textarea:focus { outline: none; border-color: var(--green); }
+    .import__msg { margin-top: 0.6rem; font-size: 0.82rem; display: none; }
+    .import__msg.ok { display: block; color: var(--green); }
+    .import__msg.err { display: block; color: var(--coral); }
+
+    .toolsrow { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; }
+
+    /* ── Detail modal ── */
+    .modal {
+      position: fixed; inset: 0; z-index: 300; display: none;
+      align-items: center; justify-content: center; padding: 1.25rem;
+      background: rgba(16, 43, 26, 0.72);
+    }
+    .modal.is-open { display: flex; }
+    .modal__card {
+      background: var(--paper); width: min(100%, 40rem); max-height: 84svh;
+      display: flex; flex-direction: column; border-top: 4px solid var(--mustard);
+    }
+    .modal__head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.3rem 1.5rem 0.8rem; }
+    .modal__head h2 { font-family: var(--font-display); font-weight: 900; font-size: 1.2rem; color: var(--green); word-break: break-all; }
+    .modal__close { background: none; border: 1px solid var(--line); width: 38px; height: 38px; cursor: pointer; font-size: 1rem; color: var(--ink-soft); flex-shrink: 0; }
+    .modal__close:hover { background: var(--linen); }
+    .modal__body { padding: 0.25rem 1.5rem 1.4rem; overflow-y: auto; }
+    .modal__body .when { font-size: 0.8rem; color: var(--ink-soft); margin-bottom: 0.9rem; }
+    .sumgroup { margin-bottom: 1rem; }
+    .sumgroup h3 {
+      font-family: var(--font-display); font-weight: 700; font-size: 0.7rem;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--green);
+      padding-bottom: 0.3rem; border-bottom: 1px solid var(--line); margin-bottom: 0.45rem;
+    }
+    .sumgroup li { list-style: none; font-size: 0.86rem; color: var(--ink-soft); padding: 0.2rem 0; display: flex; gap: 0.55rem; align-items: baseline; }
+    .sumgroup li i { width: 9px; height: 9px; border-radius: 3px; flex-shrink: 0; position: relative; top: 0; }
+
+    .foot {
+      margin-top: 3rem; background: var(--green-deep); color: rgba(244,243,239,0.6);
+      padding: 1.5rem 0; text-align: center;
+      font-family: var(--font-display); font-size: 0.72rem; letter-spacing: 0.04em;
+    }
+
+    @media (max-width: 900px) { .tiles { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 700px) {
+      .crow { grid-template-columns: 1fr; gap: 0.3rem; }
+      .crow__lab { text-align: left; }
+      .crow__val { display: none; }
+      .chart__axis { display: none; }
+      .ttable .hide-sm { display: none; }
+      .bar__user { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap bar">
+      <a href="index.html" class="logo" aria-label="Dhaka Climate Week home">
+        <img src="assets/logo/logo-white.png" alt="Dhaka Climate Week" width="804" height="273" />
+      </a>
+      <div class="bar__side">
+        <span class="bar__badge">Admin</span>
+        <span class="bar__user" id="bar-user"></span>
+        <button type="button" class="bar__signout" id="signout">Sign out</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <div class="wrap">
+
+      <div class="head">
+        <span class="kicker">Partner portal analytics</span>
+        <h1 class="display">Day 1 · <em>Partnership tracking</em></h1>
+        <p class="sub">Partner selections submitted from the Day 1 Partnership Scope portal. This static site keeps data in each browser — submissions made on other devices arrive as <b>submission codes</b> in the partners' emails; paste them below to include them here.</p>
+      </div>
+
+      <div class="tiles" id="tiles" aria-label="Key figures"></div>
+
+      <section class="card" aria-labelledby="chart-title">
+        <h2 id="chart-title">Selections by session</h2>
+        <p class="note">Each bar splits a session's selections by partnership scope. Hover a segment for detail; exact figures are in the tables below.</p>
+        <div class="legend" aria-hidden="true">
+          <span><i style="background:var(--viz-cd)"></i>Co-Design</span>
+          <span><i style="background:var(--viz-ex)"></i>Expert</span>
+          <span><i style="background:var(--viz-cm)"></i>Communicate</span>
+        </div>
+        <div id="chart"></div>
+        <div class="chart__axis" aria-hidden="true"><span></span><div><span>0</span><span id="axis-max"></span></div><span></span></div>
+      </section>
+
+      <section class="card" aria-labelledby="popular-title">
+        <h2 id="popular-title">Most requested items</h2>
+        <p class="note">The specific commitments partners picked most often, across all submissions.</p>
+        <div id="popular"></div>
+      </section>
+
+      <section class="card" aria-labelledby="subs-title">
+        <h2 id="subs-title">Submissions</h2>
+        <p class="note">Latest submission per partner. Re-submissions replace the partner's earlier entry.</p>
+        <div id="subs"></div>
+      </section>
+
+      <section class="card" aria-labelledby="import-title">
+        <h2 id="import-title">Import a submission code</h2>
+        <p class="note">Paste the <b>DCW1:</b> code from a partner's submission email to add their selections to this dashboard.</p>
+        <div class="import__row">
+          <textarea id="import-code" placeholder="DCW1:eyJlIjoi..." aria-label="Submission code"></textarea>
+          <button type="button" class="btn" id="import-btn">Import</button>
+        </div>
+        <p class="import__msg" id="import-msg" role="status"></p>
+        <div class="toolsrow">
+          <button type="button" class="btn btn--line" id="export-csv">Export CSV</button>
+          <button type="button" class="btn btn--danger" id="clear-data">Clear all data</button>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap">Dhaka Climate Week · Partner portal admin · Confidential — internal use only</div>
+  </footer>
+
+  <div class="tooltip" id="tooltip" aria-hidden="true"></div>
+
+  <div class="modal" id="detail-modal" role="dialog" aria-modal="true" aria-labelledby="detail-title">
+    <div class="modal__card">
+      <div class="modal__head">
+        <h2 id="detail-title"></h2>
+        <button type="button" class="modal__close" id="detail-close" aria-label="Close">✕</button>
+      </div>
+      <div class="modal__body" id="detail-body"></div>
+    </div>
+  </div>
+
+  <script src="assets/js/portal-data.js"></script>
+  <script>
+    // ── Access guard (front-end only) ──
+    var adminEmail = sessionStorage.getItem('dcwAdminEmail');
+    if (!adminEmail) {
+      try {
+        var remembered = JSON.parse(localStorage.getItem('dcwRemember'));
+        if (remembered && remembered.role === 'admin' && remembered.email) {
+          adminEmail = remembered.email;
+          sessionStorage.setItem('dcwAdminEmail', adminEmail);
+        }
+      } catch (e) { /* fall through to redirect */ }
+    }
+    if (!adminEmail) { location.replace('partner-login.html'); }
+    document.getElementById('bar-user').textContent = adminEmail || '';
+
+    var SCOPE_COLORS = { cd: 'var(--viz-cd)', ex: 'var(--viz-ex)', cm: 'var(--viz-cm)' };
+
+    function esc(t) {
+      return String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function fmtWhen(t) {
+      return new Date(t).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+
+    function analyse() {
+      var subs = DCW.getSubmissions();
+      var perSession = {}; // id → {cd, ex, cm}
+      var itemCounts = {}; // "sN-suffix" → count
+      var total = 0;
+      DCW.SESSIONS.forEach(function (s) { perSession[s.id] = { cd: 0, ex: 0, cm: 0 }; });
+      subs.forEach(function (rec) {
+        rec.s.forEach(function (id) {
+          var lab = DCW.labelForId(id);
+          if (!lab) return;
+          perSession[lab.session.id][lab.tag]++;
+          itemCounts[id] = (itemCounts[id] || 0) + 1;
+          total++;
+        });
+      });
+      return { subs: subs, perSession: perSession, itemCounts: itemCounts, total: total };
+    }
+
+    function render() {
+      var d = analyse();
+      renderTiles(d);
+      renderChart(d);
+      renderPopular(d);
+      renderSubs(d);
+    }
+
+    function renderTiles(d) {
+      var covered = DCW.SESSIONS.filter(function (s) {
+        var p = d.perSession[s.id]; return p.cd + p.ex + p.cm > 0;
+      }).length;
+      var latest = d.subs.length ? fmtWhen(Math.max.apply(null, d.subs.map(function (r) { return r.t; }))) : '—';
+      document.getElementById('tiles').innerHTML =
+        '<div class="tile"><span>Partners submitted</span><b>' + d.subs.length + '</b></div>' +
+        '<div class="tile"><span>Total selections</span><b>' + d.total + '</b></div>' +
+        '<div class="tile"><span>Sessions covered</span><b>' + covered + '<small>of ' + DCW.SESSIONS.length + '</small></b></div>' +
+        '<div class="tile"><span>Latest submission</span><small style="font-size:0.9rem;color:var(--ink);margin-top:0.45rem">' + esc(latest) + '</small></div>';
+    }
+
+    function renderChart(d) {
+      var max = 1;
+      DCW.SESSIONS.forEach(function (s) {
+        var p = d.perSession[s.id];
+        max = Math.max(max, p.cd + p.ex + p.cm);
+      });
+      document.getElementById('axis-max').textContent = max + (max === 1 ? ' selection' : ' selections');
+      document.getElementById('chart').innerHTML = DCW.SESSIONS.map(function (s) {
+        var p = d.perSession[s.id];
+        var totalRow = p.cd + p.ex + p.cm;
+        var segs = ['cd', 'ex', 'cm'].map(function (tag) {
+          if (!p[tag]) return '';
+          var w = (p[tag] / max) * 100;
+          return '<div class="seg seg--' + tag + '" style="flex: 0 0 ' + w.toFixed(2) + '%" data-tip="' +
+            esc(DCW.SCOPE_NAMES[tag] + ' · ' + p[tag] + ' selection' + (p[tag] === 1 ? '' : 's') + ' — ' + s.title) + '"></div>';
+        }).join('');
+        return '<div class="crow" role="img" aria-label="' + esc(s.title + ': ' + totalRow + ' selections — Co-Design ' + p.cd + ', Expert ' + p.ex + ', Communicate ' + p.cm) + '">' +
+          '<span class="crow__lab" aria-hidden="true"><small>' + s.num + ' · </small>' + esc(s.title) + '</span>' +
+          '<div class="crow__track" aria-hidden="true">' + segs + '</div>' +
+          '<span class="crow__val" aria-hidden="true">' + totalRow + '</span></div>';
+      }).join('');
+    }
+
+    function renderPopular(d) {
+      var ids = Object.keys(d.itemCounts);
+      if (!ids.length) {
+        document.getElementById('popular').innerHTML = '<p class="empty">No submissions yet — once partners submit their selections (or you import their codes), the most requested commitments appear here.</p>';
+        return;
+      }
+      ids.sort(function (a, b) { return d.itemCounts[b] - d.itemCounts[a]; });
+      var rows = ids.slice(0, 8).map(function (id) {
+        var lab = DCW.labelForId(id);
+        return '<tr><td class="hide-sm"><span class="scope-chip"><i style="background:' + SCOPE_COLORS[lab.tag] + '"></i>' + lab.scope + '</span></td>' +
+          '<td>' + esc(lab.session.num + ' · ' + lab.session.title) + '</td>' +
+          '<td>' + esc(lab.text) + '</td>' +
+          '<td class="num"><b>' + d.itemCounts[id] + '</b></td></tr>';
+      }).join('');
+      document.getElementById('popular').innerHTML =
+        '<table class="ttable"><thead><tr><th class="hide-sm">Scope</th><th>Session</th><th>Item</th><th class="num">Partners</th></tr></thead><tbody>' + rows + '</tbody></table>';
+    }
+
+    function renderSubs(d) {
+      if (!d.subs.length) {
+        document.getElementById('subs').innerHTML = '<p class="empty">No submissions recorded in this browser yet. Partner submissions made on this device appear automatically; for others, paste their submission codes below.</p>';
+        return;
+      }
+      var rows = d.subs.map(function (rec, i) {
+        var counts = { cd: 0, ex: 0, cm: 0 };
+        rec.s.forEach(function (id) { var lab = DCW.labelForId(id); if (lab) counts[lab.tag]++; });
+        var chips = ['cd', 'ex', 'cm'].map(function (tag) {
+          return counts[tag] ? '<span class="scope-chip"><i style="background:' + SCOPE_COLORS[tag] + '"></i>' + counts[tag] + '</span>' : '';
+        }).join('');
+        return '<tr><td class="mail">' + esc(rec.e) + '</td>' +
+          '<td class="when hide-sm">' + esc(fmtWhen(rec.t)) + '</td>' +
+          '<td class="hide-sm">' + chips + '</td>' +
+          '<td class="num"><b>' + rec.s.length + '</b></td>' +
+          '<td class="num"><button type="button" class="rowbtn" data-view="' + i + '">View</button> ' +
+          '<button type="button" class="rowbtn rowbtn--x" data-del="' + i + '" aria-label="Remove submission from ' + esc(rec.e) + '">✕</button></td></tr>';
+      }).join('');
+      document.getElementById('subs').innerHTML =
+        '<table class="ttable"><thead><tr><th>Partner</th><th class="hide-sm">Submitted</th><th class="hide-sm">Scopes</th><th class="num">Selections</th><th class="num">Actions</th></tr></thead><tbody>' + rows + '</tbody></table>';
+    }
+
+    // ── Tooltip ──
+    var tooltip = document.getElementById('tooltip');
+    document.getElementById('chart').addEventListener('mousemove', function (e) {
+      var seg = e.target.closest('.seg');
+      if (!seg) { tooltip.style.display = 'none'; return; }
+      tooltip.innerHTML = esc(seg.getAttribute('data-tip')).replace(' — ', ' — <b>') + '</b>';
+      tooltip.style.display = 'block';
+      var x = Math.min(e.clientX + 14, window.innerWidth - tooltip.offsetWidth - 8);
+      tooltip.style.left = x + 'px';
+      tooltip.style.top = (e.clientY - tooltip.offsetHeight - 10) + 'px';
+    });
+    document.getElementById('chart').addEventListener('mouseleave', function () {
+      tooltip.style.display = 'none';
+    });
+
+    // ── Submissions table actions ──
+    var detailModal = document.getElementById('detail-modal');
+    document.getElementById('subs').addEventListener('click', function (e) {
+      var view = e.target.closest('[data-view]');
+      var del = e.target.closest('[data-del]');
+      var subs = DCW.getSubmissions();
+      if (view) {
+        var rec = subs[+view.getAttribute('data-view')];
+        if (!rec) return;
+        document.getElementById('detail-title').textContent = rec.e;
+        var groups = {};
+        rec.s.forEach(function (id) {
+          var lab = DCW.labelForId(id);
+          if (!lab) return;
+          (groups[lab.session.id] = groups[lab.session.id] || { s: lab.session, items: [] }).items.push(lab);
+        });
+        document.getElementById('detail-body').innerHTML =
+          '<p class="when">Submitted ' + esc(fmtWhen(rec.t)) + ' · ' + rec.s.length + ' selections</p>' +
+          DCW.SESSIONS.filter(function (s) { return groups[s.id]; }).map(function (s) {
+            var g = groups[s.id];
+            return '<div class="sumgroup"><h3>' + g.s.num + ' · ' + esc(g.s.title) + '</h3><ul>' +
+              g.items.map(function (lab) {
+                return '<li><i style="background:' + SCOPE_COLORS[lab.tag] + '"></i><span>' + esc(lab.text) + '</span></li>';
+              }).join('') + '</ul></div>';
+          }).join('');
+        detailModal.classList.add('is-open');
+        document.getElementById('detail-close').focus();
+      } else if (del) {
+        var rec2 = subs[+del.getAttribute('data-del')];
+        if (!rec2) return;
+        if (!confirm('Remove the submission from ' + rec2.e + ' on this device?')) return;
+        subs.splice(+del.getAttribute('data-del'), 1);
+        localStorage.setItem('dcwSubmissions', JSON.stringify(subs));
+        render();
+      }
+    });
+    document.getElementById('detail-close').addEventListener('click', function () { detailModal.classList.remove('is-open'); });
+    detailModal.addEventListener('click', function (e) { if (e.target === detailModal) detailModal.classList.remove('is-open'); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') detailModal.classList.remove('is-open'); });
+
+    // ── Import ──
+    function showImportMsg(ok, text) {
+      var el = document.getElementById('import-msg');
+      el.className = 'import__msg ' + (ok ? 'ok' : 'err');
+      el.textContent = text;
+    }
+    document.getElementById('import-btn').addEventListener('click', function () {
+      var raw = document.getElementById('import-code').value.trim();
+      if (!raw) { showImportMsg(false, 'Paste a submission code first.'); return; }
+      var code = raw.indexOf('DCW1:') !== -1 ? raw.slice(raw.indexOf('DCW1:') + 5).split(/\s/)[0] : raw;
+      var rec = DCW.decodeSubmission(code);
+      if (!rec) { showImportMsg(false, 'That code could not be read. Make sure you copied the full DCW1: line from the email.'); return; }
+      DCW.recordSubmission(rec);
+      document.getElementById('import-code').value = '';
+      showImportMsg(true, 'Imported ' + rec.s.length + ' selections from ' + rec.e + '.');
+      render();
+    });
+
+    // ── CSV export ──
+    document.getElementById('export-csv').addEventListener('click', function () {
+      var q = function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; };
+      var lines = ['partner,submitted,session,scope,item'];
+      DCW.getSubmissions().forEach(function (rec) {
+        rec.s.forEach(function (id) {
+          var lab = DCW.labelForId(id);
+          if (!lab) return;
+          lines.push([q(rec.e), q(new Date(rec.t).toISOString()), q(lab.session.num + ' ' + lab.session.title), q(lab.scope), q(lab.text)].join(','));
+        });
+      });
+      var blob = new Blob([lines.join('\n')], { type: 'text/csv' });
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'dcw-day1-partner-selections.csv';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(a.href);
+    });
+
+    // ── Clear ──
+    document.getElementById('clear-data').addEventListener('click', function () {
+      if (!confirm('Clear ALL submissions stored on this device? This cannot be undone.')) return;
+      DCW.clearSubmissions();
+      render();
+    });
+
+    document.getElementById('signout').addEventListener('click', function () {
+      sessionStorage.removeItem('dcwAdminEmail');
+      try { localStorage.removeItem('dcwRemember'); } catch (e) { /* ignore */ }
+      location.href = 'partner-login.html';
+    });
+
+    render();
+  </script>
+
+</body>
+</html>

@@ -83,7 +83,6 @@
       letter-spacing: -0.04em; line-height: 0.95;
     }
     .display em { font-style: normal; color: var(--coral); }
-    .lede { font-size: 1.02rem; line-height: 1.7; color: var(--ink-soft); }
 
     .btn {
       position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem;
@@ -123,8 +122,7 @@
       background: var(--paper); padding: clamp(2rem, 5vw, 3.25rem);
       border-top: 4px solid var(--mustard);
     }
-    .portal__card h1 { font-size: clamp(2rem, 5.2vw, 2.8rem); margin: 0.85rem 0 0.75rem; }
-    .portal__card .lede { margin-bottom: 2rem; }
+    .portal__card h1 { font-size: clamp(2rem, 5.2vw, 2.8rem); margin: 0.85rem 0 2rem; }
 
     .field { margin-bottom: 1.25rem; }
     .field label {
@@ -139,6 +137,13 @@
     }
     .field input::placeholder { color: rgba(22,22,22,0.35); }
     .field input:focus { outline: none; border-color: var(--green); }
+    .field input.is-invalid { border-color: var(--coral); }
+    .form-error {
+      display: none; margin-bottom: 1.1rem; padding: 0.75rem 1rem;
+      background: var(--linen); border-left: 3px solid var(--coral);
+      font-size: 0.86rem; color: var(--ink-soft);
+    }
+    .form-error.is-visible { display: block; }
 
     .portal__row {
       display: flex; align-items: center; justify-content: space-between; gap: 1rem;
@@ -156,22 +161,6 @@
     .portal__help:hover { text-decoration: underline; }
 
     .portal__card .btn { width: 100%; }
-
-    .portal__note {
-      display: none; margin-top: 1.25rem; padding: 0.9rem 1rem;
-      background: var(--linen); border-left: 3px solid var(--coral);
-      font-size: 0.88rem; color: var(--ink-soft); line-height: 1.6;
-    }
-    .portal__note.is-visible { display: block; }
-    .portal__note a { color: var(--coral); font-weight: 600; }
-    .portal__note a:hover { text-decoration: underline; }
-
-    .portal__foot {
-      margin-top: 1.75rem; padding-top: 1.5rem; border-top: 1px solid var(--line);
-      font-size: 0.88rem; color: var(--ink-soft);
-    }
-    .portal__foot a { color: var(--green); font-weight: 600; }
-    .portal__foot a:hover { color: var(--coral); }
 
     /* ── Footer ── */
     .foot {
@@ -221,9 +210,9 @@
       <div class="portal__card">
         <span class="kicker">Partners portal</span>
         <h1 class="display">Partner <em>login</em></h1>
-        <p class="lede">Sign in to manage your partnership, event listings, and materials for Dhaka Climate Week 2027.</p>
 
         <form id="partner-login" novalidate>
+          <p class="form-error" id="form-error" role="alert"></p>
           <div class="field">
             <label for="pl-email">Email address</label>
             <input type="email" id="pl-email" name="email" placeholder="you@organisation.org" required autocomplete="email" />
@@ -237,15 +226,7 @@
             <a class="portal__help" href="mailto:partners@dhkclimateweek.org?subject=Partner%20portal%20password%20help">Forgot password?</a>
           </div>
           <button type="submit" class="btn btn--mustard">Sign in <span class="arw">→</span></button>
-          <p class="portal__note" id="portal-note" role="status" aria-live="polite">
-            The partner portal is not live yet. For partnership access and support, write to
-            <a href="mailto:partners@dhkclimateweek.org">partners@dhkclimateweek.org</a>.
-          </p>
         </form>
-
-        <p class="portal__foot">
-          Not a partner yet? <a href="index.html#get-involved">Become a partner</a> for Dhaka Climate Week.
-        </p>
       </div>
     </div>
   </main>
@@ -255,9 +236,73 @@
   </footer>
 
   <script>
+    // Access is limited to accounts provisioned by the DCW team.
+    // Digests are SHA-256 of "email:password" — this keeps plaintext out of the
+    // page source, but a static page has no real auth; treat the portal as
+    // low-sensitivity until a server-side login exists.
+    var ALLOWED = [
+      '44ed128bf7242be5c45457c1e6ceaeab302e5a0beccb89011877b7cc6ebb9b54',
+      '76a42ecf31162520ecf343dfbcbc5d5ec3e90566ca5d0a258736ea0fe2a4294a'
+    ];
+    var ADMIN = '72818f666a035f69cb73965f8e9c82b648a1b49fa0f34639c30e6eb394699a55';
+
+    function sha256Hex(text) {
+      return crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)).then(function (buf) {
+        return Array.prototype.map.call(new Uint8Array(buf), function (b) {
+          return b.toString(16).padStart(2, '0');
+        }).join('');
+      });
+    }
+
+    function showError(message) {
+      var el = document.getElementById('form-error');
+      el.textContent = message;
+      el.classList.add('is-visible');
+    }
+
     document.getElementById('partner-login').addEventListener('submit', function (event) {
       event.preventDefault();
-      document.getElementById('portal-note').classList.add('is-visible');
+      var email = document.getElementById('pl-email');
+      var password = document.getElementById('pl-password');
+      var emailValue = email.value.trim().toLowerCase();
+      var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue);
+      var passOk = password.value.length > 0;
+      email.classList.toggle('is-invalid', !emailOk);
+      password.classList.toggle('is-invalid', !passOk);
+      document.getElementById('form-error').classList.remove('is-visible');
+      if (!emailOk || !passOk) {
+        showError('Please enter your email address and password.');
+        (!emailOk ? email : password).focus();
+        return;
+      }
+      if (!window.crypto || !crypto.subtle) {
+        showError('Sign-in needs a secure (HTTPS) connection. Please open this page over HTTPS.');
+        return;
+      }
+      sha256Hex(emailValue + ':' + password.value).then(function (digest) {
+        var remember = document.querySelector('input[name="remember"]').checked;
+        function persist(role) {
+          try {
+            if (remember) localStorage.setItem('dcwRemember', JSON.stringify({ role: role, email: emailValue }));
+            else localStorage.removeItem('dcwRemember');
+          } catch (e) { /* private mode */ }
+        }
+        if (digest === ADMIN) {
+          sessionStorage.setItem('dcwAdminEmail', emailValue);
+          persist('admin');
+          location.href = 'admin.html';
+          return;
+        }
+        if (ALLOWED.indexOf(digest) === -1) {
+          showError('Invalid email or password. For access, contact partners@dhkclimateweek.org.');
+          password.classList.add('is-invalid');
+          password.focus();
+          return;
+        }
+        sessionStorage.setItem('dcwPartnerEmail', emailValue);
+        persist('partner');
+        location.href = 'partner-portal.html';
+      });
     });
   </script>
 
