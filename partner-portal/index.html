@@ -525,10 +525,9 @@
       </div>
       <div class="modal__body" id="review-body"></div>
       <div class="modal__foot">
-        <a class="btn btn--mustard btn--sm" id="submit-email" href="#">Submit by email</a>
         <button type="button" class="btn btn--line btn--sm" id="export-pdf">Export as PDF</button>
-        <a class="btn btn--line btn--sm" id="email-copy" href="#">Email a copy</a>
-        <p class="modal__hint">Submit by email first offers your PDF summary (choose "Save as PDF"), then opens a pre-filled email to <b>wahid@mycellium.org</b> with your submission code in the subject — attach the saved PDF before sending. Email a copy addresses the same summary to the DCW team and to you. Selections also stay saved on this device.</p>
+        <a class="btn btn--mustard btn--sm" id="email-copy" href="#">Email a copy</a>
+        <p class="modal__hint">Export as PDF creates a branded summary via your browser's print dialog — choose "Save as PDF" as the destination. Email a copy opens a pre-filled email to the DCW team with your submission code in the subject and a copy to you — attach the exported PDF if you'd like the formatted version included. Selections also stay saved on this device.</p>
       </div>
     </div>
   </div>
@@ -565,7 +564,7 @@
 
     var TIMES = DCW.TIMES;
     var SESSIONS = DCW.SESSIONS;
-    var ADMIN_EMAILS = ['wahid@mycellium.org', 'wahid.hossain@mycellium.org'];
+    var ADMIN_EMAILS = ['wahid.hossain@mycellium.org'];
 
     var STORE_KEY = "dcwDay1Selections";
 
@@ -758,13 +757,11 @@
       var subjBase = 'Day 1 Partnership Scope selections — ' + (partnerEmail || 'partner');
       var subject = encodeURIComponent(code ? subjBase + ' — DCW1:' + code : subjBase);
       var bodyText = encodeURIComponent(lines.join('\n'));
-      document.getElementById('submit-email').href =
-        'mailto:wahid@mycellium.org?subject=' + subject + '&body=' + bodyText;
-      // copy goes to the DCW admins and to the partner themselves
+      // goes to the DCW admins with a copy to the partner themselves
       document.getElementById('email-copy').href =
         'mailto:' + encodeURIComponent(ADMIN_EMAILS.join(',')) +
         '?cc=' + encodeURIComponent(partnerEmail || '') +
-        '&subject=' + encodeURIComponent('Copy: ') + subject + '&body=' + bodyText;
+        '&subject=' + subject + '&body=' + bodyText;
       lastFocus = document.activeElement;
       modal.classList.add('is-open');
       document.getElementById('close-review').focus();
@@ -775,20 +772,7 @@
     }
     document.getElementById('open-review').addEventListener('click', openReview);
     document.getElementById('close-review').addEventListener('click', closeReview);
-    // Submit: record locally, offer the PDF to save (for attaching), then open the email
-    document.getElementById('submit-email').addEventListener('click', function (event) {
-      if (!pendingSubmission) return;
-      event.preventDefault();
-      var mailHref = this.href;
-      DCW.recordSubmission(pendingSubmission);
-      refresh();
-      buildExportView();
-      closeReview();
-      document.body.classList.add('exporting');
-      window.print();
-      setTimeout(stopExporting, 500);
-      location.href = mailHref;
-    });
+    // sending the email is the submission — record it locally at that moment
     document.getElementById('email-copy').addEventListener('click', function () {
       if (pendingSubmission) { DCW.recordSubmission(pendingSubmission); refresh(); }
     });
