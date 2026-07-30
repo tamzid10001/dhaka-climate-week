@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Partner Login, Dhaka Climate Week</title>
+  <meta name="description" content="Partner login for Dhaka Climate Week. Access the partner portal for the January 17–21, 2027 event." />
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Roboto+Slab:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="icon" href="assets/logo/favicon.png" />
+  <style>
+    :root {
+      --green: #1B4D2E;
+      --green-deep: #102B1A;
+      --green-mid: #245c38;
+      --mustard: #FAC55A;
+      --coral: #C84B2F;
+      --ink: #161616;
+      --ink-soft: rgba(22, 22, 22, 0.6);
+      --linen: #EFEDE6;
+      --paper: #FBFAF6;
+      --white: #ffffff;
+      --line: rgba(22, 22, 22, 0.12);
+      --line-light: rgba(244, 243, 239, 0.16);
+
+      --font-display: 'Roboto', sans-serif;
+      --font-body: 'Roboto Slab', serif;
+
+      --max: 1280px;
+      --px: clamp(1.25rem, 5vw, 4rem);
+      --header: 80px;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: var(--font-body);
+      color: var(--ink);
+      background: var(--green-deep);
+      line-height: 1.6;
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      overflow-x: hidden;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    button, input { font: inherit; border-radius: 0; }
+    ::selection { background: var(--mustard); color: var(--green-deep); }
+    :focus-visible { outline: 2px solid var(--coral); outline-offset: 3px; }
+
+    .skip {
+      position: absolute; top: -200%; left: var(--px); z-index: 999;
+      padding: 0.7rem 1.2rem; background: var(--green); color: var(--mustard);
+      font-family: var(--font-display); font-size: 0.7rem; font-weight: 700; letter-spacing: 0.08em;
+    }
+    .skip:focus { top: 1rem; }
+
+    .wrap { width: min(calc(100% - 2 * var(--px)), var(--max)); margin-inline: auto; position: relative; z-index: 1; }
+
+    .deco {
+      position: absolute; z-index: 0; pointer-events: none; user-select: none;
+      fill: none; stroke: currentColor; stroke-width: 1.3;
+      stroke-linecap: round; stroke-linejoin: round;
+      color: var(--paper); opacity: 0.1;
+    }
+    .deco--lily { width: clamp(84px, 9vw, 150px); aspect-ratio: 110 / 100; }
+    .deco--boat { width: clamp(104px, 11vw, 176px); aspect-ratio: 130 / 110; }
+    @media (max-width: 700px) { .deco--boat { display: none; } }
+
+    .kicker {
+      display: inline-flex; align-items: center; gap: 0.7rem;
+      font-family: var(--font-display); font-weight: 700; font-size: 0.7rem;
+      letter-spacing: 0.18em; text-transform: uppercase; color: var(--coral);
+    }
+    .display {
+      font-family: var(--font-display); font-weight: 900; color: var(--green);
+      letter-spacing: -0.04em; line-height: 0.95;
+    }
+    .display em { font-style: normal; color: var(--coral); }
+    .lede { font-size: 1.02rem; line-height: 1.7; color: var(--ink-soft); }
+
+    .btn {
+      position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem;
+      padding: 1rem 1.7rem; font-family: var(--font-display); font-weight: 700;
+      font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
+      background: var(--green); color: var(--mustard); border: 1px solid var(--green);
+      transition: background 0.3s var(--ease), color 0.3s var(--ease), border-color 0.3s var(--ease), transform 0.3s var(--ease);
+    }
+    .btn .arw { transition: transform 0.3s var(--ease); }
+    .btn:hover { background: var(--green-deep); border-color: var(--green-deep); }
+    .btn:hover .arw { transform: translateX(4px); }
+    .btn--mustard { background: var(--mustard); color: var(--green-deep); border-color: var(--mustard); }
+    .btn--mustard:hover { background: var(--green); color: var(--mustard); border-color: var(--green); }
+
+    /* ── Header ── */
+    .site-header {
+      position: relative; z-index: 10; height: var(--header);
+      display: flex; align-items: center;
+    }
+    .bar { display: flex; align-items: center; justify-content: space-between; gap: clamp(1rem, 3vw, 2.5rem); }
+    .logo { display: inline-block; line-height: 0; flex-shrink: 0; }
+    .logo img { height: 34px; width: auto; }
+    .back {
+      font-family: var(--font-display); font-weight: 700; font-size: 0.7rem;
+      letter-spacing: 0.1em; text-transform: uppercase; color: rgba(244,243,239,0.85);
+      transition: color 0.3s var(--ease);
+    }
+    .back:hover { color: var(--mustard); }
+
+    /* ── Login panel ── */
+    .portal {
+      flex: 1; display: flex; align-items: center; position: relative;
+      padding: clamp(2rem, 6vw, 4.5rem) 0;
+    }
+    .portal__card {
+      width: min(100%, 30rem); margin-inline: auto;
+      background: var(--paper); padding: clamp(2rem, 5vw, 3.25rem);
+      border-top: 4px solid var(--mustard);
+    }
+    .portal__card h1 { font-size: clamp(2rem, 5.2vw, 2.8rem); margin: 0.85rem 0 0.75rem; }
+    .portal__card .lede { margin-bottom: 2rem; }
+
+    .field { margin-bottom: 1.25rem; }
+    .field label {
+      display: block; font-family: var(--font-display); font-weight: 700; font-size: 0.66rem;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft);
+      margin-bottom: 0.45rem;
+    }
+    .field input {
+      width: 100%; padding: 0.85rem 1rem;
+      background: var(--white); border: 1px solid var(--line); color: var(--ink);
+      transition: border-color 0.3s var(--ease);
+    }
+    .field input::placeholder { color: rgba(22,22,22,0.35); }
+    .field input:focus { outline: none; border-color: var(--green); }
+
+    .portal__row {
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      margin-bottom: 1.5rem; flex-wrap: wrap;
+    }
+    .remember {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      font-size: 0.85rem; color: var(--ink-soft); cursor: pointer;
+    }
+    .remember input { accent-color: var(--green); width: 15px; height: 15px; }
+    .portal__help {
+      font-family: var(--font-display); font-weight: 700; font-size: 0.66rem;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--coral);
+    }
+    .portal__help:hover { text-decoration: underline; }
+
+    .portal__card .btn { width: 100%; }
+
+    .portal__note {
+      display: none; margin-top: 1.25rem; padding: 0.9rem 1rem;
+      background: var(--linen); border-left: 3px solid var(--coral);
+      font-size: 0.88rem; color: var(--ink-soft); line-height: 1.6;
+    }
+    .portal__note.is-visible { display: block; }
+    .portal__note a { color: var(--coral); font-weight: 600; }
+    .portal__note a:hover { text-decoration: underline; }
+
+    .portal__foot {
+      margin-top: 1.75rem; padding-top: 1.5rem; border-top: 1px solid var(--line);
+      font-size: 0.88rem; color: var(--ink-soft);
+    }
+    .portal__foot a { color: var(--green); font-weight: 600; }
+    .portal__foot a:hover { color: var(--coral); }
+
+    /* ── Footer ── */
+    .foot {
+      position: relative; z-index: 1; padding: 1.5rem 0;
+      font-family: var(--font-display); font-size: 0.72rem; letter-spacing: 0.04em;
+      color: rgba(244,243,239,0.55); text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
+    <defs>
+      <symbol id="ic-lily" viewBox="0 0 110 100">
+        <path d="M55 78 C42 50 48 28 55 14 C62 28 68 50 55 78 Z"/>
+        <path d="M55 78 C34 56 30 40 30 26 C46 34 56 54 55 78 Z"/>
+        <path d="M55 78 C76 56 80 40 80 26 C64 34 54 54 55 78 Z"/>
+        <path d="M55 80 C24 70 14 58 10 46 C30 48 50 62 55 80 Z"/>
+        <path d="M55 80 C86 70 96 58 100 46 C80 48 60 62 55 80 Z"/>
+        <path d="M14 86 q14 -6 28 0 t28 0 t28 0"/>
+      </symbol>
+      <symbol id="ic-boat" viewBox="0 0 130 110">
+        <path d="M14 74 Q65 100 116 74 L104 74 Q65 86 26 74 Z"/>
+        <path d="M62 74 L62 14"/>
+        <path d="M62 18 L104 70 L62 70 Z"/>
+        <path d="M58 70 L30 70 L58 30 Z"/>
+        <path d="M6 90 q12 -7 24 0 t24 0 t24 0 t24 0 t24 0"/>
+      </symbol>
+    </defs>
+  </svg>
+
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap bar">
+      <a href="index.html" class="logo" aria-label="Dhaka Climate Week home">
+        <img src="assets/logo/logo-white.png" alt="Dhaka Climate Week" width="804" height="273" />
+      </a>
+      <a href="index.html" class="back">← Back to site</a>
+    </div>
+  </header>
+
+  <main id="main" class="portal">
+    <svg class="deco deco--lily" style="left:7%; top:8%;" aria-hidden="true"><use href="#ic-lily"/></svg>
+    <svg class="deco deco--boat" style="right:6%; bottom:10%;" aria-hidden="true"><use href="#ic-boat"/></svg>
+    <div class="wrap">
+      <div class="portal__card">
+        <span class="kicker">Partners portal</span>
+        <h1 class="display">Partner <em>login</em></h1>
+        <p class="lede">Sign in to manage your partnership, event listings, and materials for Dhaka Climate Week 2027.</p>
+
+        <form id="partner-login" novalidate>
+          <div class="field">
+            <label for="pl-email">Email address</label>
+            <input type="email" id="pl-email" name="email" placeholder="you@organisation.org" required autocomplete="email" />
+          </div>
+          <div class="field">
+            <label for="pl-password">Password</label>
+            <input type="password" id="pl-password" name="password" placeholder="••••••••" required autocomplete="current-password" />
+          </div>
+          <div class="portal__row">
+            <label class="remember"><input type="checkbox" name="remember" /> Remember me</label>
+            <a class="portal__help" href="mailto:partners@dhkclimateweek.org?subject=Partner%20portal%20password%20help">Forgot password?</a>
+          </div>
+          <button type="submit" class="btn btn--mustard">Sign in <span class="arw">→</span></button>
+          <p class="portal__note" id="portal-note" role="status" aria-live="polite">
+            The partner portal is not live yet. For partnership access and support, write to
+            <a href="mailto:partners@dhkclimateweek.org">partners@dhkclimateweek.org</a>.
+          </p>
+        </form>
+
+        <p class="portal__foot">
+          Not a partner yet? <a href="index.html#get-involved">Become a partner</a> for Dhaka Climate Week.
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap">Dhaka Climate Week · January 17–21, 2027 · Dhaka, Bangladesh</div>
+  </footer>
+
+  <script>
+    document.getElementById('partner-login').addEventListener('submit', function (event) {
+      event.preventDefault();
+      document.getElementById('portal-note').classList.add('is-visible');
+    });
+  </script>
+
+</body>
+</html>
