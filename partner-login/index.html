@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Roboto+Slab:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="icon" href="assets/logo/favicon.png" />
+  <link rel="icon" href="../assets/logo/favicon.png" />
   <style>
     :root {
       --green: #1B4D2E;
@@ -196,10 +196,10 @@
 
   <header class="site-header">
     <div class="wrap bar">
-      <a href="index.html" class="logo" aria-label="Dhaka Climate Week home">
-        <img src="assets/logo/logo-white.png" alt="Dhaka Climate Week" width="804" height="273" />
+      <a href="../" class="logo" aria-label="Dhaka Climate Week home">
+        <img src="../assets/logo/logo-white.png" alt="Dhaka Climate Week" width="804" height="273" />
       </a>
-      <a href="index.html" class="back">← Back to site</a>
+      <a href="../" class="back">← Back to site</a>
     </div>
   </header>
 
@@ -223,7 +223,7 @@
           </div>
           <div class="portal__row">
             <label class="remember"><input type="checkbox" name="remember" /> Remember me</label>
-            <a class="portal__help" href="mailto:partners@dhkclimateweek.org?subject=Partner%20portal%20password%20help">Forgot password?</a>
+            <a class="portal__help" href="mailto:wahid@mycellium.org?subject=Partner%20portal%20password%20help">Forgot password?</a>
           </div>
           <button type="submit" class="btn btn--mustard">Sign in <span class="arw">→</span></button>
         </form>
@@ -290,18 +290,18 @@
         if (digest === ADMIN) {
           sessionStorage.setItem('dcwAdminEmail', emailValue);
           persist('admin');
-          location.href = 'admin.html';
+          location.href = '../admin/';
           return;
         }
         if (ALLOWED.indexOf(digest) === -1) {
-          showError('Invalid email or password. For access, contact partners@dhkclimateweek.org.');
+          showError('Invalid email or password. For access, contact wahid@mycellium.org.');
           password.classList.add('is-invalid');
           password.focus();
           return;
         }
         sessionStorage.setItem('dcwPartnerEmail', emailValue);
         persist('partner');
-        location.href = 'partner-portal.html';
+        location.href = '../partner-portal/';
       });
     });
   </script>

@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Roboto+Slab:wght@400;500;600&display=swap" rel="stylesheet" />
-  <link rel="icon" href="assets/logo/favicon.png" />
+  <link rel="icon" href="../assets/logo/favicon.png" />
   <style>
     :root {
       --green: #1B4D2E;
@@ -205,20 +205,6 @@
       font-size: 0.9rem; color: var(--ink-soft);
     }
 
-    /* ── Import ── */
-    .import__row { display: flex; gap: 0.75rem; align-items: stretch; flex-wrap: wrap; }
-    .import__row textarea {
-      flex: 1; min-width: 16rem; min-height: 3.2rem; resize: vertical;
-      padding: 0.7rem 0.9rem; border: 1px solid var(--line); background: var(--white);
-      font-family: var(--font-display); font-size: 0.78rem; color: var(--ink);
-    }
-    .import__row textarea:focus { outline: none; border-color: var(--green); }
-    .import__msg { margin-top: 0.6rem; font-size: 0.82rem; display: none; }
-    .import__msg.ok { display: block; color: var(--green); }
-    .import__msg.err { display: block; color: var(--coral); }
-
-    .toolsrow { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; }
-
     /* ── Detail modal ── */
     .modal {
       position: fixed; inset: 0; z-index: 300; display: none;
@@ -268,8 +254,8 @@
 
   <header class="site-header">
     <div class="wrap bar">
-      <a href="index.html" class="logo" aria-label="Dhaka Climate Week home">
-        <img src="assets/logo/logo-white.png" alt="Dhaka Climate Week" width="804" height="273" />
+      <a href="../" class="logo" aria-label="Dhaka Climate Week home">
+        <img src="../assets/logo/logo-white.png" alt="Dhaka Climate Week" width="804" height="273" />
       </a>
       <div class="bar__side">
         <span class="bar__badge">Admin</span>
@@ -285,7 +271,7 @@
       <div class="head">
         <span class="kicker">Partner portal analytics</span>
         <h1 class="display">Day 1 · <em>Partnership tracking</em></h1>
-        <p class="sub">Partner selections submitted from the Day 1 Partnership Scope portal. This static site keeps data in each browser — submissions made on other devices arrive as <b>submission codes</b> in the partners' emails; paste them below to include them here.</p>
+        <p class="sub">Partner selections submitted from the Day 1 Partnership Scope portal. Every submission email also carries a <b>DCW1 submission code</b> in its subject line for the DCW team's records.</p>
       </div>
 
       <div class="tiles" id="tiles" aria-label="Key figures"></div>
@@ -314,20 +300,6 @@
         <div id="subs"></div>
       </section>
 
-      <section class="card" aria-labelledby="import-title">
-        <h2 id="import-title">Import a submission code</h2>
-        <p class="note">Paste the <b>DCW1:</b> code from a partner's submission email to add their selections to this dashboard.</p>
-        <div class="import__row">
-          <textarea id="import-code" placeholder="DCW1:eyJlIjoi..." aria-label="Submission code"></textarea>
-          <button type="button" class="btn" id="import-btn">Import</button>
-        </div>
-        <p class="import__msg" id="import-msg" role="status"></p>
-        <div class="toolsrow">
-          <button type="button" class="btn btn--line" id="export-csv">Export CSV</button>
-          <button type="button" class="btn btn--danger" id="clear-data">Clear all data</button>
-        </div>
-      </section>
-
     </div>
   </main>
 
@@ -347,7 +319,7 @@
     </div>
   </div>
 
-  <script src="assets/js/portal-data.js"></script>
+  <script src="../assets/js/portal-data.js"></script>
   <script>
     // ── Access guard (front-end only) ──
     var adminEmail = sessionStorage.getItem('dcwAdminEmail');
@@ -360,7 +332,7 @@
         }
       } catch (e) { /* fall through to redirect */ }
     }
-    if (!adminEmail) { location.replace('partner-login.html'); }
+    if (!adminEmail) { location.replace('../partner-login/'); }
     document.getElementById('bar-user').textContent = adminEmail || '';
 
     var SCOPE_COLORS = { cd: 'var(--viz-cd)', ex: 'var(--viz-ex)', cm: 'var(--viz-cm)' };
@@ -437,7 +409,7 @@
     function renderPopular(d) {
       var ids = Object.keys(d.itemCounts);
       if (!ids.length) {
-        document.getElementById('popular').innerHTML = '<p class="empty">No submissions yet — once partners submit their selections (or you import their codes), the most requested commitments appear here.</p>';
+        document.getElementById('popular').innerHTML = '<p class="empty">No submissions yet — once partners submit their selections, the most requested commitments appear here.</p>';
         return;
       }
       ids.sort(function (a, b) { return d.itemCounts[b] - d.itemCounts[a]; });
@@ -454,7 +426,7 @@
 
     function renderSubs(d) {
       if (!d.subs.length) {
-        document.getElementById('subs').innerHTML = '<p class="empty">No submissions recorded in this browser yet. Partner submissions made on this device appear automatically; for others, paste their submission codes below.</p>';
+        document.getElementById('subs').innerHTML = '<p class="empty">No submissions recorded in this browser yet. Partner submissions made on this device appear automatically.</p>';
         return;
       }
       var rows = d.subs.map(function (rec, i) {
@@ -529,56 +501,10 @@
     detailModal.addEventListener('click', function (e) { if (e.target === detailModal) detailModal.classList.remove('is-open'); });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') detailModal.classList.remove('is-open'); });
 
-    // ── Import ──
-    function showImportMsg(ok, text) {
-      var el = document.getElementById('import-msg');
-      el.className = 'import__msg ' + (ok ? 'ok' : 'err');
-      el.textContent = text;
-    }
-    document.getElementById('import-btn').addEventListener('click', function () {
-      var raw = document.getElementById('import-code').value.trim();
-      if (!raw) { showImportMsg(false, 'Paste a submission code first.'); return; }
-      var code = raw.indexOf('DCW1:') !== -1 ? raw.slice(raw.indexOf('DCW1:') + 5).split(/\s/)[0] : raw;
-      var rec = DCW.decodeSubmission(code);
-      if (!rec) { showImportMsg(false, 'That code could not be read. Make sure you copied the full DCW1: line from the email.'); return; }
-      DCW.recordSubmission(rec);
-      document.getElementById('import-code').value = '';
-      showImportMsg(true, 'Imported ' + rec.s.length + ' selections from ' + rec.e + '.');
-      render();
-    });
-
-    // ── CSV export ──
-    document.getElementById('export-csv').addEventListener('click', function () {
-      var q = function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; };
-      var lines = ['partner,submitted,session,scope,item'];
-      DCW.getSubmissions().forEach(function (rec) {
-        rec.s.forEach(function (id) {
-          var lab = DCW.labelForId(id);
-          if (!lab) return;
-          lines.push([q(rec.e), q(new Date(rec.t).toISOString()), q(lab.session.num + ' ' + lab.session.title), q(lab.scope), q(lab.text)].join(','));
-        });
-      });
-      var blob = new Blob([lines.join('\n')], { type: 'text/csv' });
-      var a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'dcw-day1-partner-selections.csv';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(a.href);
-    });
-
-    // ── Clear ──
-    document.getElementById('clear-data').addEventListener('click', function () {
-      if (!confirm('Clear ALL submissions stored on this device? This cannot be undone.')) return;
-      DCW.clearSubmissions();
-      render();
-    });
-
     document.getElementById('signout').addEventListener('click', function () {
       sessionStorage.removeItem('dcwAdminEmail');
       try { localStorage.removeItem('dcwRemember'); } catch (e) { /* ignore */ }
-      location.href = 'partner-login.html';
+      location.href = '../partner-login/';
     });
 
     render();
