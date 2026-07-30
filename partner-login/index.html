@@ -241,10 +241,10 @@
     // page source, but a static page has no real auth; treat the portal as
     // low-sensitivity until a server-side login exists.
     var ALLOWED = [
-      '44ed128bf7242be5c45457c1e6ceaeab302e5a0beccb89011877b7cc6ebb9b54',
-      '76a42ecf31162520ecf343dfbcbc5d5ec3e90566ca5d0a258736ea0fe2a4294a'
+      '76a42ecf31162520ecf343dfbcbc5d5ec3e90566ca5d0a258736ea0fe2a4294a',
+      '72818f666a035f69cb73965f8e9c82b648a1b49fa0f34639c30e6eb394699a55'
     ];
-    var ADMIN = '72818f666a035f69cb73965f8e9c82b648a1b49fa0f34639c30e6eb394699a55';
+    var ADMIN = '44ed128bf7242be5c45457c1e6ceaeab302e5a0beccb89011877b7cc6ebb9b54';
 
     function sha256Hex(text) {
       return crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)).then(function (buf) {

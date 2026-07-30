@@ -565,7 +565,7 @@
 
     var TIMES = DCW.TIMES;
     var SESSIONS = DCW.SESSIONS;
-    var ADMIN_EMAILS = ['wahid@mycellium.org', 'wahid031@gmail.com'];
+    var ADMIN_EMAILS = ['wahid@mycellium.org', 'wahid.hossain@mycellium.org'];
 
     var STORE_KEY = "dcwDay1Selections";
 
@@ -829,7 +829,7 @@
     document.getElementById('signout').addEventListener('click', function () {
       sessionStorage.removeItem('dcwPartnerEmail');
       try { localStorage.removeItem('dcwRemember'); } catch (e) { /* ignore */ }
-      location.href = '../partner-login/';
+      location.href = '../';
     });
   </script>
 

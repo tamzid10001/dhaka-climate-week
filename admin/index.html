@@ -504,7 +504,7 @@
     document.getElementById('signout').addEventListener('click', function () {
       sessionStorage.removeItem('dcwAdminEmail');
       try { localStorage.removeItem('dcwRemember'); } catch (e) { /* ignore */ }
-      location.href = '../partner-login/';
+      location.href = '../';
     });
 
     render();
