@@ -436,16 +436,21 @@
       return new Date(t).toLocaleString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
     }
 
+    function allSessions() {
+      return DCW.SESSIONS.concat(DCW.DAY2_SESSIONS || []);
+    }
+
     function analyse() {
       var subs = DCW.getSubmissions();
       var perSession = {}; // id → {cd, ex, cm}
       var itemCounts = {}; // "sN-suffix" → count
       var total = 0;
-      DCW.SESSIONS.forEach(function (s) { perSession[s.id] = { cd: 0, ex: 0, cm: 0 }; });
+      allSessions().forEach(function (s) { perSession[s.id] = { cd: 0, ex: 0, cm: 0 }; });
       subs.forEach(function (rec) {
         rec.s.forEach(function (id) {
           var lab = DCW.labelForId(id);
           if (!lab) return;
+          if (!perSession[lab.session.id]) perSession[lab.session.id] = { cd: 0, ex: 0, cm: 0 };
           perSession[lab.session.id][lab.tag]++;
           itemCounts[id] = (itemCounts[id] || 0) + 1;
           total++;
@@ -463,26 +468,28 @@
     }
 
     function renderTiles(d) {
-      var covered = DCW.SESSIONS.filter(function (s) {
-        var p = d.perSession[s.id]; return p.cd + p.ex + p.cm > 0;
+      var sessions = allSessions();
+      var covered = sessions.filter(function (s) {
+        var p = d.perSession[s.id]; return p && (p.cd + p.ex + p.cm > 0);
       }).length;
       var latest = d.subs.length ? fmtWhen(Math.max.apply(null, d.subs.map(function (r) { return r.t; }))) : '—';
       document.getElementById('tiles').innerHTML =
         '<div class="tile"><span>Partners submitted</span><b>' + d.subs.length + '</b></div>' +
         '<div class="tile"><span>Total selections</span><b>' + d.total + '</b></div>' +
-        '<div class="tile"><span>Sessions covered</span><b>' + covered + '<small>of ' + DCW.SESSIONS.length + '</small></b></div>' +
+        '<div class="tile"><span>Sessions covered</span><b>' + covered + '<small>of ' + sessions.length + '</small></b></div>' +
         '<div class="tile"><span>Latest submission</span><small style="font-size:0.9rem;color:var(--ink);margin-top:0.45rem">' + esc(latest) + '</small></div>';
     }
 
     function renderChart(d) {
       var max = 1;
-      DCW.SESSIONS.forEach(function (s) {
-        var p = d.perSession[s.id];
+      var sessions = allSessions();
+      sessions.forEach(function (s) {
+        var p = d.perSession[s.id] || { cd: 0, ex: 0, cm: 0 };
         max = Math.max(max, p.cd + p.ex + p.cm);
       });
       document.getElementById('axis-max').textContent = max + (max === 1 ? ' selection' : ' selections');
-      document.getElementById('chart').innerHTML = DCW.SESSIONS.map(function (s) {
-        var p = d.perSession[s.id];
+      document.getElementById('chart').innerHTML = sessions.map(function (s) {
+        var p = d.perSession[s.id] || { cd: 0, ex: 0, cm: 0 };
         var totalRow = p.cd + p.ex + p.cm;
         var segs = ['cd', 'ex', 'cm'].map(function (tag) {
           if (!p[tag]) return '';
@@ -563,7 +570,7 @@
         if (!lab) return;
         (groups[lab.session.id] = groups[lab.session.id] || { s: lab.session, items: [] }).items.push(lab);
       });
-      return DCW.SESSIONS.filter(function (s) { return groups[s.id]; }).map(function (s) { return groups[s.id]; });
+      return allSessions().filter(function (s) { return groups[s.id]; }).map(function (s) { return groups[s.id]; });
     }
 
     function openPdfPreview(rec) {
@@ -613,7 +620,7 @@
         });
         document.getElementById('detail-body').innerHTML =
           '<p class="when">Submitted ' + esc(fmtWhen(rec.t)) + ' · ' + rec.s.length + ' selections</p>' +
-          DCW.SESSIONS.filter(function (s) { return groups[s.id]; }).map(function (s) {
+          allSessions().filter(function (s) { return groups[s.id]; }).map(function (s) {
             var g = groups[s.id];
             return '<div class="sumgroup"><h3>' + g.s.num + ' · ' + esc(g.s.title) + '</h3><ul>' +
               g.items.map(function (lab) {

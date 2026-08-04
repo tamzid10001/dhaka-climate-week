@@ -112,6 +112,25 @@
     }
     .bar__signout:hover { background: var(--mustard); color: var(--green-deep); border-color: var(--mustard); }
 
+    /* ── Day tabs ── */
+    .daytabs {
+      background: var(--green-deep); border-bottom: 1px solid var(--line-light);
+    }
+    .daytabs__row { display: flex; gap: 0.5rem; padding: 0.6rem 0; }
+    .daytab {
+      padding: 0.5rem 1.1rem; font-family: var(--font-display); font-weight: 700;
+      font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase;
+      color: rgba(244, 243, 239, 0.7); background: rgba(244, 243, 239, 0.1);
+      border: 1px solid rgba(244, 243, 239, 0.2); cursor: pointer; transition: all 0.25s var(--ease);
+      display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .daytab:hover { background: rgba(244, 243, 239, 0.2); color: var(--paper); }
+    .daytab.is-active { background: var(--mustard); color: var(--green-deep); border-color: var(--mustard); }
+    .daytab .day__badge {
+      padding: 0.15rem 0.45rem; border-radius: 999px; background: rgba(16, 43, 26, 0.25);
+      font-size: 0.62rem; font-weight: 900;
+    }
+
     /* ── Session chip nav ── */
     .chipnav {
       position: sticky; top: var(--header); z-index: 240;
@@ -228,9 +247,9 @@
       letter-spacing: 0.04em; text-transform: uppercase; margin-right: auto;
     }
     .session__venue {
-      font-family: var(--font-display); font-weight: 500; font-size: 0.76rem;
-      color: var(--mustard); border: 1px solid rgba(250,197,90,0.4);
-      padding: 0.25rem 0.65rem; border-radius: 4px; white-space: nowrap;
+      font-family: var(--font-display); font-weight: 500; font-size: 0.72rem;
+      background: rgba(250, 197, 90, 0.2); color: var(--mustard);
+      border: 1px solid rgba(250, 197, 90, 0.4); padding: 0.3rem 0.75rem; border-radius: 6px;
     }
     .session__count {
       font-family: var(--font-display); font-weight: 700; font-size: 0.64rem;
@@ -295,7 +314,7 @@
     .tbl .row .ex { font-size: 0.85rem; color: var(--ink-soft); }
     .tbl .row .who { font-size: 0.88rem; color: var(--ink); line-height: 1.55; }
     .tbl .row .who small { display: block; font-size: 0.8rem; color: var(--ink-soft); }
-    .tbl--aud .tbl__head, .tbl--aud .row { grid-template-columns: minmax(0, 1fr) auto; }
+    .tbl--aud .tbl__head, .tbl--aud .row { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr) auto; }
     .tbl--one .tbl__head, .tbl--one .row { grid-template-columns: minmax(0, 1fr) auto; }
     .tbl--two .tbl__head, .tbl--two .row { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr) auto; }
 
@@ -450,7 +469,16 @@
     </div>
   </header>
 
-  <nav class="chipnav" aria-label="Day 1 sessions">
+  <nav class="daytabs" aria-label="Program Days">
+    <div class="wrap">
+      <div class="daytabs__row" id="daytabs-row">
+        <button type="button" class="daytab is-active" data-day="1">Day 1 <span class="day__badge">Masterclass &amp; Panels</span></button>
+        <button type="button" class="daytab" data-day="2">Day 2 <span class="day__badge">University Takeover</span></button>
+      </div>
+    </div>
+  </nav>
+
+  <nav class="chipnav" aria-label="Sessions navigation">
     <div class="wrap">
       <div class="chipnav__row" id="chipnav-row"></div>
     </div>
@@ -461,10 +489,10 @@
     <section class="intro">
       <div class="wrap">
         <span class="kicker">Partners portal</span>
-        <h1 class="display">Day 1 · <em>Partnership Scope</em></h1>
+        <h1 class="display" id="portal-title">Day 1 · <em>Partnership Scope</em></h1>
         <p class="intro__date">17 – 21 January 2027 · Dhaka, Bangladesh</p>
         <div class="intro__note">
-          <b>Six Masterclass &amp; Panel sessions are planned for Day 1 of Dhaka Climate Week.</b>
+          <b id="intro-day-text">Six Masterclass &amp; Panel sessions are planned for Day 1 of Dhaka Climate Week.</b>
           <span>Choose which session(s) to co-design, support with experts, and communicate to your networks — tick your selections below and submit.</span>
         </div>
         <p class="substatus" id="submit-status" role="status"></p>
@@ -569,8 +597,13 @@
     if (!partnerEmail) { location.replace("../partner-login/"); }
 
     var TIMES = DCW.TIMES;
-    var SESSIONS = DCW.SESSIONS;
-    var STORE_KEY = "dcwDay1Selections";
+    var currentDay = 1;
+    var STORE_KEY_DAY1 = "dcwDay1Selections";
+    var STORE_KEY_DAY2 = "dcwDay2Selections";
+
+    function getActiveSessions() {
+      return currentDay === 1 ? DCW.SESSIONS : DCW.DAY2_SESSIONS;
+    }
 
     function esc(t) {
       return t.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -585,64 +618,85 @@
       h += '<section class="session" id="' + s.id + '" aria-labelledby="' + s.id + '-title">';
       h += '<header class="session__band"><span class="session__num">' + s.num + '</span>';
       h += '<h2 id="' + s.id + '-title">' + esc(s.title) + '</h2>';
-      if (s.venue) h += '<span class="session__venue">Venue: ' + esc(s.venue) + '</span>';
+      if (s.venue) {
+        h += '<span class="session__venue">Venue: ' + esc(s.venue) + '</span>';
+      }
       h += '<span class="session__count" id="' + s.id + '-count">0 selected</span></header>';
       h += '<p class="session__obj"><b>Objectives:</b> ' + esc(s.objectives) + '</p>';
 
       h += '<label class="codesign">' + checkboxRow(s.id + '-cd', 'Co-design the ' + s.title + ' session');
       h += '<span class="txt"><b>Co-Design this session</b>Shape the agenda, speakers, and format with the DCW team.</span></label>';
 
-      h += '<div class="tbl tbl--aud"><div class="tbl__head"><span>Primary Target Audience</span><span class="r">Communicate</span></div>';
+      h += '<div class="tbl tbl--aud"><div class="tbl__head"><span>Target audience</span><span>Examples</span><span class="r">Communicate</span></div>';
       s.audiences.forEach(function (a, i) {
-        h += '<label class="row"><span class="who">' + esc(a[1]) + '</span>';
-        h += checkboxRow(s.id + '-a' + i, 'Communicate with ' + a[1] + ' for ' + s.title) + '</label>';
+        h += '<label class="row"><span class="name">' + esc(a[0]) + '</span><span class="ex">' + esc(a[1]) + '</span>';
+        h += checkboxRow(s.id + '-a' + i, 'Communicate with ' + a[0] + ' for ' + s.title) + '</label>';
       });
       h += '</div>';
 
-      h += '<h3 class="slot">' + TIMES.mc + '</h3>';
-      h += '<div class="tbl tbl--one"><div class="tbl__head"><span>Masterclass Topic</span><span class="r">Expert</span></div>';
-      h += '<label class="row"><span class="who">' + esc(s.masterclass.role) + '<small>' + esc(s.masterclass.eg) + '</small></span>';
-      h += checkboxRow(s.id + '-mc', 'Provide expert for masterclass topic in ' + s.title) + '</label></div>';
+      h += '<h3 class="slot">' + (currentDay === 1 ? TIMES.mc : 'Masterclass · 11:00 – 11:20 AM') + '</h3>';
+      h += '<div class="tbl tbl--one"><div class="tbl__head"><span>Masterclass Topic / Voice</span><span class="r">Expert</span></div>';
+      h += '<label class="row"><span class="who">' + esc(s.masterclassTopic ? s.masterclassTopic : s.masterclass.role) + '<small>' + esc(s.masterclassTopic ? s.masterclass.role : s.masterclass.eg) + '</small></span>';
+      h += checkboxRow(s.id + '-mc', 'Provide the masterclass facilitator for ' + s.title) + '</label></div>';
 
-      h += '<h3 class="slot">' + TIMES.panel + '</h3>';
+      h += '<h3 class="slot">' + (currentDay === 1 ? TIMES.panel : 'Panel Discussion · 11:40 – 12:40 PM') + '</h3>';
       h += '<div class="panelgrid">';
-      h += '<div class="tbl tbl--one"><div class="tbl__head"><span>Type of Moderator</span><span class="r">Expert</span></div>';
-      h += '<label class="row"><span class="who">' + esc(s.moderator) + '</span>' + checkboxRow(s.id + '-mod', 'Provide panel moderator for ' + s.title) + '</label></div>';
-      h += '<div class="tbl tbl--one"><div class="tbl__head"><span>Type of Panelist</span><span class="r">Expert</span></div>';
+      h += '<div class="tbl tbl--one"><div class="tbl__head"><span>Type of moderator</span><span class="r">Expert</span></div>';
+      h += '<label class="row"><span class="who">' + esc(s.moderator) + '</span>' + checkboxRow(s.id + '-mod', 'Provide the panel moderator for ' + s.title) + '</label></div>';
+      h += '<div class="tbl tbl--one"><div class="tbl__head"><span>Type of panelist</span><span class="r">Expert</span></div>';
       s.panelists.forEach(function (p, i) {
-        h += '<label class="row"><span class="who">' + esc(p) + '</span>' + checkboxRow(s.id + '-p' + i, 'Provide panelist for ' + s.title + ': ' + p) + '</label>';
+        h += '<label class="row"><span class="who">' + esc(p) + '</span>' + checkboxRow(s.id + '-p' + i, 'Provide a panelist for ' + s.title + ': ' + p) + '</label>';
       });
       h += '</div></div>';
 
-      h += '<h3 class="slot">' + TIMES.story + '</h3>';
-      h += '<div class="tbl tbl--two"><div class="tbl__head"><span>Type of Organizations</span><span>Type of Storyteller</span><span class="r">Expert</span></div>';
+      h += '<h3 class="slot">' + (currentDay === 1 ? TIMES.story : 'Storyteller Session · 12:50 – 1:15 PM') + '</h3>';
+      h += '<div class="tbl tbl--two"><div class="tbl__head"><span>Type of organizations</span><span>Type of storyteller</span><span class="r">Expert</span></div>';
       h += '<label class="row"><span class="who">' + esc(s.storyteller.orgs) + '</span><span class="who">' + esc(s.storyteller.who) + '</span>';
-      h += checkboxRow(s.id + '-st', 'Provide storyteller for ' + s.title) + '</label></div>';
+      h += checkboxRow(s.id + '-st', 'Provide the storyteller for ' + s.title) + '</label></div>';
 
       if (s.workshop) {
-        h += '<h3 class="slot">' + (TIMES.ws || 'Workshop') + '</h3>';
+        h += '<h3 class="slot">Workshop · 11:40 – 12:40 PM</h3>';
         h += '<div class="tbl tbl--two"><div class="tbl__head"><span>Workshop</span><span>Facilitator</span><span class="r">Judges / Expert</span></div>';
         h += '<label class="row"><span class="who">' + esc(s.workshop.name) + '</span><span class="who">' + esc(s.workshop.facilitator) + '</span>';
         h += checkboxRow(s.id + '-ws', 'Support workshop for ' + s.title) + '</label></div>';
       }
 
       if (s.hackathon) {
-        h += '<h3 class="slot">' + (TIMES.hack || 'Hackathon') + '</h3>';
+        h += '<h3 class="slot">Hackathon</h3>';
         h += '<div class="tbl tbl--two"><div class="tbl__head"><span>Hackathon Theme</span><span>Type of Judges</span><span class="r">Judges</span></div>';
         h += '<label class="row"><span class="who">' + esc(s.hackathon.theme) + '</span><span class="who">' + esc(s.hackathon.judges) + '</span>';
-        h += checkboxRow(s.id + '-hack', 'Provide judges for hackathon in ' + s.title) + '</label></div>';
+        h += checkboxRow(s.id + '-hk', 'Provide judge for hackathon ' + s.title) + '</label></div>';
       }
 
       h += '</section>';
       return h;
     }
 
-    document.getElementById('sessions').innerHTML = SESSIONS.map(renderSession).join('');
-    document.getElementById('chipnav-row').innerHTML = SESSIONS.map(function (s) {
-      return '<a href="#' + s.id + '">' + s.num + ' · ' + esc(s.title) + '<span class="chip__dot" id="' + s.id + '-dot">0</span></a>';
-    }).join('');
+    function renderDayView() {
+      var sessions = getActiveSessions();
+      document.getElementById('portal-title').innerHTML = 'Day ' + currentDay + ' · <em>Partnership Scope</em>';
+      document.getElementById('intro-day-text').textContent = 'Six Masterclass, Panel, Workshop & Hackathon sessions planned for Day ' + currentDay + ' of Dhaka Climate Week.';
+      document.getElementById('sessions').innerHTML = sessions.map(renderSession).join('');
+      document.getElementById('chipnav-row').innerHTML = sessions.map(function (s) {
+        return '<a href="#' + s.id + '">' + s.num + ' · ' + esc(s.title) + '<span class="chip__dot" id="' + s.id + '-dot">0</span></a>';
+      }).join('');
+      restoreSelections();
+      refresh();
+    }
 
     document.getElementById('bar-user').textContent = partnerEmail || '';
+
+    // ── Day tab switching ──
+    document.getElementById('daytabs-row').addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-day]');
+      if (!btn) return;
+      var day = parseInt(btn.getAttribute('data-day'), 10);
+      if (day === currentDay) return;
+      document.querySelectorAll('.daytab').forEach(function (b) { b.classList.remove('is-active'); });
+      btn.classList.add('is-active');
+      currentDay = day;
+      renderDayView();
+    });
 
     // ── Selection labels for the summary / email (shared with admin) ──
     function selectionLabel(s, suffix) {
@@ -653,7 +707,8 @@
 
     function gatherSelections() {
       var out = [];
-      SESSIONS.forEach(function (s) {
+      var sessions = DCW.SESSIONS.concat(DCW.DAY2_SESSIONS);
+      sessions.forEach(function (s) {
         var items = [];
         allBoxes().forEach(function (cb) {
           if (cb.checked && cb.id.indexOf(s.id + '-') === 0) {
@@ -697,15 +752,20 @@
 
     function refresh() {
       var total = 0, sessionsWith = 0;
-      SESSIONS.forEach(function (s) {
+      var sessions = getActiveSessions();
+      sessions.forEach(function (s) {
         var n = allBoxes().filter(function (cb) { return cb.checked && cb.id.indexOf(s.id + '-') === 0; }).length;
         total += n; if (n) sessionsWith++;
         var badge = document.getElementById(s.id + '-count');
-        badge.textContent = n + ' selected';
-        badge.classList.toggle('has', n > 0);
+        if (badge) {
+          badge.textContent = n + ' selected';
+          badge.classList.toggle('has', n > 0);
+        }
         var dot = document.getElementById(s.id + '-dot');
-        dot.textContent = n;
-        dot.classList.toggle('has', n > 0);
+        if (dot) {
+          dot.textContent = n;
+          dot.classList.toggle('has', n > 0);
+        }
       });
       var bar = document.getElementById('sumbar');
       bar.classList.toggle('is-on', total > 0);
@@ -714,19 +774,26 @@
         '<b>' + total + '</b> selection' + (total === 1 ? '' : 's') + ' across <b>' + sessionsWith + '</b> session' + (sessionsWith === 1 ? '' : 's') + ' · saved on this device';
       var checkedIds = allBoxes().filter(function (cb) { return cb.checked; }).map(function (cb) { return cb.id; });
       refreshSubmitStatus(checkedIds);
-      try {
-        localStorage.setItem(STORE_KEY, JSON.stringify(checkedIds));
-      } catch (e) { /* private mode: selections just don't persist */ }
+      saveSelections();
     }
 
-    // restore
-    try {
-      (JSON.parse(localStorage.getItem(STORE_KEY)) || []).forEach(function (id) {
-        var cb = document.getElementById(id);
-        if (cb) cb.checked = true;
-      });
-    } catch (e) { /* ignore corrupt state */ }
-    refresh();
+    function saveSelections() {
+      var key = currentDay === 1 ? STORE_KEY_DAY1 : STORE_KEY_DAY2;
+      var checkedIds = allBoxes().filter(function (cb) { return cb.checked; }).map(function (cb) { return cb.id; });
+      try {
+        localStorage.setItem(key, JSON.stringify(checkedIds));
+      } catch (e) { /* ignore */ }
+    }
+
+    function restoreSelections() {
+      var key = currentDay === 1 ? STORE_KEY_DAY1 : STORE_KEY_DAY2;
+      try {
+        (JSON.parse(localStorage.getItem(key)) || []).forEach(function (id) {
+          var cb = document.getElementById(id);
+          if (cb) cb.checked = true;
+        });
+      } catch (e) { /* ignore corrupt state */ }
+    }
 
     document.getElementById('sessions').addEventListener('change', refresh);
 
@@ -734,6 +801,8 @@
       allBoxes().forEach(function (cb) { cb.checked = false; });
       refresh();
     });
+
+    renderDayView();
 
     // ── Review modal ──
     var modal = document.getElementById('review-modal');
