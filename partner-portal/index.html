@@ -227,6 +227,11 @@
       font-family: var(--font-display); font-weight: 700; font-size: clamp(1.05rem, 2.4vw, 1.35rem);
       letter-spacing: 0.04em; text-transform: uppercase; margin-right: auto;
     }
+    .session__venue {
+      font-family: var(--font-display); font-weight: 500; font-size: 0.76rem;
+      color: var(--mustard); border: 1px solid rgba(250,197,90,0.4);
+      padding: 0.25rem 0.65rem; border-radius: 4px; white-space: nowrap;
+    }
     .session__count {
       font-family: var(--font-display); font-weight: 700; font-size: 0.64rem;
       letter-spacing: 0.08em; text-transform: uppercase;
@@ -290,7 +295,7 @@
     .tbl .row .ex { font-size: 0.85rem; color: var(--ink-soft); }
     .tbl .row .who { font-size: 0.88rem; color: var(--ink); line-height: 1.55; }
     .tbl .row .who small { display: block; font-size: 0.8rem; color: var(--ink-soft); }
-    .tbl--aud .tbl__head, .tbl--aud .row { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.3fr) auto; }
+    .tbl--aud .tbl__head, .tbl--aud .row { grid-template-columns: minmax(0, 1fr) auto; }
     .tbl--one .tbl__head, .tbl--one .row { grid-template-columns: minmax(0, 1fr) auto; }
     .tbl--two .tbl__head, .tbl--two .row { grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr) auto; }
 
@@ -580,38 +585,53 @@
       h += '<section class="session" id="' + s.id + '" aria-labelledby="' + s.id + '-title">';
       h += '<header class="session__band"><span class="session__num">' + s.num + '</span>';
       h += '<h2 id="' + s.id + '-title">' + esc(s.title) + '</h2>';
+      if (s.venue) h += '<span class="session__venue">Venue: ' + esc(s.venue) + '</span>';
       h += '<span class="session__count" id="' + s.id + '-count">0 selected</span></header>';
       h += '<p class="session__obj"><b>Objectives:</b> ' + esc(s.objectives) + '</p>';
 
       h += '<label class="codesign">' + checkboxRow(s.id + '-cd', 'Co-design the ' + s.title + ' session');
       h += '<span class="txt"><b>Co-Design this session</b>Shape the agenda, speakers, and format with the DCW team.</span></label>';
 
-      h += '<div class="tbl tbl--aud"><div class="tbl__head"><span>Target audience</span><span>Examples</span><span class="r">Communicate</span></div>';
+      h += '<div class="tbl tbl--aud"><div class="tbl__head"><span>Primary Target Audience</span><span class="r">Communicate</span></div>';
       s.audiences.forEach(function (a, i) {
-        h += '<label class="row"><span class="name">' + esc(a[0]) + '</span><span class="ex">' + esc(a[1]) + '</span>';
-        h += checkboxRow(s.id + '-a' + i, 'Communicate with ' + a[0] + ' for ' + s.title) + '</label>';
+        h += '<label class="row"><span class="who">' + esc(a[1]) + '</span>';
+        h += checkboxRow(s.id + '-a' + i, 'Communicate with ' + a[1] + ' for ' + s.title) + '</label>';
       });
       h += '</div>';
 
       h += '<h3 class="slot">' + TIMES.mc + '</h3>';
-      h += '<div class="tbl tbl--one"><div class="tbl__head"><span>Masterclass facilitator</span><span class="r">Expert</span></div>';
+      h += '<div class="tbl tbl--one"><div class="tbl__head"><span>Masterclass Topic</span><span class="r">Expert</span></div>';
       h += '<label class="row"><span class="who">' + esc(s.masterclass.role) + '<small>' + esc(s.masterclass.eg) + '</small></span>';
-      h += checkboxRow(s.id + '-mc', 'Provide the masterclass facilitator for ' + s.title) + '</label></div>';
+      h += checkboxRow(s.id + '-mc', 'Provide expert for masterclass topic in ' + s.title) + '</label></div>';
 
       h += '<h3 class="slot">' + TIMES.panel + '</h3>';
       h += '<div class="panelgrid">';
-      h += '<div class="tbl tbl--one"><div class="tbl__head"><span>Type of moderator</span><span class="r">Expert</span></div>';
-      h += '<label class="row"><span class="who">' + esc(s.moderator) + '</span>' + checkboxRow(s.id + '-mod', 'Provide the panel moderator for ' + s.title) + '</label></div>';
-      h += '<div class="tbl tbl--one"><div class="tbl__head"><span>Type of panelist</span><span class="r">Expert</span></div>';
+      h += '<div class="tbl tbl--one"><div class="tbl__head"><span>Type of Moderator</span><span class="r">Expert</span></div>';
+      h += '<label class="row"><span class="who">' + esc(s.moderator) + '</span>' + checkboxRow(s.id + '-mod', 'Provide panel moderator for ' + s.title) + '</label></div>';
+      h += '<div class="tbl tbl--one"><div class="tbl__head"><span>Type of Panelist</span><span class="r">Expert</span></div>';
       s.panelists.forEach(function (p, i) {
-        h += '<label class="row"><span class="who">' + esc(p) + '</span>' + checkboxRow(s.id + '-p' + i, 'Provide a panelist for ' + s.title + ': ' + p) + '</label>';
+        h += '<label class="row"><span class="who">' + esc(p) + '</span>' + checkboxRow(s.id + '-p' + i, 'Provide panelist for ' + s.title + ': ' + p) + '</label>';
       });
       h += '</div></div>';
 
       h += '<h3 class="slot">' + TIMES.story + '</h3>';
-      h += '<div class="tbl tbl--two"><div class="tbl__head"><span>Type of organizations</span><span>Type of storyteller</span><span class="r">Expert</span></div>';
+      h += '<div class="tbl tbl--two"><div class="tbl__head"><span>Type of Organizations</span><span>Type of Storyteller</span><span class="r">Expert</span></div>';
       h += '<label class="row"><span class="who">' + esc(s.storyteller.orgs) + '</span><span class="who">' + esc(s.storyteller.who) + '</span>';
-      h += checkboxRow(s.id + '-st', 'Provide the storyteller for ' + s.title) + '</label></div>';
+      h += checkboxRow(s.id + '-st', 'Provide storyteller for ' + s.title) + '</label></div>';
+
+      if (s.workshop) {
+        h += '<h3 class="slot">' + (TIMES.ws || 'Workshop') + '</h3>';
+        h += '<div class="tbl tbl--two"><div class="tbl__head"><span>Workshop</span><span>Facilitator</span><span class="r">Judges / Expert</span></div>';
+        h += '<label class="row"><span class="who">' + esc(s.workshop.name) + '</span><span class="who">' + esc(s.workshop.facilitator) + '</span>';
+        h += checkboxRow(s.id + '-ws', 'Support workshop for ' + s.title) + '</label></div>';
+      }
+
+      if (s.hackathon) {
+        h += '<h3 class="slot">' + (TIMES.hack || 'Hackathon') + '</h3>';
+        h += '<div class="tbl tbl--two"><div class="tbl__head"><span>Hackathon Theme</span><span>Type of Judges</span><span class="r">Judges</span></div>';
+        h += '<label class="row"><span class="who">' + esc(s.hackathon.theme) + '</span><span class="who">' + esc(s.hackathon.judges) + '</span>';
+        h += checkboxRow(s.id + '-hack', 'Provide judges for hackathon in ' + s.title) + '</label></div>';
+      }
 
       h += '</section>';
       return h;
