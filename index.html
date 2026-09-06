@@ -480,6 +480,9 @@
     /* Partners */
     .logos { display: grid; grid-template-columns: repeat(5, 1fr); border: 1px solid var(--line); }
     .logos--2 { grid-template-columns: repeat(2, 1fr); }
+    .logos--4 { grid-template-columns: repeat(4, 1fr); }
+    .logos--4 > div:nth-child(4n) { border-right: none; }
+    .logos--4 > div:nth-child(-n+4) { border-bottom: 1px solid var(--line); }
     .logos--5 { grid-template-columns: repeat(5, 1fr); }
     .partner-block + .partner-block { margin-top: clamp(2.75rem, 5vw, 4rem); }
     .logos > div { display: flex; align-items: center; justify-content: center; padding: clamp(2rem, 4vw, 3rem) 1.5rem; min-height: 120px; border-right: 1px solid var(--line); transition: background 0.3s var(--ease); }
@@ -587,7 +590,7 @@
       .logos { grid-template-columns: repeat(2, 1fr); }
       .logos > div:nth-child(2n) { border-right: none; }
       .logos > div { border-bottom: 1px solid var(--line); }
-      .logos > div:nth-last-child(-n+1) { border-bottom: none; }
+      .logos > div:nth-last-child(-n+2) { border-bottom: none; }
 
       .team-grid--3, .team-grid--4, .team-grid--5 { grid-template-columns: repeat(2, 1fr); }
       .foot__grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
@@ -1127,12 +1130,15 @@
 
         <div class="partner-block reveal">
           <p class="team-block__label">Supported by</p>
-          <div class="logos logos--5">
-            <div><a href="https://www.climatehive.co/" target="_blank" rel="noopener noreferrer"><img src="assets/partners/climate-hive.png" alt="Climate Hive" loading="lazy" /></a></div>
-            <div><a href="https://www.ekshathefoundation.org/" target="_blank" rel="noopener noreferrer"><img src="assets/partners/ekshathe-foundation.jpg" alt="Ekshathe Foundation" loading="lazy" /></a></div>
-            <div><a href="https://resolutionproject.org/" target="_blank" rel="noopener noreferrer"><img src="assets/partners/resolution-project.png?v=3" alt="Resolution Project" loading="lazy" /></a></div>
-            <div><a href="https://enactus.org/" target="_blank" rel="noopener noreferrer"><img src="assets/partners/enactus.png" alt="Enactus" loading="lazy" /></a></div>
-            <div><a href="https://siklab.org/" target="_blank" rel="noopener noreferrer"><img class="tall" src="assets/partners/siklab.png" alt="Siklab" loading="lazy" /></a></div>
+          <div class="logos logos--4">
+            <div><a href="https://climate.columbia.edu/" target="_blank" rel="noopener noreferrer"><img class="tall" src="assets/partners/columbia-climate-school.png" alt="Columbia Climate School" loading="lazy" /></a></div>
+            <div><a href="https://climate.upenn.edu/" target="_blank" rel="noopener noreferrer"><img src="assets/partners/penn-climate.png" alt="Penn Climate, University of Pennsylvania" loading="lazy" /></a></div>
+            <div><a href="https://resolutionproject.org/" target="_blank" rel="noopener noreferrer"><img src="assets/partners/resolution-project.png?v=4" alt="Resolution Project" loading="lazy" /></a></div>
+            <div><a href="https://climatebase.org/" target="_blank" rel="noopener noreferrer"><img src="assets/partners/climatebase.png" alt="Climatebase" loading="lazy" /></a></div>
+            <div><a href="https://hoshizora.org/" target="_blank" rel="noopener noreferrer"><img class="tall" src="assets/partners/hoshizora-foundation.png" alt="Hoshizora Foundation" loading="lazy" /></a></div>
+            <div><a href="https://jamuna.tv/" target="_blank" rel="noopener noreferrer"><img class="tall" src="assets/partners/jamuna-tv.png" alt="Jamuna TV" loading="lazy" /></a></div>
+            <div><a href="https://theclimatewatch.com/" target="_blank" rel="noopener noreferrer"><img class="tall" src="assets/partners/the-climate-watch.png" alt="The Climate Watch" loading="lazy" /></a></div>
+            <div><a href="https://futurestartup.com/" target="_blank" rel="noopener noreferrer"><img src="assets/partners/future-startup.png" alt="Future Startup" loading="lazy" /></a></div>
           </div>
         </div>
       </div>
@@ -1203,9 +1209,10 @@
         </div>
         <div>
           <h4>Follow</h4>
-          <p><a href="#">LinkedIn</a></p>
-          <p><a href="#">Instagram</a></p>
-          <p><a href="#">X / Twitter</a></p>
+          <p><a href="https://www.linkedin.com/company/dhaka-climate-week/" target="_blank" rel="noopener noreferrer">LinkedIn</a></p>
+          <p><a href="https://www.instagram.com/dhakaclimateweek" target="_blank" rel="noopener noreferrer">Instagram</a></p>
+          <p><a href="https://x.com/dhkclimateweek" target="_blank" rel="noopener noreferrer">X / Twitter</a></p>
+          <p><a href="https://www.facebook.com/profile.php?id=61591525031721" target="_blank" rel="noopener noreferrer">Facebook</a></p>
         </div>
       </div>
       <div class="foot__bottom">
