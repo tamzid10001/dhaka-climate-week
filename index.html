@@ -1105,6 +1105,11 @@
               <p class="person__name">Firoj Iqbal</p>
               <p class="person__role">Assistant Manager, Turtle Venture</p>
             </article>
+            <article class="person">
+              <div class="person__photo"><img src="assets/team/samir-kumar-paul.png" alt="Samir Kumar Paul" width="1264" height="1218" loading="lazy" /></div>
+              <p class="person__name">Samir Kumar Paul</p>
+              <p class="person__role">Development Professional, Climate Resilience, WASH &amp; Youth Empowerment</p>
+            </article>
           </div>
         </div>
       </div>
@@ -1154,18 +1159,6 @@
             <span class="head__num">Join us</span>
           </div>
           <h2 class="display h-sec head__title">Be part of Dhaka Climate Week</h2>
-        </div>
-        <div class="involve reveal">
-          <div class="involve__intro">
-            <span class="kicker kicker--plain">Newsletter</span>
-            <h3 class="display h-card">Get updates first</h3>
-            <p class="lede">Speakers, events, and opportunities for Dhaka Climate Week 2027, straight to your inbox.</p>
-          </div>
-          <form id="newsletter" class="involve__form" onsubmit="handleSubscribe(event)" novalidate>
-            <input type="email" name="email" placeholder="Email address" required aria-label="Email address" autocomplete="email" />
-            <label><input type="checkbox" name="consent" required /> I agree to receive updates.</label>
-            <button type="submit" class="btn btn--mustard">Subscribe <span class="arw">→</span></button>
-          </form>
         </div>
         <div class="cards reveal">
           <div class="card">
@@ -1221,8 +1214,6 @@
       </div>
     </div>
   </footer>
-
-  <div class="toast" id="toast" role="status" aria-live="polite">Subscribed.</div>
 
   <script>
     const header = document.getElementById('header');
@@ -1295,14 +1286,6 @@
       reveals.forEach(el => el.classList.add('in'));
     }
 
-    function handleSubscribe(e) {
-      e.preventDefault();
-      const form = e.target;
-      if (!form.checkValidity()) return;
-      document.getElementById('toast').classList.add('show');
-      form.reset();
-      setTimeout(() => document.getElementById('toast').classList.remove('show'), 3200);
-    }
   </script>
 </body>
 </html>
