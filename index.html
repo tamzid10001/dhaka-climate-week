@@ -478,21 +478,40 @@
     .person__role { margin-top: 0.35rem; font-size: 0.82rem; line-height: 1.45; color: var(--ink-soft); }
 
     /* Partners */
-    .logos { display: grid; grid-template-columns: repeat(5, 1fr); border: 1px solid var(--line); }
-    .logos--2 { grid-template-columns: repeat(2, 1fr); }
-    .logos--4 { grid-template-columns: repeat(4, 1fr); }
-    .logos--4 > div:nth-child(4n) { border-right: none; }
-    .logos--4 > div:nth-child(-n+4) { border-bottom: 1px solid var(--line); }
-    .logos--5 { grid-template-columns: repeat(5, 1fr); }
+    .logos { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1px; border: 1px solid var(--line); background: var(--line); color: var(--ink); }
+    .logos--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .partner-block + .partner-block { margin-top: clamp(2.75rem, 5vw, 4rem); }
-    .logos > div { display: flex; align-items: center; justify-content: center; padding: clamp(2rem, 4vw, 3rem) 1.5rem; min-height: 120px; border-right: 1px solid var(--line); transition: background 0.3s var(--ease); }
-    .logos > div:last-child { border-right: none; }
+    .logos > div { display: flex; align-items: center; justify-content: center; padding: clamp(2rem, 4vw, 3rem) 1.5rem; min-height: 120px; background: var(--paper); color: var(--ink); transition: background 0.3s var(--ease); }
     .logos > div:hover { background: var(--linen); }
     .logos a { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
-    .logos img { max-width: 80%; max-height: 50px; width: auto; height: auto; object-fit: contain; opacity: 0.72; filter: grayscale(1); transition: opacity 0.3s var(--ease), filter 0.3s var(--ease); }
-    .logos > div:hover img { opacity: 1; filter: grayscale(0); }
+    .logos img { max-width: 80%; max-height: 50px; width: auto; height: auto; object-fit: contain; mix-blend-mode: multiply; opacity: 0.72; filter: grayscale(1); transition: opacity 0.3s var(--ease), filter 0.3s var(--ease); }
+    .logos > div:hover img, .logos a:focus-visible img { opacity: 1; filter: grayscale(0); }
     .logos img.wide { max-height: 34px; }
     .logos img.tall { max-height: 58px; }
+
+    .media-features__intro { margin-top: 1.5rem; }
+    .media-features__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(1.25rem, 2.5vw, 2rem); }
+    .media-feature { min-width: 0; background: var(--paper); color: var(--ink); }
+    .media-feature__link { display: flex; flex-direction: column; height: 100%; }
+    .media-feature__link:focus-visible { outline-color: var(--mustard); outline-offset: 6px; }
+    .media-feature__visual { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: var(--linen); color: var(--green); }
+    .media-feature__visual img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--ease); }
+    .media-feature__link:hover .media-feature__visual img, .media-feature__link:focus-visible .media-feature__visual img { transform: scale(1.035); }
+    .media-feature__play { position: absolute; inset: 0; margin: auto; display: grid; place-items: center; width: 3.75rem; height: 3.75rem; background: var(--mustard); color: var(--green-deep); }
+    .media-feature__play svg { width: 24px; height: 24px; }
+    .media-feature__body { display: flex; flex: 1; flex-direction: column; gap: 1rem; padding: clamp(1.5rem, 3vw, 2.25rem); }
+    .media-feature__meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem 1rem; font-size: 0.875rem; color: var(--ink-soft); }
+    .media-feature__source { font-family: var(--font-display); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--green); }
+    .media-feature__title { font-size: clamp(1.35rem, 2.2vw, 1.8rem); line-height: 1.2; letter-spacing: -0.025em; text-wrap: balance; }
+    .media-feature__description { font-size: 1rem; line-height: 1.6; color: var(--ink-soft); }
+    .media-feature__cta { display: flex; align-items: center; gap: 0.65rem; margin-top: auto; padding-top: 1rem; font-family: var(--font-display); font-size: 0.875rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--green); transition: color 0.3s var(--ease); }
+    .media-feature__cta .arw { transition: transform 0.3s var(--ease); }
+    .media-feature__link:hover .media-feature__cta, .media-feature__link:focus-visible .media-feature__cta { color: var(--coral); }
+    .media-feature__link:hover .arw, .media-feature__link:focus-visible .arw { transform: translateX(4px); }
+
+    @media (min-width: 701px) {
+      .media-features__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
 
     /* CTA / involve */
     .involve { display: grid; grid-template-columns: 1.05fr 0.95fr; border: 1px solid var(--line); }
@@ -550,6 +569,12 @@
     }
     .subtheme:hover::before { height: 55%; }
 
+    @media (min-width: 961px) and (max-width: 1200px) {
+      .bar__date { display: none; }
+      .bar { gap: 1.25rem; }
+      .nav { gap: 0.85rem; }
+    }
+
     @media (max-width: 1024px) {
       .subthemes { grid-template-columns: 1fr 1fr; }
       .subtheme { border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
@@ -587,10 +612,7 @@
       .program__day { border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); min-height: 180px; }
       .program__day:nth-child(2n) { border-right: none; }
 
-      .logos { grid-template-columns: repeat(2, 1fr); }
-      .logos > div:nth-child(2n) { border-right: none; }
-      .logos > div { border-bottom: 1px solid var(--line); }
-      .logos > div:nth-last-child(-n+2) { border-bottom: none; }
+      .logos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
       .team-grid--3, .team-grid--4, .team-grid--5 { grid-template-columns: repeat(2, 1fr); }
       .foot__grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
@@ -697,6 +719,7 @@
         <a href="#speakers" data-nav>Speakers</a>
         <a href="#team" data-nav>Team</a>
         <a href="#partners" data-nav>Partners</a>
+        <a href="#media" data-nav>Media</a>
         <a href="#contact" data-nav>Contact</a>
       </nav>
       <div class="bar__cta">
@@ -718,6 +741,7 @@
       <a href="#speakers">Speakers</a>
       <a href="#team">Team</a>
       <a href="#partners">Partners</a>
+      <a href="#media">Media</a>
       <a href="#contact">Contact</a>
       <a href="#get-involved" class="mm-cta">Get involved →</a>
       <a href="partner-login/" class="mm-cta mm-cta--partner">Partner login →</a>
@@ -795,7 +819,7 @@
         <div class="head reveal">
           <div class="head__top">
             <span class="kicker">About</span>
-            <span class="head__num">01 / 05</span>
+            <span class="head__num">01 / 07</span>
           </div>
           <h2 class="display h-sec head__title">What is Dhaka Climate Week</h2>
         </div>
@@ -899,7 +923,7 @@
         <div class="head reveal">
           <div class="head__top">
             <span class="kicker">Programme</span>
-            <span class="head__num">03 / 05</span>
+            <span class="head__num">03 / 07</span>
           </div>
           <h2 class="display h-sec head__title">Five days, one delta</h2>
         </div>
@@ -956,7 +980,7 @@
         <div class="head reveal">
           <div class="head__top">
             <span class="kicker">Speakers</span>
-            <span class="head__num">04 / 06</span>
+            <span class="head__num">04 / 07</span>
           </div>
           <h2 class="display h-sec head__title">Confirmed speakers</h2>
         </div>
@@ -1048,7 +1072,7 @@
         <div class="head reveal">
           <div class="head__top">
             <span class="kicker">People</span>
-            <span class="head__num">05 / 06</span>
+            <span class="head__num">05 / 07</span>
           </div>
           <h2 class="display h-sec head__title">The team behind the week</h2>
         </div>
@@ -1123,7 +1147,7 @@
         <div class="head reveal">
           <div class="head__top">
             <span class="kicker">Partners</span>
-            <span class="head__num">06 / 06</span>
+            <span class="head__num">06 / 07</span>
           </div>
         </div>
 
@@ -1136,8 +1160,8 @@
         </div>
 
         <div class="partner-block reveal">
-          <p class="team-block__label">Supported by</p>
-          <div class="logos logos--4">
+          <p class="team-block__label">Partners</p>
+          <div class="logos">
             <div><a href="https://climate.columbia.edu/" target="_blank" rel="noopener noreferrer"><img class="tall" src="assets/partners/columbia-climate-school.png" alt="Columbia Climate School" loading="lazy" /></a></div>
             <div><a href="https://climate.upenn.edu/" target="_blank" rel="noopener noreferrer"><img src="assets/partners/penn-climate.png" alt="Penn Climate, University of Pennsylvania" loading="lazy" /></a></div>
             <div><a href="https://resolutionproject.org/" target="_blank" rel="noopener noreferrer"><img src="assets/partners/resolution-project.png?v=4" alt="Resolution Project" loading="lazy" /></a></div>
@@ -1146,7 +1170,59 @@
             <div><a href="https://jamuna.tv/" target="_blank" rel="noopener noreferrer"><img class="tall" src="assets/partners/jamuna-tv.png" alt="Jamuna TV" loading="lazy" /></a></div>
             <div><a href="https://theclimatewatch.com/" target="_blank" rel="noopener noreferrer"><img class="tall" src="assets/partners/the-climate-watch.png" alt="The Climate Watch" loading="lazy" /></a></div>
             <div><a href="https://futurestartup.com/" target="_blank" rel="noopener noreferrer"><img src="assets/partners/future-startup.png" alt="Future Startup" loading="lazy" /></a></div>
+            <div><a href="https://climatehive.co/" target="_blank" rel="noopener noreferrer"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-XSfeqpRyrwCaLaTUwRMiE5yZBSWLXx.png" alt="Climate Hive" width="966" height="355" loading="lazy" decoding="async" /></a></div>
+            <div><a href="https://www.ihg.com/crowneplaza/hotels/us/en/dhaka/daccr/hoteldetail" target="_blank" rel="noopener noreferrer"><img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-GJE9ukhF41qWzPovDD0ud6S2qyyXhY.png" alt="Crowne Plaza by IHG, Dhaka Gulshan" width="1600" height="520" loading="lazy" decoding="async" /></a></div>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="media" class="sec sec--green" aria-labelledby="media-title">
+      <div class="wrap">
+        <div class="head head--light reveal">
+          <div class="head__top">
+            <span class="kicker kicker--light">Media features</span>
+            <span class="head__num">07 / 07</span>
+          </div>
+          <h2 id="media-title" class="display h-sec head__title light">Dhaka Climate Week<br>in the media</h2>
+          <p class="lede lede--light media-features__intro">Coverage, conversations, and collaborations ahead of January 2027.</p>
+        </div>
+
+        <div class="media-features__grid">
+          <article class="media-feature reveal" data-d="1">
+            <a class="media-feature__link" href="https://www.youtube.com/watch?v=MtMJlnqKOPk" target="_blank" rel="noopener noreferrer" aria-label="Watch Bangladesh’s climate on Sokaler Bangladesh — Jamuna TV (opens in a new tab)">
+              <div class="media-feature__visual">
+                <img src="assets/images/media-jamuna-tv.jpg" alt="Sokaler Bangladesh programme on Jamuna TV" width="1280" height="720" loading="lazy" decoding="async" />
+                <span class="media-feature__play" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M8 5v14l11-7z" fill="currentColor" /></svg></span>
+              </div>
+              <div class="media-feature__body">
+                <div class="media-feature__meta">
+                  <span class="media-feature__source">Jamuna TV</span>
+                  <time datetime="2026-10-12">12 October 2026</time>
+                </div>
+                <h3 class="display media-feature__title">Bangladesh’s climate on Sokaler Bangladesh</h3>
+                <p class="media-feature__description">Watch the conversation on Bangladesh’s climate, featured on Jamuna TV’s morning programme.</p>
+                <span class="media-feature__cta">Watch on YouTube <span class="arw" aria-hidden="true">↗</span></span>
+              </div>
+            </a>
+          </article>
+
+          <article class="media-feature reveal" data-d="2">
+            <a class="media-feature__link" href="https://theclimatewatch.com/dhaka-climate-week-climate-watch-sign-media-and-strategic-partnership-ahead-of-2027/" target="_blank" rel="noopener noreferrer" aria-label="Read Dhaka Climate Week, Climate Watch sign media and strategic partnership ahead of 2027 — The Climate Watch (opens in a new tab)">
+              <div class="media-feature__visual">
+                <img src="assets/images/media-climate-watch.jpg" alt="Dhaka Climate Week and The Climate Watch representatives at their partnership signing" width="945" height="630" loading="lazy" decoding="async" />
+              </div>
+              <div class="media-feature__body">
+                <div class="media-feature__meta">
+                  <span class="media-feature__source">The Climate Watch</span>
+                  <time datetime="2026-09-17">17 September 2026</time>
+                </div>
+                <h3 class="display media-feature__title">Dhaka Climate Week, Climate Watch sign media and strategic partnership ahead of 2027</h3>
+                <p class="media-feature__description">A new partnership to amplify Bangladesh’s climate stories, frontline voices, and solutions.</p>
+                <span class="media-feature__cta">Read the article <span class="arw" aria-hidden="true">↗</span></span>
+              </div>
+            </a>
+          </article>
         </div>
       </div>
     </section>
@@ -1195,6 +1271,7 @@
           <p><a href="#agenda">Programme</a></p>
           <p><a href="#speakers">Speakers</a></p>
           <p><a href="#team">Team</a></p>
+          <p><a href="#media">Media features</a></p>
         </div>
         <div>
           <h4>Contact</h4>
