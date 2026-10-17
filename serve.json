@@ -1,0 +1,16 @@
+{
+  "directoryListing": false,
+  "cleanUrls": false,
+  "symlinks": false,
+  "ignore": [
+    ".git",
+    ".vercel",
+    ".env*",
+    "node_modules",
+    "user_read_only_context",
+    "v0_memories",
+    "package.json",
+    "pnpm-lock.yaml",
+    "serve.json"
+  ]
+}
