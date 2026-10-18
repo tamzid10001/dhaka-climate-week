@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { TAU, rng, blob, trunk, paint, merge, withWind } from './util.js';
-import { Z_START, Z_END, riverX, riverW, heightAt, meadowAt, charAt } from './terrain.js';
+import { Z_START, Z_END, CHARS, riverX, riverW, heightAt, meadowAt } from './terrain.js';
 
 /*
  * The mangrove forest, by species: sundari (the tree the Sundarbans is named for: tall, buttressed,
