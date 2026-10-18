@@ -97,7 +97,7 @@ function start() {
   const DEPTH = 1000;
   const OFFSET = [[0, -24], [60, -16], [118, 24], [190, 8], [272, -24], [350, -4], [430, 12], [560, 26], [640, 4], [705, -20], [838, -26], [1000, -8]];
   const HEIGHT = [[0, 4.4], [80, 6], [160, 9], [272, 6], [380, 11], [480, 8], [560, 5.5], [705, 5], [838, 4], [1000, 3.2]];
-  const LOOK = [[0, 0], [70, 10], [118, 34], [200, 0], [272, -34], [350, 0], [430, 20], [560, 34], [640, 0], [705, -22], [838, -32], [1000, -6]];
+  const LOOK = [[0, 0], [70, 22], [118, 50], [200, 0], [272, -34], [350, 0], [430, 20], [560, 34], [640, 0], [705, -22], [838, -32], [1000, -6]];
   const TOD = [[0, 0], [0.5, 0], [0.72, 0.4], [0.86, 0.72], [0.965, 1]];
   const camPos = new THREE.Vector3();
   const camLook = new THREE.Vector3();
@@ -149,10 +149,11 @@ function start() {
   let ready = false;
   const stats = { tier, dpr, fps: 60 };
   window.__sundarbans = stats;
+  if (params.has('world-debug')) Object.assign(stats, { scene, camera, fauna, renderer });
 
   function tick(now) {
     raf = requestAnimationFrame(tick);
-    const dt = Math.min(0.05, (now - last) / 1000);
+    const dt = clamp((now - last) / 1000, 0, 0.05);
     last = now;
     const still = reducedMotion.matches;
     if (!still) time += dt;
@@ -253,7 +254,11 @@ function start() {
     };
     sync(false);
     soundButton.hidden = false;
-    soundButton.addEventListener('click', async () => sync(await sound.toggle()));
+    soundButton.addEventListener('click', async () => {
+      const on = await sound.toggle();
+      sync(on);
+      if (on) setTimeout(() => fauna.cue('roar'), 2200);
+    });
   }
 }
 
