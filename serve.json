@@ -1,16 +1,13 @@
 {
   "directoryListing": false,
-  "cleanUrls": false,
   "symlinks": false,
-  "ignore": [
-    ".git",
-    ".vercel",
-    ".env*",
-    "node_modules",
-    "user_read_only_context",
-    "v0_memories",
-    "package.json",
-    "pnpm-lock.yaml",
-    "serve.json"
+  "redirects": [
+    { "source": "/.*", "destination": "/not-found", "type": 302 },
+    { "source": "/node_modules/**", "destination": "/not-found", "type": 302 },
+    { "source": "/user_read_only_context/**", "destination": "/not-found", "type": 302 },
+    { "source": "/v0_memories/**", "destination": "/not-found", "type": 302 },
+    { "source": "/package.json", "destination": "/not-found", "type": 302 },
+    { "source": "/pnpm-lock.yaml", "destination": "/not-found", "type": 302 },
+    { "source": "/serve.json", "destination": "/not-found", "type": 302 }
   ]
 }
