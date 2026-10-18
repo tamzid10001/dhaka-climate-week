@@ -640,6 +640,20 @@
       *, *::before, *::after { transition-duration: 0.01ms !important; }
     }
   </style>
+  <link rel="stylesheet" href="assets/css/motion.css" />
+  <script>
+    (function () {
+      var root = document.documentElement;
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      root.classList.add('motion');
+      try {
+        if (!sessionStorage.getItem('dcw-intro')) {
+          root.classList.add('has-intro');
+          sessionStorage.setItem('dcw-intro', '1');
+        }
+      } catch (e) {}
+    })();
+  </script>
 </head>
 <body>
 
@@ -706,6 +720,11 @@
 
   <div class="progress" id="progress" aria-hidden="true"></div>
 
+  <div class="intro" aria-hidden="true">
+    <img class="intro__logo" src="assets/logo/logo-white.png" alt="" width="804" height="273" />
+    <span class="intro__line"></span>
+  </div>
+
   <header class="site-header" id="header">
     <div class="wrap bar">
       <a href="#" class="logo" aria-label="Dhaka Climate Week">
@@ -767,7 +786,7 @@
       <div class="hero__scrim" aria-hidden="true"></div>
       <div class="wrap hero__inner">
         <span class="kicker kicker--light">Global South · Climate Week</span>
-        <h1 class="display h-hero hero__title light">Dhaka<br>Climate <em>Week</em></h1>
+        <h1 class="display h-hero hero__title light"><span class="ln"><span>Dhaka</span></span> <span class="ln"><span>Climate <em class="hero__em">Week<svg class="hero__wave" viewBox="0 0 240 14" aria-hidden="true" focusable="false"><path pathLength="1" d="M2 8 C 22 1, 38 1, 58 8 S 98 15, 118 8 S 158 1, 178 8 S 218 15, 238 7"/></svg></em></span></span></h1>
         <p class="hero__lede">A 5-day collaborative platform connecting government, businesses, academia, communities, and youth to accelerate climate action and strengthen the climate ecosystem in Bangladesh and beyond.</p>
         <div class="hero__meta">
           <span class="hero__date">17 – 21 JANUARY 2027</span>
@@ -808,6 +827,27 @@
           <div class="reveal" data-d="1"><strong data-count="120" data-suffix="+">120+</strong><span>Events</span></div>
           <div class="reveal" data-d="2"><strong data-count="15" data-suffix="K+">15K+</strong><span>Participants</span></div>
           <div class="reveal" data-d="3"><strong data-count="150" data-suffix="+">150+</strong><span>Speakers</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="warming" id="warming" data-warming aria-labelledby="warming-title">
+      <div class="warming__sticky">
+        <div class="wrap warming__top">
+          <div>
+            <span class="kicker kicker--light">Why Dhaka, why now</span>
+            <h2 id="warming-title" class="display h-sec light warming__title">The delta is <em>warming</em></h2>
+          </div>
+          <p class="warming__lede">Each stripe is one year of global surface temperature since 1880, set against the 1951–1980 average. Bangladesh lives at the sharp end of this curve, which is exactly why the answers must be built here.</p>
+        </div>
+        <figure class="warming__figure" data-w-figure></figure>
+        <div class="wrap warming__foot">
+          <p class="warming__readout">
+            <span class="warming__year" data-w-year>2024</span>
+            <span class="warming__anom"><i class="warming__swatch" data-w-swatch aria-hidden="true"></i><span data-w-anom>+1.28°C</span></span>
+            <span class="warming__note" data-w-note>Warmest year on record</span>
+          </p>
+          <p class="warming__source">Global surface temperature anomaly, 1880–2025, relative to 1951–1980.<span>Data: NASA GISS Surface Temperature Analysis (GISTEMP v4)</span></p>
         </div>
       </div>
     </section>
@@ -1366,5 +1406,6 @@
     }
 
   </script>
+  <script src="assets/js/motion.js" defer></script>
 </body>
 </html>
