@@ -3,9 +3,9 @@
    frame and removes it if the device cannot keep up, which leaves the base design in place. With the world
    on, the page is laid out like an event programme printed straight onto the forest. There are no panels,
    plates, outlines or glows; the scene carries the contrast instead. River mist settles on the land and
-   water (never the sky), and the type is plain: mangrove ink by day with deep rust for large emphasis, then
-   moonlight bone with tiger orange from the Media section on, where the sun goes down. Small type is always
-   ink; tiger marks what can be acted on and the short rules that lead each label. */
+   water (never the sky), and the type is plain: mangrove ink by day, then moonlight bone from the Media
+   section on, where the sun goes down. Text is always set in the ink; tiger orange marks what can be acted
+   on, the short rules that lead each label and the stroke under emphasised words. */
 
 /* Registered so the ink can cross-fade at nightfall: one transition on body carries the whole page. */
 @property --ink { syntax: '<color>'; inherits: true; initial-value: #0E1B15; }
@@ -257,11 +257,20 @@ html.has-world :is(.logos > div:hover, .logos a:focus-visible) img:not(.badge) {
 html.has-world .media-feature__link { border: 0; }
 html.has-world .media-feature__visual { border-radius: var(--r-photo); }
 html.has-world .media-feature__body { padding: clamp(1.25rem, 2.5vw, 1.75rem) 0 0; }
+html.has-world .media-feature__source { color: var(--ink); }
 html.has-world .cards { gap: clamp(2rem, 4vw, 3.5rem); }
 html.has-world .card { padding: 1.6rem 0 0; border: 0; border-top: 1px solid var(--rule-strong); box-shadow: none; }
 html.has-world .card--accent { border-top: 2px solid var(--tiger); }
 
+/* ── Footer: column heads take the label treatment; links stay ink and pick up a tiger underline. ── */
 html.has-world .foot { padding-bottom: 5rem; }
+html.has-world .foot h4 { display: flex; align-items: center; gap: 0.7rem; color: var(--ink); }
+html.has-world .foot h4::before { content: ""; flex: none; width: 1.25rem; height: 2px; background: var(--tiger); }
+html.has-world :is(.foot a:hover, .media-feature__link:is(:hover, :focus-visible) .media-feature__cta) {
+  color: var(--ink);
+  text-decoration: underline 2px var(--tiger);
+  text-underline-offset: 0.35em;
+}
 
 /* ── Sound of the forest: a round control in the corner, off until asked for. ── */
 .sound {

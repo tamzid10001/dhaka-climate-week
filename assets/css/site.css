@@ -520,7 +520,7 @@ body::after {
   :root { --header: 66px; }
 
   .nav, .bar__cta { display: none; }
-  .menu-btn { display: flex; }
+  .menu-btn { display: flex; margin-left: auto; }
   .mobile-menu { display: flex; }
   .site-header, .site-header.is-scrolled {
     --ink: var(--stripe);

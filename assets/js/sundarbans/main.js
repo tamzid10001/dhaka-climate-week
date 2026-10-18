@@ -99,20 +99,22 @@ function start() {
    * Time of day by scroll. Day holds through the first half, golden hour arrives with the speakers and
    * team, and the sun sets in one short stretch centred on the nightfall line (the point where the
    * [data-nightfall] section reaches the lower part of the screen). A dusk sky runs from navy overhead to a
-   * glowing horizon, which no single ink can read against, so it passes in a few hundred pixels instead of
-   * lingering behind a whole section.
+   * glowing horizon, which no single ink can read against, so it passes in half a screen of scrolling
+   * instead of lingering behind a whole section, and full night has fallen by the time the section's heading
+   * reaches the top. The sunset is measured in screen heights (`vh`, one viewport as a share of the scroll),
+   * so a long phone page sets as briskly as a short desktop one.
    */
   const nightfallSection = document.querySelector('[data-nightfall]');
-  const todFor = (n) => [
+  const todFor = (n, vh) => [
     [0, 0],
     [Math.min(0.42, n * 0.5), 0],
     [n - 0.12, 0.4],
-    [n - 0.016, 0.52],
-    [n + 0.016, 0.84],
-    [Math.min(1, n + 0.1), 1],
+    [n - 0.25 * vh, 0.52],
+    [n + 0.25 * vh, 0.84],
+    [Math.min(1, n + 0.6 * vh), 1],
   ];
   let nightfall = 0.84;
-  let TOD = todFor(nightfall);
+  let TOD = todFor(nightfall, 0.064);
 
   let maxScroll = 1;
   const measure = () => {
@@ -120,7 +122,7 @@ function start() {
     if (nightfallSection) {
       const top = nightfallSection.getBoundingClientRect().top + scrollY;
       nightfall = clamp((top - innerHeight * 0.6) / maxScroll, 0.3, 0.9);
-      TOD = todFor(nightfall);
+      TOD = todFor(nightfall, innerHeight / maxScroll);
     }
   };
   const forcedP = params.has('world-p') ? clamp(+params.get('world-p')) : null;
@@ -193,8 +195,12 @@ function start() {
   // Share of the air's colour laid over land and water. By day it lifts the darkest mangrove crowns to where
   // mangrove ink still holds 4.5:1 over body copy; at night less is needed, as the forest is already dark.
   const MIST = { hero: 0.32, page: 0.58, night: 0.8 };
+  // The hero keeps its forest vivid only on wide screens. As the frame narrows, the right bank moves in under
+  // the text column, so the hero's mist rises to the page level by the time the screen is square.
+  const heroMist = () => lerp(MIST.page, MIST.hero, clamp((camera.aspect - 1) / 0.5));
   const mistColor = new THREE.Color();
-  let mistAmount = MIST.hero;
+  const mistTarget = new THREE.Color();
+  let mistAmount = heroMist();
   const stats = { tier, dpr, fps: 60 };
   window.__sundarbans = stats;
   if (params.has('world-debug')) Object.assign(stats, { scene, camera, fauna, renderer, sound });
@@ -301,10 +307,14 @@ function start() {
 
     // Lighter in the hero, where the title stands in open sky, and settled once the programme begins.
     const settle = clamp(scrollY / innerHeight);
-    mistAmount = damp(mistAmount, lerp(MIST.hero, MIST.page, settle) * lerp(1, MIST.night, atm.night), 2.5, dt);
+    mistAmount = damp(mistAmount, lerp(heroMist(), MIST.page, settle) * lerp(1, MIST.night, atm.night), 2.5, dt);
     mist.uniforms.uAmount.value = mistAmount;
-    // Halfway between the fog and the horizon haze: the brightest air in the frame lifts the forest most per step.
-    mist.uniforms.uColor.value.copy(mistColor.copy(atm.fog).lerp(atm.horizon, 0.5));
+    // Under the dark day ink the mist sits halfway between the fog and the horizon haze, the brightest air in the
+    // frame, so it lifts the forest most per step. Once the ink turns to moonlight it drifts toward the upper sky
+    // instead, deepening the land rather than lifting it toward a sunset glow behind light type.
+    mistTarget.copy(atm.fog).lerp(nightInk ? atm.upper : atm.horizon, 0.5);
+    mistColor.lerp(mistTarget, ready ? 1 - Math.exp(-4 * dt) : 1);
+    mist.uniforms.uColor.value.copy(mistColor);
 
     if (water.reflect && (tier === 2 || frame % 2 === 0)) water.renderReflection(renderer, scene, camera);
     renderer.render(scene, camera);
