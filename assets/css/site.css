@@ -33,6 +33,7 @@
   --section: clamp(5rem, 11vw, 9.5rem);
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --r-photo: 16px;
+  --r-person: 12px;
 }
 
 .sec--dark, .strip, .lens, .foot, .hero, .mobile-menu, .site-header, body.menu-open .site-header {
@@ -76,14 +77,15 @@ button, input { font: inherit; border-radius: 0; }
 
 /* ── Two voices: narrow display, wide labels ── */
 .display, .stats strong, .facts b, .subtheme h3, .lens h3, .program__theme,
-.speaker__name, .person__name, .mobile-menu__nav a {
+.speaker__name, .person__name, .speaker__more-num, .mobile-menu__nav a {
   font-family: var(--font-display);
   font-stretch: var(--narrow);
   font-weight: 700;
   letter-spacing: -0.005em;
 }
 .kicker, .head__num, .bar__date, .btn, .strip span, .stats span, .hero__date, .hero__pill, .hero__scroll,
-.framework__pill, .program__num, .team-block__label, .media-feature__source,
+.framework__pill, .program__num, .team-block__label, .speaker__org, .person__org,
+.speaker__more-cap, .speaker__link, .media-feature__source,
 .media-feature__cta, .foot h4, .foot__copy, .toast, .skip, .mobile-menu__foot .mm-label {
   font-family: var(--font-display);
   font-stretch: var(--wide);
@@ -150,6 +152,13 @@ button, input { font: inherit; border-radius: 0; }
 }
 .head__num { color: var(--ink-soft); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .head__title { max-width: 18ch; text-wrap: balance; }
+/* On wide screens the intro sits opposite the title, under the section number, so heads fill their measure. */
+.head__body { display: grid; gap: 1.1rem 3rem; }
+.head__lede { max-width: 30rem; font-size: clamp(1rem, 1.25vw, 1.1rem); }
+@media (min-width: 900px) {
+  .head__body { grid-template-columns: minmax(0, 1fr) minmax(16rem, 26rem); align-items: end; }
+  .head__lede { padding-bottom: 0.3rem; }
+}
 
 /* ── Buttons ── */
 .btn {
@@ -335,15 +344,6 @@ body.menu-open .logo__dark { opacity: 0; }
 .facts small { display: block; margin-top: 0.4rem; font-size: 0.86rem; color: var(--ink-soft); line-height: 1.4; }
 
 /* Themes */
-.theme-core {
-  padding: clamp(2.5rem, 5vw, 3.75rem) 0;
-  border-top: 1px solid var(--rule);
-  border-bottom: 1px solid var(--rule);
-  margin-bottom: clamp(2.5rem, 5vw, 3.5rem);
-  display: flex; flex-direction: column; gap: 1rem; max-width: 52rem;
-}
-.theme-core__title { margin-top: 0.15rem; }
-.theme-core__text { max-width: 46rem; }
 .subthemes-block { display: flex; flex-direction: column; gap: 1.5rem; }
 .subthemes { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--rule); }
 .subtheme {
@@ -397,30 +397,92 @@ body.menu-open .logo__dark { opacity: 0; }
 .program__theme { margin-top: auto; font-size: 1.45rem; line-height: 1; color: var(--ink); }
 .program__tag { font-size: 0.82rem; color: var(--ink-soft); }
 
-/* Speakers */
+/* Speakers: eleven portraits plus the invitation make twelve, so every row fills at 6, 4, 3 and 2 columns. */
 .speakers-grid {
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: clamp(1.25rem, 2.5vw, 2rem);
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(2rem, 3.5vw, 2.75rem) clamp(0.875rem, 1.6vw, 1.5rem);
 }
-.speaker__photo { aspect-ratio: 4 / 5; overflow: hidden; background: var(--mist); border-radius: var(--r-photo); isolation: isolate; }
-.speaker__photo img { width: 100%; height: 100%; object-fit: cover; object-position: center top; transition: transform 0.6s var(--ease), filter 0.4s var(--ease); filter: saturate(0.92); }
-.speaker__photo--right img { object-position: right 28%; }
-.speaker:hover .speaker__photo img { transform: scale(1.04); filter: saturate(1.05); }
-.speaker__name { margin-top: 0.95rem; font-size: 1.3rem; line-height: 1.05; color: var(--ink); }
-.speaker__role { margin-top: 0.4rem; font-size: 0.88rem; line-height: 1.45; color: var(--ink-soft); }
+@media (min-width: 600px) { .speakers-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 900px) { .speakers-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 1200px) { .speakers-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.speaker { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; }
 
-/* Team */
-.team-block + .team-block { margin-top: clamp(2.75rem, 5vw, 4rem); }
-.team-block__label { color: var(--accent); padding-bottom: 1rem; margin-bottom: 1.75rem; border-bottom: 1px solid var(--rule); }
-.team-grid { display: grid; gap: clamp(1.25rem, 2.5vw, 2rem); }
-.team-grid--3 { grid-template-columns: repeat(3, 1fr); }
-.team-grid--4 { grid-template-columns: repeat(4, 1fr); }
-.team-grid--5 { grid-template-columns: repeat(5, 1fr); }
-.person__photo { aspect-ratio: 4 / 5; overflow: hidden; background: var(--mist); border-radius: var(--r-photo); isolation: isolate; }
-.person__photo img { width: 100%; height: 100%; object-fit: cover; object-position: center top; transition: transform 0.6s var(--ease), filter 0.4s var(--ease); filter: saturate(0.9); }
-.person:hover .person__photo img { transform: scale(1.04); filter: saturate(1.05); }
-.person__name { margin-top: 0.95rem; font-size: 1.22rem; line-height: 1.05; color: var(--ink); }
-.person__role { margin-top: 0.4rem; font-size: 0.86rem; line-height: 1.45; color: var(--ink-soft); }
+/* One frame for every portrait. Loose shots set their own --zoom and --origin so faces land at a similar size. */
+.speaker__photo, .person__photo {
+  position: relative; width: 100%; overflow: hidden; isolation: isolate;
+  background: var(--mist); border-radius: var(--r-person);
+}
+.speaker__photo { aspect-ratio: 4 / 5; margin-bottom: 1rem; }
+:is(.speaker__photo, .person__photo) img {
+  width: 100%; height: 100%; object-fit: cover;
+  object-position: var(--pos, 50% 20%);
+  transform-origin: var(--origin, 50% 30%);
+  transform: scale(var(--zoom, 1));
+  filter: saturate(0.92);
+  transition: scale 0.7s var(--ease), filter 0.5s var(--ease);
+}
+:is(.speaker, .person):hover img { scale: 1.04; filter: saturate(1.04); }
+
+.speaker__name { font-size: clamp(1.15rem, 1.5vw, 1.3rem); line-height: 1.05; color: var(--ink); text-wrap: balance; }
+.speaker__role { margin-top: 0.45rem; font-size: 0.875rem; line-height: 1.4; color: var(--ink-soft); text-wrap: pretty; }
+:is(.speaker__org, .person__org) { margin-top: 0.4rem; font-size: 0.64rem; letter-spacing: 0.1em; line-height: 1.4; color: var(--ink); text-wrap: balance; }
+
+/* The twelfth cell is an open frame for the line-up still to come. */
+.speaker__more {
+  display: flex; flex-direction: column; justify-content: flex-end; gap: 0.6rem;
+  padding: clamp(0.9rem, 1.6vw, 1.2rem);
+  background: none; border: 1px solid var(--rule-strong);
+}
+.speaker__more::before {
+  content: ""; position: absolute; top: clamp(0.9rem, 1.6vw, 1.2rem); left: clamp(0.9rem, 1.6vw, 1.2rem);
+  width: 1.75rem; height: 2px; background: var(--tiger);
+}
+.speaker__more-num { font-weight: 800; font-size: clamp(2.75rem, 4.6vw, 3.75rem); line-height: 0.85; color: var(--ink); }
+.speaker__more-cap { font-size: 0.64rem; letter-spacing: 0.12em; color: var(--ink-soft); }
+.speaker__link {
+  position: relative; display: inline-flex; align-items: center; gap: 0.55rem;
+  margin-top: 0.9rem; padding-bottom: 0.45rem; font-size: 0.68rem; color: var(--ink);
+}
+.speaker__link::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px;
+  background: var(--tiger); transition: background-color 0.3s var(--ease);
+}
+.speaker__link .arw { transition: transform 0.3s var(--ease); }
+.speaker__link:hover::after { background: var(--ink); }
+.speaker__link:hover .arw { transform: translateX(4px); }
+
+/* Team: thumbnail rows on smaller screens; on wide screens both groups share one five-column grid, two columns and three. */
+.team-blocks { --team-gap: clamp(1rem, 2.2vw, 2rem); display: grid; gap: clamp(2.75rem, 5vw, 3.5rem); }
+.team-block { min-width: 0; }
+.team-block__label { color: var(--accent); padding-bottom: 1rem; margin-bottom: clamp(1.5rem, 2.5vw, 2rem); border-bottom: 1px solid var(--rule); }
+.team-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5rem var(--team-gap); }
+.person { display: flex; align-items: flex-start; gap: clamp(0.9rem, 2vw, 1.25rem); min-width: 0; }
+.person__photo { flex: none; width: clamp(4.5rem, 11vw, 5.75rem); aspect-ratio: 1; border-radius: 10px; }
+.person__text { min-width: 0; }
+.person__name { font-size: clamp(1.15rem, 1.5vw, 1.25rem); line-height: 1.05; color: var(--ink); text-wrap: balance; }
+.person__role { margin-top: 0.35rem; font-size: 0.86rem; line-height: 1.4; color: var(--ink-soft); }
+.person__org { margin-top: 0.3rem; }
+.person__org + .person__role { margin-top: 0.55rem; }
+
+@media (min-width: 600px) {
+  .team-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+/* Both groups subgrid the same columns and rows, so the label rules and each row of portraits line up across them. */
+@media (min-width: 1100px) {
+  .team-blocks {
+    --team-row-gap: clamp(2rem, 3vw, 2.5rem);
+    grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--team-row-gap) var(--team-gap);
+  }
+  .team-block { display: grid; grid-template-columns: subgrid; grid-template-rows: subgrid; grid-row: span 3; }
+  .team-block--advisory { grid-column: span 2; }
+  .team-block--management { grid-column: span 3; }
+  .team-block__label { grid-column: 1 / -1; margin-bottom: 0; }
+  .team-grid { grid-column: 1 / -1; grid-row: span 2; gap: var(--team-row-gap) var(--team-gap); }
+  .team-block--advisory .team-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-columns: subgrid; grid-template-rows: subgrid; }
+  .team-block--management .team-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-columns: subgrid; grid-template-rows: subgrid; }
+  .person { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .person__photo { width: min(100%, 12rem); border-radius: var(--r-person); }
+}
 
 /* Partners */
 .logos { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border-top: 1px solid var(--rule); border-left: 1px solid var(--rule); }
@@ -438,7 +500,6 @@ body.menu-open .logo__dark { opacity: 0; }
 .logos img.tall { max-height: 58px; }
 
 /* Media features */
-.media-features__intro { margin-top: 1.5rem; }
 .media-features__grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(1.25rem, 2.5vw, 2rem); }
 .media-feature { min-width: 0; }
 .media-feature__link { display: flex; flex-direction: column; height: 100%; border: 1px solid var(--rule); transition: border-color 0.3s var(--ease); }
@@ -545,19 +606,20 @@ body::after {
   .about__body, .cards { grid-template-columns: 1fr; }
   .facts { grid-template-columns: repeat(3, 1fr); padding: 2rem 0 0; border-left: 0; border-top: 1px solid var(--rule); }
 
-  .program { grid-template-columns: 1fr 1fr; }
-  .program__day { border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule); min-height: 180px; }
-  .program__day:nth-child(2n) { border-right: none; }
+  .program { grid-template-columns: 1fr; }
+  .program__day { flex-direction: row; align-items: center; gap: 1.25rem; min-height: 0; border-right: none; }
+  .program__day + .program__day { border-top: 1px solid var(--rule); }
+  .program__num { flex: none; width: 4.75rem; }
+  .program__theme { margin-top: 0; }
 
   .logos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 
-  .team-grid--3, .team-grid--4, .team-grid--5 { grid-template-columns: repeat(2, 1fr); }
   .foot__grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
   .hero__scroll { display: none; }
 }
 
 @media (max-width: 480px) {
-  .stats, .program, .team-grid--3, .team-grid--4, .team-grid--5, .foot__grid { grid-template-columns: 1fr; }
+  .stats, .program, .foot__grid { grid-template-columns: 1fr; }
   .stats div { border-right: none; border-top: 1px solid var(--rule); }
   .stats div:first-child { border-top: none; }
   .program__day { border-right: none !important; }

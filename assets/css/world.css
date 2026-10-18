@@ -37,6 +37,8 @@ html.world-night .world { background: linear-gradient(180deg, #0b1322 0%, #17213
 html.has-world main,
 html.has-world .foot { position: relative; z-index: 1; }
 html.has-world .deco { display: none; }
+/* Sections share one continuous scene instead of their own bands, so a slightly closer rhythm keeps them connected. */
+html.has-world { --section: clamp(4.5rem, 9vw, 8rem); }
 
 /* ── Ink ── */
 html.has-world body {
@@ -184,7 +186,6 @@ html.has-world .facts { border-color: var(--rule-strong); }
 html.has-world .wc :is(.wc-paris-label, .wc-tlabel--paris, .wc-note--hot text) { fill: var(--ink); }
 
 /* ── Themes: grids become lists ruled across the top, with no cells. ── */
-html.has-world .theme-core { padding: 0; border: 0; margin-bottom: clamp(3rem, 6vw, 4.5rem); }
 html.has-world .subthemes { border: 0; gap: clamp(2rem, 3.5vw, 2.75rem) clamp(1.5rem, 3vw, 2.75rem); }
 html.has-world .subtheme {
   padding: 1.4rem 0 0;
@@ -245,6 +246,11 @@ html.has-world .program__day {
 html.has-world .program__day:hover { box-shadow: none; }
 html.has-world .program__num { color: var(--ink-soft); }
 html.has-world .program__boat { display: none; }
+html.has-world .program__theme { margin-top: 0; }
+@media (max-width: 960px) {
+  html.has-world .program { gap: 0; }
+  html.has-world .program__day { padding: 1.1rem 0; }
+}
 
 /* ── Partners: an open wall of marks ── */
 html.has-world .logos { border: 0; gap: 0.5rem clamp(1rem, 2.5vw, 2rem); }
@@ -252,6 +258,12 @@ html.has-world .logos > div { min-height: 96px; padding: clamp(1rem, 2.5vw, 1.75
 /* Marks are pressed to one deep grey so pale wordmarks hold on the misted forest; hover restores their colour. */
 html.has-world .logos img:not(.badge) { opacity: 1; filter: grayscale(1) brightness(0.42); }
 html.has-world :is(.logos > div:hover, .logos a:focus-visible) img:not(.badge) { filter: none; }
+/* The two organizers lead in their own colours at a larger size, set left on the content edge. */
+html.has-world .logos.logos--2 { display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem clamp(2.5rem, 7vw, 5.5rem); }
+html.has-world .logos.logos--2 > div { min-height: 0; padding: 0.25rem 0; }
+html.has-world .logos.logos--2 img { width: auto; max-width: none; max-height: none; opacity: 1; filter: none; }
+html.has-world .logos.logos--2 img.wide { height: clamp(26px, 3vw, 38px); }
+html.has-world .logos.logos--2 img.badge { height: clamp(56px, 6vw, 76px); }
 
 /* ── Media and Get involved ── */
 html.has-world .media-feature__link { border: 0; }

@@ -38,7 +38,7 @@
   ];
 
   const ITEM_GROUPS = ['.subthemes', '.lenses', '.program', '.speakers-grid', '.team-grid', '.logos', '.facts', '.cards', '.foot__grid'];
-  const SPLIT_HEADINGS = '.head__title, .framework-head h2, .theme-core__title, .warming__title';
+  const SPLIT_HEADINGS = '.head__title, .framework-head h2, .warming__title';
 
   const scrollers = [];
   const measurers = [];
