@@ -35,8 +35,8 @@ function nearestHosts(hosts, centre, radius, max) {
     .map(([h]) => h);
 }
 
-/** Where the boat holds for the opening: out in the channel, square to the tiger's walk. */
-function heroEye(stage, distance = 8.6, height = 2.35) {
+/** Where the boat holds for the opening: a few metres off the shore at deck height, square to the tiger's walk. */
+function heroEye(stage, distance = 5.6, height = 1.75) {
   const [a, m, b] = stage.points;
   const len = Math.hypot(b[0] - a[0], b[1] - a[1]);
   let px = (b[1] - a[1]) / len;

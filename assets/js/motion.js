@@ -27,12 +27,13 @@
     101, 85, 89, 117, 128, 118, // 2020s
   ];
 
-  // Brand palette as a heat scale in °C above the late-1800s average: sage (cool) > linen > mustard > coral (hot).
+  // Heat scale in °C above the late-1800s average: river grey-green (cool) > pale tiger > tiger > ember (hot).
+  // Mid-luminance throughout, so the line reads over the bright day sky and the dark fallback alike.
   const HEAT_STOPS = [
-    [-0.3, [150, 172, 156]],
-    [0.35, [239, 237, 230]],
-    [0.85, [250, 197, 90]],
-    [1.45, [200, 75, 47]],
+    [-0.3, [127, 151, 140]],
+    [0.35, [214, 160, 102]],
+    [0.85, [232, 116, 42]],
+    [1.45, [176, 52, 14]],
   ];
 
   const ITEM_GROUPS = ['.subthemes', '.lenses', '.program', '.speakers-grid', '.team-grid', '.logos', '.facts', '.cards', '.foot__grid'];

@@ -154,7 +154,7 @@ function start() {
     const dz = heroFocus.z - eye.z;
     const wide = smoothstep(0.75, 1.5, camera.aspect);
     const sx = lerp(0.12, 0.42, wide);
-    const sy = lerp(-0.6, -0.34, wide);
+    const sy = lerp(-0.7, -0.48, smoothstep(0.45, 1.5, camera.aspect));
     const tanV = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
     const yaw = Math.atan2(dx, -dz) - Math.atan(sx * viewTan);
     const pitch = Math.atan2(heroFocus.y - eye.y, Math.hypot(dx, dz)) - Math.atan(sy * tanV);
@@ -205,7 +205,7 @@ function start() {
     const w = innerWidth;
     const h = innerHeight;
     camera.aspect = w / h;
-    camera.fov = w / h < 0.85 ? 62 : w / h < 1.2 ? 52 : 45;
+    camera.fov = w / h < 0.6 ? 70 : w / h < 0.85 ? 62 : w / h < 1.2 ? 52 : 45;
     camera.updateProjectionMatrix();
     viewTan = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect;
     renderer.setSize(w, h, false);
@@ -240,7 +240,7 @@ function start() {
     retired = true;
     stats.retired = true;
     stop();
-    root.classList.remove('has-world', 'world-glass', 'world-night');
+    root.classList.remove('has-world', 'world-night');
     if (soundButton && soundButton.getAttribute('aria-pressed') !== 'true') soundButton.hidden = true;
     setTimeout(() => renderer.forceContextLoss(), 1800);
   }
@@ -333,8 +333,7 @@ function start() {
 
     if (!ready) {
       ready = true;
-      root.classList.add('has-world');
-      if (tier > 0) root.classList.add('world-glass');
+    root.classList.add('has-world');
     }
 
     govern(frameMs);
@@ -363,7 +362,7 @@ function start() {
     lost = true;
     nightInk = false;
     stop();
-    root.classList.remove('has-world', 'world-glass', 'world-night');
+    root.classList.remove('has-world', 'world-night');
   });
   // three.js rebuilds its GPU resources on restore, and the first frame back fades the world in again.
   canvas.addEventListener('webglcontextrestored', () => {
