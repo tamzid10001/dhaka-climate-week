@@ -43,6 +43,16 @@ export function roar(A, out, t) {
   if (R() < 0.6) roarOnce(A, out, t + 5.1, 1.3, 110, 0.35);
 }
 
+/** Prusten: the tiger's friendly greeting, a run of soft, fluttering snorts through the nose. */
+export function chuff(A, out, t) {
+  const n = 3 + Math.floor(R() * 3);
+  for (let i = 0; i < n; i++) {
+    const at = t + i * (0.17 + R() * 0.05);
+    chain(noise(A, 'pink', at, 0.16), filter(A, 'bandpass', 420 + R() * 120, 1.4), amp(A, at, [[0, 0], [0.015, 0.55], [0.07, 0.25], [0.16, 0]]), out);
+    chain(osc(A, 'sine', at, 0.14, [[0, 70 + R() * 14], [0.14, 55]]), amp(A, at, [[0, 0], [0.02, 0.28], [0.14, 0]]), out);
+  }
+}
+
 /** Chital alarm: a sharp, high "ak!" — one deer, then others answering. */
 export function chitalAlarm(A, out, t) {
   const reps = 1 + Math.floor(R() * 3);

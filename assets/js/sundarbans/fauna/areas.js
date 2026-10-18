@@ -29,6 +29,30 @@ export function islandArea(c, { side = -1, u: [u0, u1] = [-0.55, 0.55], v: [v0, 
   };
 }
 
+/**
+ * A tiger's stage along the west shore of an island, square to a boat in the channel: three points to
+ * walk between, inland of the mud, and a drinking spot at the waterline facing the boat.
+ */
+export function shoreStage(c, { v: [v0, v1] = [0.5, 0.12], e = 0.42 } = {}) {
+  const cx = riverX(c.z) + c.off;
+  const at = (v, ring) => [cx - c.rx * Math.sqrt(Math.max(0, ring - v * v)), c.z + v * c.rz];
+  const [dx, dz] = at((v0 + v1) / 2, 0.6);
+  return {
+    points: [at(v0, e), at((v0 + v1) / 2, e), at(v1, e)],
+    drink: { x: dx, z: dz, heading: Math.atan2((dx - cx) / (c.rx * c.rx), (dz - c.z) / (c.rz * c.rz)) },
+  };
+}
+
+/** A tiger's stage on a grassy clearing: a beat along the waterline and a drinking spot. */
+export function bankStage(md, { b = 3.2, span = 0.42 } = {}) {
+  const z0 = md.z + md.len * span * 0.5;
+  const z1 = md.z - md.len * span * 0.5;
+  return {
+    points: [[bankX(z0, md.side, b), z0], [bankX(md.z, md.side, b + 1.5), md.z], [bankX(z1, md.side, b), z1]],
+    drink: { x: bankX(md.z + 4, md.side, 1.4), z: md.z + 4, heading: md.side > 0 ? -Math.PI / 2 : Math.PI / 2 },
+  };
+}
+
 /** A grassy clearing on one bank; the waterline sits about 2.5 m onto the bank. */
 export function bankArea(md, { near = 3.5, far = 0.5, span = 1.1 } = {}) {
   return {

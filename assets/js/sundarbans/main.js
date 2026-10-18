@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { clamp, damp, lerp, smoothstep, track } from './util.js';
+import { clamp, damp, dampAngle, lerp, smoothstep, track } from './util.js';
 import { createSky, sampleAtmosphere } from './sky.js';
 import { createTerrain, riverX } from './terrain.js';
 import { createWater } from './water.js';
@@ -8,9 +8,10 @@ import { createFauna } from './fauna.js';
 import { createSoundscape } from './audio.js';
 
 /*
- * The Sundarbans, behind the whole page. Scrolling is a boat journey down one tidal river from morning
- * to night: the camera glides south between the mangroves while the sky turns from the reference's
- * luminous day to golden hour, dusk and a starlit night. Sections float over it as glass.
+ * The Sundarbans, behind the whole page. It opens on a tiger a few metres from the boat; then
+ * scrolling is a journey down one tidal river from morning to night: the camera glides south between
+ * the mangroves while the sky turns from the reference's luminous day to golden hour, dusk and a
+ * starlit night. The page has no panels; its ink turns to moonlight when dusk falls (html.world-night).
  */
 
 const root = document.documentElement;
@@ -91,10 +92,13 @@ function start() {
   });
   scene.add(fauna.group);
 
-  // Scroll → journey.
+  // Scroll → journey. The first screen of scrolling belongs to the tiger: it covers only a few metres of
+  // river while the camera turns from the island to the channel ahead.
   let maxScroll = 1;
+  let heroSpan = 0.06;
   const measure = () => {
     maxScroll = Math.max(1, root.scrollHeight - innerHeight);
+    heroSpan = clamp(innerHeight / maxScroll, 0.02, 0.4);
   };
   const forcedP = params.has('world-p') ? clamp(+params.get('world-p')) : null;
   let pTarget = 0;
@@ -111,50 +115,80 @@ function start() {
   );
 
   const DEPTH = 1000;
-  const OFFSET = [[0, -24], [60, -16], [118, 24], [190, 8], [272, -24], [350, -4], [430, 12], [560, 26], [640, 4], [705, -20], [838, -26], [1000, -8]];
-  const HEIGHT = [[0, 4.4], [80, 6], [160, 9], [272, 6], [380, 11], [480, 8], [560, 5.5], [705, 5], [838, 4], [1000, 3.2]];
-  const LOOK = [[0, 0], [70, 22], [118, 50], [200, 0], [272, -34], [350, 0], [430, 20], [560, 34], [640, 0], [705, -22], [838, -32], [1000, -6]];
+  const HERO_TRAVEL = 26;
+  const OFFSET = [[0, -24], [60, -16], [118, 24], [190, 8], [272, -24], [350, -4], [430, 12], [560, 26], [640, 4], [705, -20], [838, -40], [1000, -8]];
+  const HEIGHT = [[0, 4.4], [80, 6], [160, 9], [272, 6], [380, 11], [480, 8], [560, 5.5], [705, 5], [838, 3.6], [1000, 3.2]];
+  const LOOK = [[0, 0], [70, 22], [118, 50], [200, 0], [272, -34], [350, 0], [430, 20], [560, 34], [640, 0], [705, -22], [838, -38], [1000, -6]];
   const TOD = [[0, 0], [0.5, 0], [0.72, 0.4], [0.86, 0.72], [0.965, 1]];
   const camPos = new THREE.Vector3();
   const camLook = new THREE.Vector3();
   const lookTarget = new THREE.Vector3();
   const forward = new THREE.Vector3();
   const right = new THREE.Vector3();
+  const heroPos = new THREE.Vector3();
+  const heroLook = new THREE.Vector3();
+  const heroFocus = new THREE.Vector3();
   const debugCam = params.get('world-cam')?.split(',').map(Number);
   let heroYaw = 0;
+  let heroPitch = 0;
+  let framed = false;
   let viewTan = 1;
 
+  /** Metres down the river for a scroll progress: a short hold on the tiger, then the full journey. */
+  function depthAt(progress) {
+    const k = HERO_TRAVEL / DEPTH;
+    if (progress <= heroSpan) return DEPTH * k * (progress / heroSpan);
+    return DEPTH * (k + ((1 - k) * (progress - heroSpan)) / (1 - heroSpan));
+  }
+
   /**
-   * Narrow screens see a thin slice of the river, so the opening shot turns just enough to keep the
-   * hero tiger within 62% of the way to the right edge as it wanders, then hands back to the journey.
+   * The opening shot, operated like a documentary camera: it pans after the tiger (damped, so it never
+   * jerks) to keep it right of the copy on wide screens and low in the frame, under the copy, on tall
+   * ones.
    */
-  function frameHero(d, dt) {
-    const fade = 1 - smoothstep(12, 60, d);
-    let turn = 0;
-    if (fade > 0) {
-      const yaw = Math.atan2(lookTarget.x - camPos.x, camPos.z - lookTarget.z);
-      const h = fauna.hero.position;
-      const yawHero = Math.atan2(h.x - camPos.x, camPos.z - h.z);
-      turn = Math.max(0, yawHero - yaw - Math.atan(0.62 * viewTan)) * fade;
+  function aimHero(dt) {
+    const { eye, focus } = fauna.heroShot;
+    if (framed) heroFocus.lerp(focus, 1 - Math.exp(-2.4 * dt));
+    else heroFocus.copy(focus);
+    const dx = heroFocus.x - eye.x;
+    const dz = heroFocus.z - eye.z;
+    const wide = smoothstep(0.75, 1.5, camera.aspect);
+    const sx = lerp(0.12, 0.42, wide);
+    const sy = lerp(-0.6, -0.34, wide);
+    const tanV = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+    const yaw = Math.atan2(dx, -dz) - Math.atan(sx * viewTan);
+    const pitch = Math.atan2(heroFocus.y - eye.y, Math.hypot(dx, dz)) - Math.atan(sy * tanV);
+    if (!framed || reducedMotion.matches) {
+      heroYaw = yaw;
+      heroPitch = pitch;
+      framed = true;
+    } else {
+      heroYaw = dampAngle(heroYaw, yaw, 1.5, dt);
+      heroPitch = damp(heroPitch, pitch, 1.5, dt);
     }
-    heroYaw = reducedMotion.matches ? turn : damp(heroYaw, turn, 1.2, dt);
-    if (heroYaw < 1e-4) return;
-    const dx = lookTarget.x - camPos.x;
-    const dz = lookTarget.z - camPos.z;
-    const c = Math.cos(heroYaw);
-    const s = Math.sin(heroYaw);
-    lookTarget.x = camPos.x + dx * c - dz * s;
-    lookTarget.z = camPos.z + dz * c + dx * s;
+    heroLook.set(
+      eye.x + Math.sin(heroYaw) * Math.cos(heroPitch) * 60,
+      eye.y + Math.sin(heroPitch) * 60,
+      eye.z - Math.cos(heroYaw) * Math.cos(heroPitch) * 60
+    );
   }
 
   function placeCamera(progress, t, dt) {
-    const d = (reducedMotion.matches ? 0 : progress) * DEPTH;
+    const still = reducedMotion.matches;
+    const d = still ? 0 : depthAt(progress);
     const z = -d;
-    const bob = reducedMotion.matches ? 0 : Math.sin(t * 0.45) * 0.14 + Math.sin(t * 0.21) * 0.08;
+    const bob = still ? 0 : Math.sin(t * 0.45) * 0.14 + Math.sin(t * 0.21) * 0.08;
     camPos.set(riverX(z) + track(OFFSET, d), track(HEIGHT, d) + bob, z);
     const lz = z - 62;
     lookTarget.set(riverX(lz) + track(LOOK, d), track(HEIGHT, d) * 0.42, lz);
-    frameHero(d, dt);
+    aimHero(dt);
+    const hero = still ? 1 : 1 - smoothstep(0, heroSpan * 1.05, progress);
+    if (hero > 0) {
+      const eye = fauna.heroShot.eye;
+      heroPos.set(eye.x, eye.y + bob * 0.5, eye.z);
+      camPos.lerp(heroPos, hero);
+      lookTarget.lerp(heroLook, hero);
+    }
     if (debugCam && debugCam.length === 6) {
       camPos.set(debugCam[0], debugCam[1], debugCam[2]);
       lookTarget.set(debugCam[3], debugCam[4], debugCam[5]);
@@ -189,6 +223,7 @@ function start() {
   let ready = false;
   let lost = false;
   let retired = false;
+  let nightInk = false;
   const stats = { tier, dpr, fps: 60 };
   window.__sundarbans = stats;
   if (params.has('world-debug')) Object.assign(stats, { scene, camera, fauna, renderer, sound });
@@ -205,7 +240,7 @@ function start() {
     retired = true;
     stats.retired = true;
     stop();
-    root.classList.remove('has-world', 'world-glass');
+    root.classList.remove('has-world', 'world-glass', 'world-night');
     if (soundButton && soundButton.getAttribute('aria-pressed') !== 'true') soundButton.hidden = true;
     setTimeout(() => renderer.forceContextLoss(), 1800);
   }
@@ -266,6 +301,12 @@ function start() {
     camera.updateMatrixWorld();
 
     const tod = track(TOD, p);
+    // The page's ink follows the light: dark over the bright day, moonlight once the sky has dimmed.
+    const dusk = tod > (nightInk ? 0.44 : 0.52);
+    if (dusk !== nightInk) {
+      nightInk = dusk;
+      root.classList.toggle('world-night', dusk);
+    }
     const atm = sampleAtmosphere(tod);
     const yaw = Math.atan2(forward.x, -forward.z);
     sky.update(atm, { time, camera, yaw, pointer });
@@ -320,8 +361,9 @@ function start() {
   canvas.addEventListener('webglcontextlost', (e) => {
     e.preventDefault();
     lost = true;
+    nightInk = false;
     stop();
-    root.classList.remove('has-world', 'world-glass');
+    root.classList.remove('has-world', 'world-glass', 'world-night');
   });
   // three.js rebuilds its GPU resources on restore, and the first frame back fades the world in again.
   canvas.addEventListener('webglcontextrestored', () => {
