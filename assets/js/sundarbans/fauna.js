@@ -93,6 +93,8 @@ export function createFauna({ hosts = [], tier = 1, emit = () => {} }) {
   const forward = new THREE.Vector3();
   return {
     group,
+    /** The tiger on the hero island, which the opening shot keeps in frame. */
+    hero: actors[0].actor.object,
     /** Ask a visible tiger to roar — used when the visitor turns the sound on. */
     cue(name) {
       if (name !== 'roar') return;

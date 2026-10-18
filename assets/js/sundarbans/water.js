@@ -157,7 +157,19 @@ export function createWater({ reflect = true, resolution = 0.5 } = {}) {
   return {
     mesh,
     uniforms,
-    reflect,
+    get reflect() {
+      return reflect;
+    },
+    /** Stop mirroring on devices that cannot afford the second pass; the shader falls back to sky and forest tints. */
+    dropReflection() {
+      if (!reflect) return;
+      reflect = false;
+      delete material.defines.REFLECT;
+      material.needsUpdate = true;
+      uniforms.uRefl.value = null;
+      target?.dispose();
+      target = null;
+    },
     setSize(w, h) {
       if (!reflect) return;
       const rw = Math.max(2, Math.round(w * resolution));

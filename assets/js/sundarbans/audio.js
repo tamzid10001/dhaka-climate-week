@@ -14,7 +14,7 @@ const smooth = (a, b, v) => {
 const FOREVER = 1e6;
 
 const EVENTS = {
-  'tiger-roar': { voice: V.roar, ref: 40, gain: 1.25, send: 0.45 },
+  'tiger-roar': { voice: V.roar, ref: 40, gain: 1, send: 0.45 },
   'tiger-lap': { voice: (A, o, t) => V.plop(A, o, t, 0.5), ref: 6, gain: 0.45, every: 2 },
   'deer-alarm': { voice: V.chitalAlarm, ref: 22, gain: 0.9 },
   'monkey-call': { voice: V.macaque, ref: 18, gain: 0.8 },
@@ -41,7 +41,7 @@ const CALLERS = [
   { voice: V.frog, when: 'night', rate: 9, near: 8, far: 40, height: 0.3, gain: 0.6 },
 ];
 
-export function createSoundscape() {
+export function createSoundscape({ hrtf = true } = {}) {
   let A = null;
   let beds = null;
   let on = false;
@@ -111,9 +111,10 @@ export function createSoundscape() {
     set(beds.leaves, 0.04 + 0.03 * day);
     set(beds.water, 0.2);
     set(beds.rush, Math.min(0.22, speed * 4), 0.25);
-    beds.cicadas.forEach((n) => set(n, 0.05 * day));
-    beds.crickets.forEach((n) => set(n, 0.032 * Math.max(dusk, night)));
-    set(beds.trill, 0.016 * night);
+    // Insects sit a few dB under wind and water: a shimmer by day, a pulse at night, never a whine.
+    beds.cicadas.forEach((n) => set(n, 0.22 * day));
+    beds.crickets.forEach((n) => set(n, 0.02 * Math.max(dusk, night)));
+    set(beds.trill, 0.012 * night);
   }
 
   function call(c, t) {
@@ -158,11 +159,12 @@ export function createSoundscape() {
     async toggle() {
       if (!A) {
         try {
-          A = createEngine();
+          A = createEngine({ hrtf });
+          beds = buildBeds();
         } catch {
+          A = null;
           return false;
         }
-        beds = buildBeds();
       }
       on = !on;
       const t = A.ctx.currentTime;

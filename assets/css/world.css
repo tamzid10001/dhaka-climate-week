@@ -93,7 +93,7 @@ html.world-glass .foot {
 /* Sound of the forest: off until asked for. */
 .sound {
   position: fixed;
-  left: clamp(0.85rem, 2vw, 1.5rem);
+  right: clamp(0.85rem, 2vw, 1.5rem);
   bottom: clamp(0.85rem, 2vw, 1.5rem);
   z-index: 230;
   display: inline-flex;
@@ -132,6 +132,10 @@ html.world-glass .foot {
   pointer-events: none;
   animation: sound-invite 2.8s var(--ease) 3.5s infinite;
 }
+/* A confirmation toast shares this corner; the sound control steps up out of its way. */
+html:has(.toast.show) .sound,
+html:has(.toast.show) .sound:active { translate: 0 -4.1rem; }
+
 @keyframes sound-eq { 0%, 100% { transform: scaleY(0.25); } 50% { transform: scaleY(1); } }
 @keyframes sound-invite { 0% { opacity: 0.75; transform: scale(1); } 100% { opacity: 0; transform: scale(1.18, 1.6); } }
 

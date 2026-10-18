@@ -52,8 +52,10 @@ function forestImpulse(ctx, seconds = 2.6) {
   return buf;
 }
 
-export function createEngine() {
+export function createEngine({ hrtf = true } = {}) {
   const AC = window.AudioContext || window.webkitAudioContext;
+  // iOS mutes Web Audio under the silent switch unless the session is declared as playback.
+  if (navigator.audioSession) navigator.audioSession.type = 'playback';
   const ctx = new AC({ latencyHint: 'playback' });
   const master = ctx.createGain();
   master.gain.value = 0;
@@ -75,7 +77,7 @@ export function createEngine() {
   reverb.connect(wet).connect(master);
   const noise = { white: noiseBuffer(ctx, 'white'), pink: noiseBuffer(ctx, 'pink'), brown: noiseBuffer(ctx, 'brown') };
   const listenerPos = { x: 0, y: 0, z: 0 };
-  return { ctx, master, reverb, noise, listenerPos };
+  return { ctx, master, reverb, noise, listenerPos, hrtf };
 }
 
 /** Smooth automation through [secondsFromT, value] points. */
@@ -166,7 +168,7 @@ export function spot(A, p, { ref = 12, gain = 1, send = 0.3 } = {}) {
   air.type = 'lowpass';
   air.frequency.value = Math.max(900, 18000 * Math.exp(-d / 150));
   const pan = ctx.createPanner();
-  pan.panningModel = 'HRTF';
+  pan.panningModel = A.hrtf ? 'HRTF' : 'equalpower';
   pan.distanceModel = 'inverse';
   pan.refDistance = ref;
   pan.rolloffFactor = 1.1;

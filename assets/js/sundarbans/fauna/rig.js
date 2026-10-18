@@ -48,29 +48,62 @@ export function blobShadow(w, l) {
 }
 
 /**
+ * One draw call per animal: every part is baked into a single geometry in its rest pose and bound
+ * rigidly to the joint it hangs from, so animating the joints drives the skinned mesh.
+ */
+function skin(root, parts, mat) {
+  root.updateMatrixWorld(true);
+  const bones = [];
+  const geos = parts.map(([bone, source]) => {
+    let index = bones.indexOf(bone);
+    if (index < 0) index = bones.push(bone) - 1;
+    const geo = source.index ? source.toNonIndexed() : source.clone();
+    geo.applyMatrix4(bone.matrixWorld);
+    const n = geo.attributes.position.count;
+    const skinIndex = new Float32Array(n * 4);
+    const skinWeight = new Float32Array(n * 4);
+    for (let i = 0; i < n; i++) {
+      skinIndex[i * 4] = index;
+      skinWeight[i * 4] = 1;
+    }
+    geo.setAttribute('skinIndex', new THREE.BufferAttribute(skinIndex, 4));
+    geo.setAttribute('skinWeight', new THREE.BufferAttribute(skinWeight, 4));
+    return geo;
+  });
+  const mesh = new THREE.SkinnedMesh(merge(geos), mat);
+  mesh.bind(new THREE.Skeleton(bones));
+  // Culling uses the rest pose; leave room for a stride, a raised head or a lashing tail.
+  mesh.computeBoundingSphere();
+  mesh.boundingSphere.radius *= 1.3;
+  return mesh;
+}
+
+/**
  * Quadruped skeleton from lofted parts: root (ground, heading) → body (bob, roll) → neck → head → jaw,
  * four legs (hip → knee) and a tail chain. Everything faces +z.
  */
 export function buildRig(spec, mat) {
   const root = new THREE.Group();
   root.rotation.order = 'YXZ';
+  const parts = [];
+  const attach = (joint, geo) => parts.push([joint, geo]);
   const body = new THREE.Group();
   root.add(body);
-  body.add(new THREE.Mesh(loft(spec.torso, { radial: 14, region: 0 }), mat));
+  attach(body, loft(spec.torso, { radial: 14, region: 0 }));
 
   const neck = new THREE.Group();
   neck.position.fromArray(spec.neck.at);
   body.add(neck);
-  if (spec.neck.sections) neck.add(new THREE.Mesh(loft(spec.neck.sections, { radial: 12, region: 0 }), mat));
+  if (spec.neck.sections) attach(neck, loft(spec.neck.sections, { radial: 12, region: 0 }));
   const head = new THREE.Group();
   head.position.fromArray(spec.head.at);
   neck.add(head);
-  head.add(new THREE.Mesh(merge(spec.head.parts), mat));
+  attach(head, merge(spec.head.parts));
   let jaw = null;
   if (spec.head.jaw) {
     jaw = new THREE.Group();
     jaw.position.fromArray(spec.head.jaw.at);
-    jaw.add(new THREE.Mesh(spec.head.jaw.geo, mat));
+    attach(jaw, spec.head.jaw.geo);
     head.add(jaw);
   }
 
@@ -81,12 +114,12 @@ export function buildRig(spec, mat) {
     body.add(hip);
     const up = L.upper.at(-1).z;
     const lo = L.lower.at(-1).z;
-    hip.add(new THREE.Mesh(limb(L.upper, { radial: 9, region: 2 }), mat));
+    attach(hip, limb(L.upper, { radial: 9, region: 2 }));
     const knee = new THREE.Group();
     knee.position.y = -up;
     hip.add(knee);
     const foot = loft(L.foot.map((s) => ({ ...s, y: (s.y || 0) - lo })), { radial: 8, region: L.footRegion ?? 2, along0: up + lo });
-    knee.add(new THREE.Mesh(merge([limb(L.lower, { radial: 8, region: 2, along0: up }), foot]), mat));
+    attach(knee, merge([limb(L.lower, { radial: 8, region: 2, along0: up }), foot]));
     const rest = L.rest || 0;
     const kneeRest = L.kneeRest || 0;
     drop = Math.max(drop, up * Math.cos(rest) + lo * Math.cos(rest + kneeRest) + (L.sole || 0.03) - L.at[1]);
@@ -103,7 +136,7 @@ export function buildRig(spec, mat) {
     else g.position.z = -spec.tail.segments[i - 1].at(-1).z;
     const geo = loft(secs, { radial: 8, region: 3, along0: along });
     geo.rotateY(Math.PI);
-    g.add(new THREE.Mesh(geo, mat));
+    attach(g, geo);
     g.rotation.x = spec.tail.rest?.[i] || 0;
     parent.add(g);
     along += secs.at(-1).z - secs[0].z;
@@ -113,6 +146,7 @@ export function buildRig(spec, mat) {
 
   const baseY = drop;
   body.position.y = baseY;
+  root.add(skin(root, parts, mat));
   return { root, body, neck, head, jaw, legs, tail, baseY, tailRest: spec.tail?.rest || [] };
 }
 

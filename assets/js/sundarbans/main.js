@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { clamp, damp, lerp, track } from './util.js';
+import { clamp, damp, lerp, smoothstep, track } from './util.js';
 import { createSky, sampleAtmosphere } from './sky.js';
 import { createTerrain, riverX } from './terrain.js';
 import { createWater } from './water.js';
@@ -64,7 +64,7 @@ function start() {
   const flora = createFlora({ density: Q.density });
   scene.add(sky.mesh, createTerrain(), water.mesh, flora.group);
 
-  const sound = createSoundscape();
+  const sound = createSoundscape({ hrtf: tier > 0 });
   const fauna = createFauna({
     hosts: flora.hosts,
     tier,
@@ -105,14 +105,40 @@ function start() {
   const forward = new THREE.Vector3();
   const right = new THREE.Vector3();
   const debugCam = params.get('world-cam')?.split(',').map(Number);
+  let heroYaw = 0;
+  let viewTan = 1;
 
-  function placeCamera(progress, t) {
+  /**
+   * Narrow screens see a thin slice of the river, so the opening shot turns just enough to keep the
+   * hero tiger within 62% of the way to the right edge as it wanders, then hands back to the journey.
+   */
+  function frameHero(d, dt) {
+    const fade = 1 - smoothstep(12, 60, d);
+    let turn = 0;
+    if (fade > 0) {
+      const yaw = Math.atan2(lookTarget.x - camPos.x, camPos.z - lookTarget.z);
+      const h = fauna.hero.position;
+      const yawHero = Math.atan2(h.x - camPos.x, camPos.z - h.z);
+      turn = Math.max(0, yawHero - yaw - Math.atan(0.62 * viewTan)) * fade;
+    }
+    heroYaw = reducedMotion.matches ? turn : damp(heroYaw, turn, 1.2, dt);
+    if (heroYaw < 1e-4) return;
+    const dx = lookTarget.x - camPos.x;
+    const dz = lookTarget.z - camPos.z;
+    const c = Math.cos(heroYaw);
+    const s = Math.sin(heroYaw);
+    lookTarget.x = camPos.x + dx * c - dz * s;
+    lookTarget.z = camPos.z + dz * c + dx * s;
+  }
+
+  function placeCamera(progress, t, dt) {
     const d = (reducedMotion.matches ? 0 : progress) * DEPTH;
     const z = -d;
     const bob = reducedMotion.matches ? 0 : Math.sin(t * 0.45) * 0.14 + Math.sin(t * 0.21) * 0.08;
     camPos.set(riverX(z) + track(OFFSET, d), track(HEIGHT, d) + bob, z);
     const lz = z - 62;
     lookTarget.set(riverX(lz) + track(LOOK, d), track(HEIGHT, d) * 0.42, lz);
+    frameHero(d, dt);
     if (debugCam && debugCam.length === 6) {
       camPos.set(debugCam[0], debugCam[1], debugCam[2]);
       lookTarget.set(debugCam[3], debugCam[4], debugCam[5]);
@@ -131,6 +157,7 @@ function start() {
     camera.aspect = w / h;
     camera.fov = w / h < 0.85 ? 62 : w / h < 1.2 ? 52 : 45;
     camera.updateProjectionMatrix();
+    viewTan = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect;
     renderer.setSize(w, h, false);
     water.setSize(w * dpr, h * dpr);
     measure();
@@ -149,11 +176,13 @@ function start() {
   let ready = false;
   const stats = { tier, dpr, fps: 60 };
   window.__sundarbans = stats;
-  if (params.has('world-debug')) Object.assign(stats, { scene, camera, fauna, renderer });
+  if (params.has('world-debug')) Object.assign(stats, { scene, camera, fauna, renderer, sound });
 
   function tick(now) {
     raf = requestAnimationFrame(tick);
-    const dt = clamp((now - last) / 1000, 0, 0.05);
+    // The simulation steps at most 50 ms; the governor below needs the frame time as it really was.
+    const frameMs = Math.min(now - last, 250);
+    const dt = clamp(frameMs / 1000, 0, 0.05);
     last = now;
     const still = reducedMotion.matches;
     if (!still) time += dt;
@@ -163,7 +192,7 @@ function start() {
     p = damp(p, pTarget, 3, dt);
     pointer.x = damp(pointer.x, still ? 0 : pointerTarget.x, 3.5, dt);
     pointer.y = damp(pointer.y, still ? 0 : pointerTarget.y, 3.5, dt);
-    placeCamera(p, time);
+    placeCamera(p, time, dt);
     camera.updateMatrixWorld();
 
     const tod = track(TOD, p);
@@ -184,7 +213,7 @@ function start() {
     sun.target.updateMatrixWorld();
 
     water.update(atm, time, fog);
-    flora.update(time, 0.75 + Math.sin(time * 0.13) * 0.35);
+    flora.update(time, 0.75 + Math.sin(time * 0.13) * 0.35, camera.position);
     fauna.update(dt * (still ? 0 : 1), time, { camera, night: atm.night, tod });
     sound.update({ camera, forward, tod, night: atm.night, progress: p, speed: Math.abs(pTarget - p) });
 
@@ -197,8 +226,9 @@ function start() {
       if (tier > 0) root.classList.add('world-glass');
     }
 
-    // Adaptive resolution: hold ~60fps, step down when frames run long, recover when there is headroom.
-    avg = lerp(avg, dt * 1000, 0.05);
+    // Adaptive quality: hold ~60fps by stepping resolution down when frames run long, then giving up the
+    // water's mirror pass if even the lowest resolution is too slow; recover resolution with headroom.
+    avg = lerp(avg, frameMs, 0.05);
     stats.fps = Math.round(1000 / avg);
     if (frame > 90) {
       if (avg > 24) slow++;
@@ -209,6 +239,9 @@ function start() {
         dpr = Math.max(Q.minDpr, dpr - 0.15);
         renderer.setPixelRatio(dpr);
         resize();
+        slow = 0;
+      } else if (slow > 45 && water.reflect) {
+        water.dropReflection();
         slow = 0;
       } else if (fast > 240 && dpr < Math.min(window.devicePixelRatio || 1, Q.dpr)) {
         dpr = Math.min(Q.dpr, dpr + 0.1);

@@ -12,6 +12,8 @@ import { Z_START, Z_END, CHARS, riverX, riverW, heightAt, meadowAt } from './ter
 
 const V3 = THREE.Vector3;
 const UP = new V3(0, 1, 0);
+/** Where bank trees hand over to their distant form: the haze is ~60% and a tree under 50px tall. */
+const DETAIL_REACH = 450;
 
 const tone = (hex, r, h = 0.025, s = 0.08, l = 0.06) =>
   new THREE.Color(hex).offsetHSL((r() - 0.5) * h, (r() - 0.5) * s, (r() - 0.5) * l);
@@ -245,10 +247,15 @@ const e = new THREE.Euler();
 const sc = new V3();
 const ps = new V3();
 
-function instanced(geo, material, items, { layer = 0, chunk = 150 } = {}) {
+/**
+ * Instances grouped into square cells so frustum culling can drop forest beside and behind the boat.
+ * Each cell draws only while the camera is between `from` and `reach` metres away, measured from a
+ * sphere around the trees themselves so a detailed cell and its distant twin hand over exactly.
+ */
+function instanced(geo, material, items, { layer = 0, chunk = 150, from = 0, reach = 950 } = {}) {
   const chunks = new Map();
   for (const it of items) {
-    const k = Math.floor((Z_START - it.z) / chunk);
+    const k = `${Math.floor((Z_START - it.z) / chunk)}:${Math.floor(it.x / chunk)}`;
     if (!chunks.has(k)) chunks.set(k, []);
     chunks.get(k).push(it);
   }
@@ -267,6 +274,8 @@ function instanced(geo, material, items, { layer = 0, chunk = 150 } = {}) {
     mesh.instanceMatrix.needsUpdate = true;
     if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
     mesh.computeBoundingSphere();
+    const cell = new THREE.Sphere().setFromPoints(list.map((it) => new V3(it.x, it.y, it.z)));
+    Object.assign(mesh.userData, { cell, from, reach });
     if (layer) mesh.layers.set(layer);
     meshes.push(mesh);
   }
@@ -378,6 +387,13 @@ export function createFlora({ density = 1 } = {}) {
   }
 
   const group = new THREE.Group();
+  const cells = [];
+  const plant = (geo, mat, list, opts) => {
+    for (const mesh of instanced(geo, mat, list, opts)) {
+      group.add(mesh);
+      cells.push(mesh);
+    }
+  };
   for (const sp of ['sundari', 'keora', 'garjan', 'gewa', 'nipa']) {
     const near = [SPECIES[sp](11 + sp.length * 7, false), SPECIES[sp](53 + sp.length * 3, false)];
     const far = SPECIES[sp](97 + sp.length, true);
@@ -385,20 +401,32 @@ export function createFlora({ density = 1 } = {}) {
     const nearA = items[sp].filter((it, i) => !it.lod && i % 2 === 0);
     const nearB = items[sp].filter((it, i) => !it.lod && i % 2 === 1);
     const lod = items[sp].filter((it) => it.lod);
-    for (const [geo, list] of [[near[0], nearA], [near[1], nearB], [far, lod]]) {
-      if (list.length) instanced(geo, mat, list).forEach((m) => group.add(m));
+    // Bank trees keep full detail while near; past the haze line their cell hands over to the same
+    // trees in the species' distant form.
+    for (const [geo, list] of [[near[0], nearA], [near[1], nearB]]) {
+      if (!list.length) continue;
+      plant(geo, mat, list, { reach: DETAIL_REACH });
+      plant(far, mat, list, { from: DETAIL_REACH });
     }
+    if (lod.length) plant(far, mat, lod);
   }
-  instanced(SPECIES.goran(7, false), treeMat, items.goran, { layer: 1 }).forEach((m) => group.add(m));
-  instanced(tuft(3), grassMat, items.grass, { layer: 1 }).forEach((m) => group.add(m));
-  instanced(pneumatophore(), rootMat, items.roots, { layer: 1, chunk: 120 }).forEach((m) => group.add(m));
+  // Understorey detail is lost in the haze long before the canopy, so it stops drawing much sooner.
+  plant(SPECIES.goran(7, false), treeMat, items.goran, { layer: 1, reach: 450 });
+  plant(tuft(3), grassMat, items.grass, { layer: 1, reach: 260 });
+  plant(pneumatophore(), rootMat, items.roots, { layer: 1, chunk: 120, reach: 220 });
 
   return {
     group,
     hosts,
-    update(time, wind) {
+    update(time, wind, eye) {
       shared.uTime.value = time;
       shared.uWind.value = wind;
+      if (!eye) return;
+      for (const mesh of cells) {
+        const { cell, from, reach } = mesh.userData;
+        const d = Math.max(0, cell.distanceToPoint(eye));
+        mesh.visible = d >= from && d < reach;
+      }
     },
   };
 }
