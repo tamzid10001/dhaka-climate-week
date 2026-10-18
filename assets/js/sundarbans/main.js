@@ -18,15 +18,27 @@ const canvas = document.querySelector('[data-world]');
 const soundButton = document.querySelector('[data-sound]');
 const params = new URLSearchParams(location.search);
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+// `?world-tier=0|1|2` pins the quality and keeps the world running on any device, for debugging.
+const forced = params.has('world-tier');
 
 function pickTier() {
-  if (params.has('world-tier')) return clamp(+params.get('world-tier'), 0, 2);
+  if (forced) return clamp(+params.get('world-tier'), 0, 2);
   const coarse = matchMedia('(pointer: coarse)').matches;
   const small = Math.min(innerWidth, innerHeight) < 700;
   const cores = navigator.hardwareConcurrency || 4;
   const memory = navigator.deviceMemory || 8;
   if (coarse || small || cores <= 4 || memory <= 4) return 0;
   return cores >= 8 && memory >= 8 ? 2 : 1;
+}
+
+/** SwiftShader, llvmpipe and Windows' Basic Render Driver draw WebGL on the CPU; those visitors get the static design. */
+function softwareRenderer(gl) {
+  let name = String(gl.getParameter(gl.RENDERER));
+  if (/^webkit/i.test(name)) {
+    const info = gl.getExtension('WEBGL_debug_renderer_info');
+    if (info) name = String(gl.getParameter(info.UNMASKED_RENDERER_WEBGL));
+  }
+  return /swiftshader|llvmpipe|softpipe|software|basic render/i.test(name);
 }
 
 function start() {
@@ -42,6 +54,10 @@ function start() {
   try {
     renderer = new THREE.WebGLRenderer({ canvas, antialias: Q.aa, powerPreference: 'high-performance', stencil: false });
   } catch {
+    return;
+  }
+  if (!forced && softwareRenderer(renderer.getContext())) {
+    renderer.dispose();
     return;
   }
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -170,18 +186,72 @@ function start() {
   let last = performance.now();
   let raf = 0;
   let frame = 0;
-  let slow = 0;
-  let fast = 0;
-  let avg = 16;
   let ready = false;
+  let lost = false;
+  let retired = false;
   const stats = { tier, dpr, fps: 60 };
   window.__sundarbans = stats;
   if (params.has('world-debug')) Object.assign(stats, { scene, camera, fauna, renderer, sound });
 
+  function setDpr(value) {
+    dpr = value;
+    stats.dpr = dpr;
+    renderer.setPixelRatio(dpr);
+    resize();
+  }
+
+  /** Hand the page back to the static design, fading the world out before releasing the GPU. */
+  function retire() {
+    retired = true;
+    stats.retired = true;
+    stop();
+    root.classList.remove('has-world', 'world-glass');
+    if (soundButton && soundButton.getAttribute('aria-pressed') !== 'true') soundButton.hidden = true;
+    setTimeout(() => renderer.forceContextLoss(), 1800);
+  }
+
+  /*
+   * Adaptive quality, timed in wall-clock milliseconds so a struggling device reacts as quickly as a capable
+   * one: step resolution down while frames run long, then drop the water's mirror pass, and if even that
+   * cannot hold ~18fps, retire the world rather than drag the whole page down with it. Resolution climbs
+   * back with sustained headroom. A lone long gap after smooth frames is a pause (a throttled iframe, a
+   * debugger), not a slow frame.
+   */
+  let avg = 16;
+  let prevMs = 16;
+  let warm = 0;
+  let slowFor = 0;
+  let fastFor = 0;
+  let crawlFor = 0;
+  function govern(ms) {
+    const paused = ms > 1000 && prevMs < 100;
+    prevMs = ms;
+    if (paused) return;
+    const span = Math.min(ms, 1000);
+    avg = lerp(avg, Math.min(ms, 250), 1 - Math.exp(-span / 400));
+    stats.fps = Math.round(1000 / avg);
+    warm += span;
+    if (warm < 2000) return;
+    slowFor = avg > 24 ? slowFor + span : 0;
+    fastFor = avg < 13 ? fastFor + span : 0;
+    crawlFor = avg > 55 ? crawlFor + span : 0;
+    if (slowFor > 1200 && (dpr > Q.minDpr || water.reflect)) {
+      if (dpr > Q.minDpr) setDpr(Math.max(Q.minDpr, dpr - 0.15));
+      else water.dropReflection();
+      slowFor = 0;
+      crawlFor = 0;
+    } else if (crawlFor > 3000 && !forced) {
+      retire();
+    } else if (fastFor > 5000 && dpr < Math.min(window.devicePixelRatio || 1, Q.dpr)) {
+      setDpr(Math.min(Q.dpr, dpr + 0.1));
+      fastFor = 0;
+    }
+  }
+
   function tick(now) {
     raf = requestAnimationFrame(tick);
-    // The simulation steps at most 50 ms; the governor below needs the frame time as it really was.
-    const frameMs = Math.min(now - last, 250);
+    // The simulation steps at most 50 ms; the governor needs the frame time as it really was.
+    const frameMs = now - last;
     const dt = clamp(frameMs / 1000, 0, 0.05);
     last = now;
     const still = reducedMotion.matches;
@@ -226,35 +296,11 @@ function start() {
       if (tier > 0) root.classList.add('world-glass');
     }
 
-    // Adaptive quality: hold ~60fps by stepping resolution down when frames run long, then giving up the
-    // water's mirror pass if even the lowest resolution is too slow; recover resolution with headroom.
-    avg = lerp(avg, frameMs, 0.05);
-    stats.fps = Math.round(1000 / avg);
-    if (frame > 90) {
-      if (avg > 24) slow++;
-      else slow = 0;
-      if (avg < 13) fast++;
-      else fast = 0;
-      if (slow > 45 && dpr > Q.minDpr) {
-        dpr = Math.max(Q.minDpr, dpr - 0.15);
-        renderer.setPixelRatio(dpr);
-        resize();
-        slow = 0;
-      } else if (slow > 45 && water.reflect) {
-        water.dropReflection();
-        slow = 0;
-      } else if (fast > 240 && dpr < Math.min(window.devicePixelRatio || 1, Q.dpr)) {
-        dpr = Math.min(Q.dpr, dpr + 0.1);
-        renderer.setPixelRatio(dpr);
-        resize();
-        fast = 0;
-      }
-      stats.dpr = dpr;
-    }
+    govern(frameMs);
   }
 
   function run() {
-    if (raf) return;
+    if (raf || lost || retired) return;
     last = performance.now();
     raf = requestAnimationFrame(tick);
   }
@@ -273,8 +319,16 @@ function start() {
   });
   canvas.addEventListener('webglcontextlost', (e) => {
     e.preventDefault();
+    lost = true;
     stop();
     root.classList.remove('has-world', 'world-glass');
+  });
+  // three.js rebuilds its GPU resources on restore, and the first frame back fades the world in again.
+  canvas.addEventListener('webglcontextrestored', () => {
+    lost = false;
+    ready = false;
+    warm = 0;
+    run();
   });
   run();
 

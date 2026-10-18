@@ -1,6 +1,7 @@
 /* ── The Sundarbans world (assets/js/sundarbans) ──────────────────────────────
    A fixed WebGL scene behind the page. Everything below is scoped to html.has-world, which the
-   script adds after its first frame, so without WebGL the original design stays exactly as it was.
+   script adds after its first frame and removes if the device cannot keep up, so without a capable
+   GPU the original design stays exactly as it was.
    html.world-glass (capable devices) adds frosted glass; lighter devices get near-opaque panels. */
 
 .world {
@@ -130,7 +131,7 @@ html.world-glass .foot {
   border: 1px solid var(--mustard);
   opacity: 0;
   pointer-events: none;
-  animation: sound-invite 2.8s var(--ease) 3.5s infinite;
+  animation: sound-invite 2.8s var(--ease) 3.5s 4;
 }
 /* A confirmation toast shares this corner; the sound control steps up out of its way. */
 html:has(.toast.show) .sound,
