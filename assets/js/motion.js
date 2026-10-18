@@ -27,13 +27,12 @@
     101, 85, 89, 117, 128, 118, // 2020s
   ];
 
-  // Brand palette as a diverging scale: forest green (cool) > linen > mustard > coral (hot).
-  const STRIPE_STOPS = [
-    [-0.5, [27, 77, 46]],
-    [-0.25, [36, 92, 56]],
-    [0.12, [239, 237, 230]],
-    [0.6, [250, 197, 90]],
-    [1.28, [200, 75, 47]],
+  // Brand palette as a heat scale in °C above the late-1800s average: sage (cool) > linen > mustard > coral (hot).
+  const HEAT_STOPS = [
+    [-0.3, [150, 172, 156]],
+    [0.35, [239, 237, 230]],
+    [0.85, [250, 197, 90]],
+    [1.45, [200, 75, 47]],
   ];
 
   const ITEM_GROUPS = ['.subthemes', '.lenses', '.program', '.speakers-grid', '.team-grid', '.logos', '.facts', '.cards', '.foot__grid'];
@@ -72,11 +71,11 @@
     requestFrame();
   }
 
-  function stripeColor(value) {
+  function heatColor(value) {
     let i = 1;
-    while (i < STRIPE_STOPS.length - 1 && value > STRIPE_STOPS[i][0]) i++;
-    const [v0, c0] = STRIPE_STOPS[i - 1];
-    const [v1, c1] = STRIPE_STOPS[i];
+    while (i < HEAT_STOPS.length - 1 && value > HEAT_STOPS[i][0]) i++;
+    const [v0, c0] = HEAT_STOPS[i - 1];
+    const [v1, c1] = HEAT_STOPS[i];
     const t = clamp((value - v0) / (v1 - v0), 0, 1);
     const [r, g, b] = c0.map((channel, k) => Math.round(channel + (c1[k] - channel) * t));
     return `rgb(${r}, ${g}, ${b})`;
@@ -87,7 +86,7 @@
     return `${sign}${Math.abs(value).toFixed(2)}\u00b0C`;
   }
 
-  /* ---------- Signature: scroll-driven warming stripes ---------- */
+  /* ---------- Signature: scroll-driven temperature chart with a live thermometer ---------- */
   function initWarming() {
     const section = document.querySelector('[data-warming]');
     const figure = section && section.querySelector('[data-w-figure]');
@@ -97,102 +96,307 @@
     const swatchEl = section.querySelector('[data-w-swatch]');
     const noteEl = section.querySelector('[data-w-note]');
 
-    const values = GISTEMP.map((v) => v / 100);
-    const count = values.length;
-    const lastYear = GISTEMP_FIRST_YEAR + count - 1;
-    let maxIndex = 0;
+    const firstYear = GISTEMP_FIRST_YEAR;
+    const count = GISTEMP.length;
+    const lastYear = firstYear + count - 1;
+    // Re-baselined from NASA's 1951-1980 reference to 1880-1900, the earliest years of the record and a
+    // common stand-in for pre-industrial levels, so the 1.5°C Paris line sits where it belongs.
+    const baseline = GISTEMP.slice(0, 21).reduce((sum, v) => sum + v, 0) / 2100;
+    const values = GISTEMP.map((v) => v / 100 - baseline);
+
     let minIndex = 0;
+    let maxIndex = 0;
+    let best = -Infinity;
+    const records = [];
     values.forEach((v, i) => {
-      if (v > values[maxIndex]) maxIndex = i;
       if (v < values[minIndex]) minIndex = i;
+      if (v > values[maxIndex]) maxIndex = i;
+      if (v > best) {
+        best = v;
+        if (firstYear + i >= 1930) records.push(i);
+      }
     });
-    const min = values[minIndex];
-    const max = values[maxIndex];
-    const colors = values.map(stripeColor);
-    const PAD = 0.1;
-    const ys = values.map((v) => 1 - (PAD + ((v - min) / (max - min)) * (1 - PAD * 2)));
+    const recordSet = new Set(records);
+    const lastRank = values.filter((v) => v > values[count - 1]).length + 1;
+    const RANKS = ['', 'Hottest', 'Second-hottest', 'Third-hottest'];
 
-    const stripes = document.createElement('div');
-    stripes.className = 'warming__stripes';
-    stripes.setAttribute('role', 'img');
-    stripes.setAttribute(
-      'aria-label',
-      `Warming stripes: one stripe per year of global surface temperature from ${GISTEMP_FIRST_YEAR} to ${lastYear}. ` +
-        `The coolest year was ${GISTEMP_FIRST_YEAR + minIndex} at ${formatAnomaly(min)} and the warmest was ` +
-        `${GISTEMP_FIRST_YEAR + maxIndex} at ${formatAnomaly(max)}, relative to the 1951 to 1980 average.`
-    );
-    const bars = colors.map((color) => {
-      const bar = document.createElement('i');
-      bar.style.setProperty('--c', color);
-      stripes.appendChild(bar);
-      return bar;
-    });
-
-    const SVG_NS = 'http://www.w3.org/2000/svg';
-    const trace = document.createElementNS(SVG_NS, 'svg');
-    trace.setAttribute('class', 'warming__trace');
-    trace.setAttribute('viewBox', '0 0 1000 300');
-    trace.setAttribute('preserveAspectRatio', 'none');
-    trace.setAttribute('aria-hidden', 'true');
-    const d = ys
-      .map((y, i) => `${i ? 'L' : 'M'}${(((i + 0.5) / count) * 1000).toFixed(2)} ${(y * 300).toFixed(2)}`)
-      .join(' ');
-    for (const cls of ['halo', 'line']) {
-      const path = document.createElementNS(SVG_NS, 'path');
-      path.setAttribute('class', cls);
-      path.setAttribute('d', d);
-      trace.appendChild(path);
+    function noteFor(i) {
+      if (i === maxIndex) return 'Hottest year on record';
+      if (i === minIndex) return 'Coldest year on record';
+      if (i === count - 1) return RANKS[lastRank] ? `${RANKS[lastRank]} year on record` : 'Latest full year';
+      if (firstYear + i === 2015) return 'Paris Agreement adopted';
+      if (i === 0) return 'NASA\u2019s record begins';
+      return recordSet.has(i) ? 'New record high' : '';
     }
 
-    const marker = document.createElement('div');
-    marker.className = 'warming__marker';
-    marker.setAttribute('aria-hidden', 'true');
-    marker.appendChild(document.createElement('span')).className = 'warming__dot';
-
-    figure.append(stripes, trace, marker);
-
     function setReadout(i) {
-      figure.style.setProperty('--x', ((i + 0.5) / count).toFixed(4));
-      figure.style.setProperty('--y', ys[i].toFixed(4));
-      if (yearEl) yearEl.textContent = String(GISTEMP_FIRST_YEAR + i);
+      if (yearEl) yearEl.textContent = String(firstYear + i);
       if (anomEl) anomEl.textContent = formatAnomaly(values[i]);
-      if (swatchEl) swatchEl.style.background = colors[i];
-      if (noteEl) {
-        noteEl.textContent =
-          i === maxIndex ? 'Warmest year on record'
-          : i === minIndex ? 'Coolest year on record'
-          : i === count - 1 ? 'Latest full year'
-          : '';
+      if (swatchEl) swatchEl.style.background = heatColor(values[i]);
+      if (noteEl) noteEl.textContent = noteFor(i);
+    }
+
+    const Y_MIN = -0.5;
+    const Y_MAX = 1.75;
+    const PARIS = 1.5;
+    const recentRecords = records.filter((i) => firstYear + i >= 1980).length;
+    const summary =
+      `Line chart of Earth's average surface temperature each year from ${firstYear} to ${lastYear}, compared with the 1880 to 1900 average. ` +
+      `The coldest year was ${firstYear + minIndex} at ${formatAnomaly(values[minIndex])} and the hottest was ` +
+      `${firstYear + maxIndex} at ${formatAnomaly(values[maxIndex])}. Of the ${records.length} record highs set since 1930, ` +
+      `${recentRecords} came after 1980. A dashed line marks the 1.5°C Paris Agreement limit.`;
+    const px = (n) => n.toFixed(1);
+
+    let geo = null;
+    let current = 0;
+    let shownIndex = -1;
+
+    function build() {
+      const W = Math.round(figure.clientWidth);
+      const H = Math.round(figure.clientHeight);
+      if (W < 60 || H < 60 || (geo && geo.W === W && geo.H === H)) return false;
+
+      const compact = W < 560;
+      const tubeW = compact ? 9 : 12;
+      const bulbR = compact ? 9 : 11;
+      const hw = tubeW / 2;
+      const tx = W - (compact ? 38 : 46) - hw;
+      const tubeL = tx - hw;
+      const plotL = 0;
+      const plotR = tubeL - (compact ? 16 : 26);
+      const plotT = compact ? 16 : 20;
+      const plotB = H - (compact ? 26 : 30);
+      const xOf = (i) => plotL + (i / (count - 1)) * (plotR - plotL);
+      const yOf = (v) => plotB - ((v - Y_MIN) / (Y_MAX - Y_MIN)) * (plotB - plotT);
+
+      const pts = values.map((v, i) => [xOf(i), yOf(v)]);
+      const line = `M${pts.map(([x, y]) => `${px(x)} ${px(y)}`).join('L')}`;
+      const area = `${line}L${px(plotR)} ${px(plotB)}L${px(plotL)} ${px(plotB)}Z`;
+
+      const s0 = HEAT_STOPS[0][0];
+      const sN = HEAT_STOPS[HEAT_STOPS.length - 1][0];
+      const gradient = (id, alphas) =>
+        `<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="0" x2="0" y1="${px(yOf(s0))}" y2="${px(yOf(sN))}">` +
+        HEAT_STOPS.map(
+          ([v, c], k) =>
+            `<stop offset="${((v - s0) / (sN - s0)).toFixed(3)}" stop-color="rgb(${c.join(',')})" stop-opacity="${alphas[k]}"/>`
+        ).join('') +
+        '</linearGradient>';
+
+      const gridEnd = px(tubeL - 5);
+      const grid = [0, 0.5, 1, PARIS]
+        .map(
+          (v) =>
+            `<line${v === 0 ? ' class="wc-zero"' : v === PARIS ? ' class="wc-paris"' : ''} x1="${plotL}" x2="${gridEnd}" y1="${px(yOf(v))}" y2="${px(yOf(v))}"/>`
+        )
+        .join('');
+
+      let years = '';
+      for (let year = firstYear; year <= lastYear; year += compact ? 40 : 20) {
+        years += `<text x="${px(xOf(year - firstYear))}" y="${H - 8}" text-anchor="${year === firstYear ? 'start' : 'middle'}">${year}</text>`;
+      }
+
+      const recordDots = records
+        .map((i) => {
+          const [x, y] = pts[i];
+          return (
+            `<g class="wc-rec"><circle class="wc-rec__ping" cx="${px(x)}" cy="${px(y)}" r="3"/>` +
+            `<circle class="wc-rec__dot" cx="${px(x)}" cy="${px(y)}" r="${compact ? 2.4 : 2.9}"/></g>`
+          );
+        })
+        .join('');
+
+      const axisLabels =
+        `<text class="wc-paris-label" x="${plotL}" y="${px(yOf(PARIS) - 8)}">${compact ? '1.5°C Paris limit' : '1.5°C · Paris Agreement limit'}</text>` +
+        `<text class="wc-zero-label" x="${px(plotR)}" y="${px(yOf(0) - 8)}" text-anchor="end">Late-1800s average</text>`;
+
+      const [cx, cy] = pts[minIndex];
+      const [hx, hy] = pts[maxIndex];
+      const notes =
+        `<g class="wc-note"><circle class="wc-note__ring" cx="${px(cx)}" cy="${px(cy)}" r="5.5"/>` +
+        `<text x="${px(cx)}" y="${px(Math.min(cy + 20, plotB - 2))}" text-anchor="middle">Coldest${compact ? '' : ' year'} · ${firstYear + minIndex}</text></g>` +
+        `<g class="wc-note wc-note--hot"><circle class="wc-note__ring" cx="${px(hx)}" cy="${px(hy)}" r="5.5"/>` +
+        `<text x="${px(hx - 10)}" y="${px(hy - 12)}" text-anchor="end">Hottest${compact ? '' : ' year'} · ${firstYear + maxIndex}</text></g>`;
+
+      const bulbCy = plotB + bulbR * 0.45;
+      const tubeTop = yOf(Y_MAX) - 2;
+      const neck = bulbCy - Math.sqrt(bulbR * bulbR - hw * hw);
+      const glass =
+        `M${px(tx - hw)} ${px(tubeTop + hw)}A${hw} ${hw} 0 0 1 ${px(tx + hw)} ${px(tubeTop + hw)}` +
+        `L${px(tx + hw)} ${px(neck)}A${bulbR} ${bulbR} 0 1 1 ${px(tx - hw)} ${px(neck)}Z`;
+      const mw = hw - 2.5;
+      const mR = bulbR - 3;
+      const mNeck = bulbCy - Math.sqrt(mR * mR - mw * mw);
+      const mercuryPath = (level) => {
+        const top = Math.min(level, mNeck - mw);
+        return (
+          `M${(tx - mw).toFixed(2)} ${(top + mw).toFixed(2)}A${mw} ${mw} 0 0 1 ${(tx + mw).toFixed(2)} ${(top + mw).toFixed(2)}` +
+          `L${(tx + mw).toFixed(2)} ${mNeck.toFixed(2)}A${mR} ${mR} 0 1 1 ${(tx - mw).toFixed(2)} ${mNeck.toFixed(2)}Z`
+        );
+      };
+      const tickX = tx + hw + 2;
+      let ticks = '';
+      for (let k = -3; k <= 17; k++) {
+        const y = yOf(k / 10);
+        const major = k % 5 === 0;
+        ticks += `<line class="wc-tick${major ? ' wc-tick--major' : ''}" x1="${px(tickX)}" x2="${px(tickX + (major ? 6 : 3))}" y1="${px(y)}" y2="${px(y)}"/>`;
+        if (major) {
+          ticks += `<text class="wc-tlabel${k === 15 ? ' wc-tlabel--paris' : ''}" x="${px(tickX + 9)}" y="${px(y + 4)}">${k === 0 ? '0°' : `+${(k / 10).toFixed(1)}°`}</text>`;
+        }
+      }
+      const shine =
+        `<line class="wc-shine" x1="${px(tx - hw + 2.3)}" x2="${px(tx - hw + 2.3)}" y1="${px(tubeTop + hw + 3)}" y2="${px(neck - 2)}"/>` +
+        `<circle class="wc-shine-dot" cx="${px(tx - bulbR * 0.38)}" cy="${px(bulbCy - bulbR * 0.38)}" r="${px(bulbR * 0.2)}"/>`;
+
+      figure.innerHTML =
+        `<svg class="wc${compact ? ' is-compact' : ''}" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${summary}">` +
+        `<defs><clipPath id="wc-reveal"><rect class="wc-reveal" x="${plotL - 6}" y="0" width="0" height="${H}"/></clipPath>` +
+        gradient('wc-heat-line', [1, 1, 1, 1]) +
+        gradient('wc-heat-area', [0, 0.06, 0.18, 0.34]) +
+        '</defs>' +
+        `<g class="wc-grid">${grid}</g>` +
+        `<g class="wc-years">${years}</g>` +
+        `<g clip-path="url(#wc-reveal)"><path class="wc-area" fill="url(#wc-heat-area)" d="${area}"/>` +
+        `<path class="wc-line" stroke="url(#wc-heat-line)" d="${line}"/></g>` +
+        `<g class="wc-recs">${recordDots}</g>` +
+        '<line class="wc-leader" x1="0" y1="0" x2="0" y2="0"/>' +
+        `<g class="wc-axis">${axisLabels}</g>` +
+        `<g class="wc-notes">${notes}</g>` +
+        `<g class="wc-thermo"><path class="wc-glass" d="${glass}"/><path class="wc-mercury" d="${mercuryPath(yOf(0))}"/>${shine}${ticks}</g>` +
+        `<g class="wc-head"><circle class="wc-head__halo" r="5"/><circle class="wc-head__dot" r="${compact ? 4.5 : 5.5}"/></g>` +
+        '</svg>';
+
+      const svg = figure.firstElementChild;
+      const recordEls = svg.querySelectorAll('.wc-rec');
+      const noteEls = svg.querySelectorAll('.wc-note');
+      geo = {
+        W,
+        H,
+        svg,
+        xOf,
+        yOf,
+        plotL,
+        tubeL,
+        mercuryPath,
+        reveal: svg.querySelector('.wc-reveal'),
+        leader: svg.querySelector('.wc-leader'),
+        head: svg.querySelector('.wc-head'),
+        headDot: svg.querySelector('.wc-head__dot'),
+        mercury: svg.querySelector('.wc-mercury'),
+        records: records.map((i, k) => [i, recordEls[k]]),
+        notes: [[minIndex, noteEls[0]], [maxIndex, noteEls[1]]],
+      };
+      return true;
+    }
+
+    function render(f, quiet) {
+      if (!geo) return;
+      f = clamp(f, 0, count - 1);
+      const i0 = Math.floor(f);
+      const i1 = Math.min(count - 1, i0 + 1);
+      const v = values[i0] + (values[i1] - values[i0]) * (f - i0);
+      const x = geo.xOf(f);
+      const y = geo.yOf(v);
+      const color = heatColor(v);
+      const yAttr = y.toFixed(2);
+      geo.reveal.setAttribute('width', (x - geo.plotL + 6).toFixed(2));
+      geo.head.setAttribute('transform', `translate(${x.toFixed(2)} ${yAttr})`);
+      geo.headDot.setAttribute('fill', color);
+      geo.mercury.setAttribute('d', geo.mercuryPath(y));
+      geo.mercury.setAttribute('fill', color);
+      geo.leader.setAttribute('x1', (x + 11).toFixed(2));
+      geo.leader.setAttribute('x2', Math.max(x + 11, geo.tubeL - 5).toFixed(2));
+      geo.leader.setAttribute('y1', yAttr);
+      geo.leader.setAttribute('y2', yAttr);
+      geo.svg.classList.toggle('is-near', v >= 1.25);
+      for (const [i, el] of geo.records) {
+        const on = i <= f + 0.001;
+        if (on === el.classList.contains('on')) continue;
+        el.classList.toggle('on', on);
+        el.classList.toggle('ping', on && !quiet);
+      }
+      for (const [i, el] of geo.notes) el.classList.toggle('on', i <= f + 0.001);
+      const index = Math.round(f);
+      if (index !== shownIndex) {
+        shownIndex = index;
+        setReadout(index);
       }
     }
 
-    let shown = 0;
-    function show(n) {
-      n = clamp(n, 1, count);
-      if (n === shown) return;
-      for (let i = shown; i < n; i++) bars[i].classList.add('on');
-      for (let i = n; i < shown; i++) bars[i].classList.remove('on');
-      shown = n;
-      figure.style.setProperty('--p', (n / count).toFixed(4));
-      setReadout(n - 1);
-    }
+    const scrolly = !reduceMotion && window.innerHeight >= 480;
+    if (scrolly) section.classList.add('is-scrolly');
+    figure.classList.add('is-live');
+    current = reduceMotion ? count - 1 : 0;
+    build();
+    render(current, true);
+    watch(figure);
+    const rebuild = () => {
+      if (build()) render(current, true);
+    };
+    if ('ResizeObserver' in window) new ResizeObserver(rebuild).observe(figure);
+    else window.addEventListener('resize', rebuild);
+    if (reduceMotion) return;
 
-    if (reduceMotion || window.innerHeight < 480) {
-      show(count);
-      setReadout(maxIndex);
+    if (!scrolly) {
+      if (!('IntersectionObserver' in window)) {
+        current = count - 1;
+        render(current, true);
+        return;
+      }
+      const play = () => {
+        const start = performance.now();
+        const step = (now) => {
+          const t = clamp((now - start) / 3600, 0, 1);
+          current = (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2) * (count - 1);
+          render(current);
+          if (t < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      };
+      const io = new IntersectionObserver(
+        (entries) => {
+          if (!entries.some((entry) => entry.isIntersecting)) return;
+          io.disconnect();
+          play();
+        },
+        { threshold: 0.4 }
+      );
+      io.observe(figure);
       return;
     }
 
-    section.classList.add('is-scrolly');
     let top = 0;
     let travel = 1;
+    let target = 0;
+    let frame = 0;
+    let last = 0;
+    let primed = false;
+    const glide = (now) => {
+      const dt = last ? Math.min(0.064, (now - last) / 1000) : 1 / 60;
+      last = now;
+      current += (target - current) * (1 - Math.exp(-dt / 0.14));
+      if (Math.abs(target - current) < 0.004) current = target;
+      render(current);
+      if (current === target) {
+        frame = 0;
+        last = 0;
+      } else {
+        frame = requestAnimationFrame(glide);
+      }
+    };
     measurers.push(() => {
       top = section.getBoundingClientRect().top + window.scrollY;
       travel = Math.max(1, section.offsetHeight - window.innerHeight);
     });
     scrollers.push((y) => {
-      const progress = clamp((y - top) / travel, 0, 1);
-      show(Math.round(1 + Math.min(progress / 0.86, 1) * (count - 1)));
+      target = Math.min(clamp((y - top) / travel, 0, 1) / 0.86, 1) * (count - 1);
+      if (!primed) {
+        primed = true;
+        current = target;
+        render(current, true);
+        return;
+      }
+      if (!frame) frame = requestAnimationFrame(glide);
     });
   }
 
