@@ -27,13 +27,14 @@
     101, 85, 89, 117, 128, 118, // 2020s
   ];
 
-  // Heat scale in °C above the late-1800s average: river grey-green (cool) > pale tiger > tiger > ember (hot).
-  // Mid-luminance throughout, so the line reads over the bright day sky and the dark fallback alike.
+  // Heat scale in °C above the late-1800s average: river teal (cool) > ochre > rust > ember (hot).
+  // The chart is read on light ground (the misted day world, or the base design's moon surface), so every
+  // stop is dark enough to hold at least 3:1 against it.
   const HEAT_STOPS = [
-    [-0.3, [127, 151, 140]],
-    [0.35, [214, 160, 102]],
-    [0.85, [232, 116, 42]],
-    [1.45, [176, 52, 14]],
+    [-0.3, [47, 93, 87]],
+    [0.35, [135, 88, 26]],
+    [0.85, [163, 70, 12]],
+    [1.45, [138, 31, 8]],
   ];
 
   const ITEM_GROUPS = ['.subthemes', '.lenses', '.program', '.speakers-grid', '.team-grid', '.logos', '.facts', '.cards', '.foot__grid'];

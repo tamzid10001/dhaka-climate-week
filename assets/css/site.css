@@ -3,8 +3,8 @@
    Colour is the Royal Bengal tiger on the river: stripe ink, moonlit mist, tiger orange.
    Type is Anek Bangla (a Bangla–Latin family by Ek Type) set narrow for display and wide for labels,
    with Hind Siliguri for reading. Components colour themselves through surface roles (--ink, --accent,
-   --rule…), so the same markup reads on light and dark surfaces and, in world.css, on the signboard
-   plates that float over the live river.
+   --rule…), so the same markup reads on light and dark surfaces and, in world.css, as plain type set
+   straight onto the live river by day and by night.
    ========================================================================== */
 
 :root {
@@ -35,7 +35,7 @@
   --r-photo: 16px;
 }
 
-.sec--dark, .strip, .warming, .lens, .foot, .hero, .mobile-menu, .site-header, body.menu-open .site-header {
+.sec--dark, .strip, .lens, .foot, .hero, .mobile-menu, .site-header, body.menu-open .site-header {
   --ink: var(--moon);
   --ink-soft: rgb(237 241 234 / 0.76);
   --accent: var(--tiger);

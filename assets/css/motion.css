@@ -171,9 +171,9 @@ html.motion .media-feature__play { animation: play-pulse 2.6s var(--ease) infini
 
 /* ==========================================================================
    Signature: scroll-driven temperature chart (NASA GISTEMP v4, 1880 to 2025)
-   The heat scale runs from river grey-green through pale tiger to ember (motion.js HEAT_STOPS).
+   The heat scale runs from river teal through ochre and rust to ember (motion.js HEAT_STOPS).
    ========================================================================== */
-.warming { --cool: #7F978C; --warm: #D6A066; --hot: #B0340E; position: relative; background: var(--stripe); color: var(--ink); }
+.warming { --cool: #2F5D57; --warm: #87581A; --rust: #A3460C; --hot: #8A1F08; position: relative; background: var(--moon); color: var(--ink); }
 .warming.is-scrolly { height: 300vh; }
 .warming__sticky {
   position: relative; display: flex; flex-direction: column; justify-content: center;
@@ -199,7 +199,6 @@ html.motion .media-feature__play { animation: play-pulse 2.6s var(--ease) infini
 .wc-grid .wc-zero { stroke: var(--rule-strong); }
 .wc-grid .wc-paris { stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 6 5; shape-rendering: auto; opacity: 0.75; transition: opacity 0.5s ease; }
 .wc.is-near .wc-paris { opacity: 1; }
-.wc-axis text, .wc-notes text { paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
 .wc .wc-paris-label { fill: var(--accent); font-weight: 700; letter-spacing: 0.02em; }
 .wc .wc-zero-label { fill: var(--ink-soft); }
 .wc-line { fill: none; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
@@ -270,7 +269,7 @@ html.motion .warming__figure.m-in .wc-thermo { opacity: 1; translate: 0 0; }
 }
 .warming__legend li { display: inline-flex; align-items: center; gap: 0.55rem; }
 .warming__lg { display: inline-block; flex: none; }
-.warming__lg--line { width: 1.5rem; height: 3px; background: linear-gradient(90deg, var(--cool), var(--warm) 40%, var(--tiger) 68%, var(--hot)); }
+.warming__lg--line { width: 1.5rem; height: 3px; background: linear-gradient(90deg, var(--cool), var(--warm) 40%, var(--rust) 68%, var(--hot)); }
 .warming__lg--dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ink); box-shadow: 0 0 0 2px rgb(232 116 42 / 0.6); }
 .warming__source { margin: 0; font-size: 0.8rem; line-height: 1.55; color: var(--ink-soft); }
 .warming__source span { display: block; margin-top: 0.2rem; color: var(--ink); text-wrap: balance; }

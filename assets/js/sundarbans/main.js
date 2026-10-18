@@ -6,12 +6,14 @@ import { createWater } from './water.js';
 import { createFlora } from './flora.js';
 import { createFauna } from './fauna.js';
 import { createSoundscape } from './audio.js';
+import { createMist } from './mist.js';
 
 /*
  * The Sundarbans, behind the whole page. Scrolling is a journey down one tidal river from morning to
  * night: the camera glides south between the mangroves while the sky turns from the reference's
- * luminous day to golden hour, dusk and a starlit night. Sections have no backgrounds; the copy rides
- * on solid signboard plates (world.css).
+ * luminous day to golden hour and a starlit night. The copy sits on the world as plain type. River mist
+ * on the land keeps the scene in a range the ink can read against, and the sun goes down in one short
+ * stretch at the [data-nightfall] section, where the page switches from mangrove ink to moonlight.
  */
 
 const root = document.documentElement;
@@ -80,6 +82,7 @@ function start() {
   const water = createWater({ reflect: Q.reflect });
   const flora = createFlora({ density: Q.density });
   scene.add(sky.mesh, createTerrain(), water.mesh, flora.group);
+  const mist = createMist();
 
   const sound = createSoundscape({ hrtf: tier > 0 });
   const fauna = createFauna({
@@ -92,9 +95,33 @@ function start() {
   });
   scene.add(fauna.group);
 
+  /*
+   * Time of day by scroll. Day holds through the first half, golden hour arrives with the speakers and
+   * team, and the sun sets in one short stretch centred on the nightfall line (the point where the
+   * [data-nightfall] section reaches the lower part of the screen). A dusk sky runs from navy overhead to a
+   * glowing horizon, which no single ink can read against, so it passes in a few hundred pixels instead of
+   * lingering behind a whole section.
+   */
+  const nightfallSection = document.querySelector('[data-nightfall]');
+  const todFor = (n) => [
+    [0, 0],
+    [Math.min(0.42, n * 0.5), 0],
+    [n - 0.12, 0.4],
+    [n - 0.016, 0.52],
+    [n + 0.016, 0.84],
+    [Math.min(1, n + 0.1), 1],
+  ];
+  let nightfall = 0.84;
+  let TOD = todFor(nightfall);
+
   let maxScroll = 1;
   const measure = () => {
     maxScroll = Math.max(1, root.scrollHeight - innerHeight);
+    if (nightfallSection) {
+      const top = nightfallSection.getBoundingClientRect().top + scrollY;
+      nightfall = clamp((top - innerHeight * 0.6) / maxScroll, 0.3, 0.9);
+      TOD = todFor(nightfall);
+    }
   };
   const forcedP = params.has('world-p') ? clamp(+params.get('world-p')) : null;
   let pTarget = 0;
@@ -114,7 +141,6 @@ function start() {
   const OFFSET = [[0, -24], [60, -16], [118, 24], [190, 8], [272, -24], [350, -4], [430, 12], [560, 26], [640, 4], [705, -20], [838, -26], [1000, -8]];
   const HEIGHT = [[0, 4.4], [80, 6], [160, 9], [272, 6], [380, 11], [480, 8], [560, 5.5], [705, 5], [838, 4], [1000, 3.2]];
   const LOOK = [[0, 0], [70, 22], [118, 50], [200, 0], [272, -34], [350, 0], [430, 20], [560, 34], [640, 0], [705, -22], [838, -32], [1000, -6]];
-  const TOD = [[0, 0], [0.5, 0], [0.72, 0.4], [0.86, 0.72], [0.965, 1]];
   const camPos = new THREE.Vector3();
   const camLook = new THREE.Vector3();
   const lookTarget = new THREE.Vector3();
@@ -164,6 +190,11 @@ function start() {
   let lost = false;
   let retired = false;
   let nightInk = false;
+  // Share of the air's colour laid over land and water. By day it lifts the darkest mangrove crowns to where
+  // mangrove ink still holds 4.5:1 over body copy; at night less is needed, as the forest is already dark.
+  const MIST = { hero: 0.32, page: 0.58, night: 0.8 };
+  const mistColor = new THREE.Color();
+  let mistAmount = MIST.hero;
   const stats = { tier, dpr, fps: 60 };
   window.__sundarbans = stats;
   if (params.has('world-debug')) Object.assign(stats, { scene, camera, fauna, renderer, sound });
@@ -241,8 +272,8 @@ function start() {
     camera.updateMatrixWorld();
 
     const tod = track(TOD, p);
-    // The page's ink follows the light: dark over the bright day, moonlight once the sky has dimmed.
-    const dusk = tod > (nightInk ? 0.44 : 0.52);
+    // The page's ink follows the light: mangrove ink over the day, moonlight from the middle of the sunset.
+    const dusk = p > nightfall + (nightInk ? -0.004 : 0.004);
     if (dusk !== nightInk) {
       nightInk = dusk;
       root.classList.toggle('world-night', dusk);
@@ -268,8 +299,16 @@ function start() {
     fauna.update(dt * (still ? 0 : 1), time, { camera, night: atm.night, tod });
     sound.update({ camera, forward, tod, night: atm.night, progress: p, speed: Math.abs(pTarget - p) });
 
+    // Lighter in the hero, where the title stands in open sky, and settled once the programme begins.
+    const settle = clamp(scrollY / innerHeight);
+    mistAmount = damp(mistAmount, lerp(MIST.hero, MIST.page, settle) * lerp(1, MIST.night, atm.night), 2.5, dt);
+    mist.uniforms.uAmount.value = mistAmount;
+    // Halfway between the fog and the horizon haze: the brightest air in the frame lifts the forest most per step.
+    mist.uniforms.uColor.value.copy(mistColor.copy(atm.fog).lerp(atm.horizon, 0.5));
+
     if (water.reflect && (tier === 2 || frame % 2 === 0)) water.renderReflection(renderer, scene, camera);
     renderer.render(scene, camera);
+    mist.render(renderer);
 
     if (!ready) {
       ready = true;

@@ -1,10 +1,18 @@
 /* ── The Sundarbans world (assets/js/sundarbans) ──────────────────────────────
-   A fixed WebGL scene behind the page. Everything below is scoped to html.has-world, which the
-   script adds after its first frame and removes if the device cannot keep up; without it the base
-   design stands. With the world on, sections lose their backgrounds and every piece of copy rides on a
-   solid mangrove-green plate cut to its content, like the forest department's painted signboards. The
-   river shows through every gap, the type needs no glow, and one palette (mangrove, bone, tiger) holds
-   from morning to night, so nothing has to re-ink when dusk falls. */
+   A fixed WebGL scene behind the page, scoped to html.has-world: the script adds the class after its first
+   frame and removes it if the device cannot keep up, which leaves the base design in place. With the world
+   on, the page is laid out like an event programme printed straight onto the forest. There are no panels,
+   plates, outlines or glows; the scene carries the contrast instead. River mist settles on the land and
+   water (never the sky), and the type is plain: mangrove ink by day with deep rust for large emphasis, then
+   moonlight bone with tiger orange from the Media section on, where the sun goes down. Small type is always
+   ink; tiger marks what can be acted on and the short rules that lead each label. */
+
+/* Registered so the ink can cross-fade at nightfall: one transition on body carries the whole page. */
+@property --ink { syntax: '<color>'; inherits: true; initial-value: #0E1B15; }
+@property --ink-soft { syntax: '<color>'; inherits: true; initial-value: #13201A; }
+@property --accent { syntax: '<color>'; inherits: true; initial-value: #82360A; }
+@property --rule { syntax: '<color>'; inherits: true; initial-value: rgb(14 27 21 / 0.2); }
+@property --rule-strong { syntax: '<color>'; inherits: true; initial-value: rgb(14 27 21 / 0.46); }
 
 .world {
   position: fixed;
@@ -19,7 +27,7 @@
 .world__grain {
   position: absolute;
   inset: 0;
-  opacity: 0.07;
+  opacity: 0.06;
   mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
 }
@@ -30,192 +38,263 @@ html.has-world main,
 html.has-world .foot { position: relative; z-index: 1; }
 html.has-world .deco { display: none; }
 
-html.has-world {
-  --plate: #0F2C23;
-  --bone: #F3EEE2;
-  --r-plate: 16px;
-  --r-tag: 8px;
-  --gap-plate: clamp(0.75rem, 1.4vw, 1rem);
+/* ── Ink ── */
+html.has-world body {
+  --ink: #0E1B15;
+  --ink-soft: #13201A;
+  --accent: #82360A;
+  --rule: rgb(14 27 21 / 0.2);
+  --rule-strong: rgb(14 27 21 / 0.46);
+  --air: rgb(236 242 247 / 0.86);
+  font-weight: 500;
+  transition: --ink 0.7s var(--ease), --ink-soft 0.7s var(--ease), --accent 0.7s var(--ease), --rule 0.7s var(--ease), --rule-strong 0.7s var(--ease);
+}
+html.has-world.world-night body {
+  --ink: #F3EEE2;
+  --ink-soft: #D8D4C9;
+  --accent: #F08A46;
+  --rule: rgb(243 238 226 / 0.2);
+  --rule-strong: rgb(243 238 226 / 0.46);
+  --air: rgb(9 15 29 / 0.82);
 }
 
-/* Every surface is a plate, so the ink is fixed: bone type with tiger accents. */
-html.has-world :is(body, .hero, .strip, .statement, .warming, .sec, .lens, .foot, .mobile-menu, .site-header, .site-header.is-scrolled) {
-  --ink: var(--bone);
-  --ink-soft: rgb(243 238 226 / 0.78);
-  --accent: var(--tiger);
-  --rule: rgb(243 238 226 / 0.16);
-  --rule-strong: rgb(243 238 226 / 0.42);
-  --surface: var(--plate);
+/* Every surface reads the ink from the page instead of setting its own. */
+html.has-world :is(.hero, .strip, .statement, .warming, .sec, .lens, .foot, .site-header) {
+  --ink: inherit;
+  --ink-soft: inherit;
+  --accent: inherit;
+  --rule: inherit;
+  --rule-strong: inherit;
 }
-
-/* The sections themselves stay open to the world. */
-html.has-world :is(.hero, .statement, .warming, .warming__sticky, .sec, .foot),
+html.has-world :is(.hero, .strip, .statement, .warming, .warming__sticky, .sec, .foot),
 html.motion.has-world .hero { background: transparent; }
-html.has-world :is(.speaker__photo, .person__photo) { background: rgb(243 238 226 / 0.08); }
 
-/* ── Plates ── */
-
-/* Tags: the small labels that sit straight on the world. */
-html.has-world :is(.hero__inner > .kicker, .hero__pill, .head__top .kicker, .head__num, .subthemes-block > .kicker, .team-block__label) {
-  width: fit-content;
-  padding: 0.6rem 0.85rem;
-  background: var(--plate);
-  border-radius: var(--r-tag);
-}
-html.has-world .head__top { padding-bottom: 0; margin-bottom: var(--gap-plate); border-bottom: 0; }
-html.has-world .team-block__label { margin-bottom: var(--gap-plate); border-bottom: 0; }
-html.has-world :is(.btn, .hero__date, .framework__pill) { border-radius: var(--r-tag); }
-html.has-world .btn--line:not(:hover) { background: var(--plate); }
-
-/* Display headings: one board cut to the words. A box can't shrink to lines it wrapped, so the
-   heads run on a single line wherever it fits instead of being capped and balanced into two. */
-html.has-world :is(.head__title, .framework-head h2) {
-  width: fit-content;
-  max-width: 100%;
-  padding: 0.17em 0.3em 0.15em;
-  background: var(--plate);
-  border-radius: var(--r-plate);
-  text-wrap: pretty;
-}
-
-/* Copy: boards padded like painted signage. */
-html.has-world :is(.hero__lede, .statement__side, .warming__top > div, .warming__lede, .warming__readout, .warming__key, .about__body > .lede, .media-features__intro, .facts > div) {
-  padding: clamp(1rem, 2vw, 1.35rem) clamp(1.1rem, 2.2vw, 1.5rem);
-  background: var(--plate);
-  border-radius: var(--r-plate);
-}
-html.has-world :is(.statement__big, .theme-core) {
-  padding: clamp(1.25rem, 2.6vw, 2rem) clamp(1.35rem, 3vw, 2.25rem);
-  background: var(--plate);
-  border-radius: var(--r-plate);
-}
-html.has-world :is(.hero__lede, .about__body > .lede, .media-features__intro, .theme-core) { width: fit-content; }
-html.has-world .theme-core { border: 0; }
-html.has-world .media-features__intro { margin-top: var(--gap-plate); }
-
-/* Tiles: grids that shared hairlines become separate boards with the river between them. */
-html.has-world :is(.stats, .facts, .subthemes, .lenses, .program, .logos) {
-  --rule: transparent;
-  gap: var(--gap-plate);
-  padding: 0;
-  border: 0;
-}
-html.has-world :is(.stats > div, .subtheme, .lens, .program__day, .logos > div, .card, .media-feature__link) {
-  background: var(--plate);
-  border-radius: var(--r-plate);
-}
-html.has-world .subtheme::before { display: none; }
-/* The real river runs behind the page, so the drawn one goes; it stays laid out to keep driving the current-day highlight. */
-html.has-world .program__river { visibility: hidden; }
-html.has-world :is(.subtheme, .logos > div) { transition: box-shadow 0.35s var(--ease); }
-html.has-world :is(.subtheme, .logos > div):hover { box-shadow: inset 0 0 0 1px var(--tiger); }
-html.has-world .card:not(.card--accent) { border-color: transparent; }
-html.has-world .media-feature__link { --rule: transparent; overflow: hidden; }
-html.has-world .media-feature__play { border-radius: 50%; }
-
-/* People: rounded portraits set into a board, the name beneath. */
-html.has-world :is(.speaker, .person) {
-  padding: 0.5rem 0.5rem 1.2rem;
-  background: var(--plate);
-  border-radius: calc(var(--r-photo) + 0.5rem);
-}
-html.has-world :is(.speaker__name, .speaker__role, .person__name, .person__role) { padding-inline: 0.65rem; }
-
-/* Partner marks turn bone on their boards; self-contained badges keep their colours. */
-html.has-world .logos img:not(.badge),
-html.has-world .logos > div:hover img:not(.badge),
-html.has-world .logos a:focus-visible img:not(.badge) { filter: brightness(0) invert(1); }
-html.has-world .logos img:not(.badge) { opacity: 0.82; }
-html.has-world .logos > div:hover img:not(.badge) { opacity: 1; }
-html.has-world .logos img.badge { filter: none; opacity: 1; }
-
-/* ── Hero: the title is two boards in the sky over the river. ── */
-html.has-world .hero__bg { opacity: 0; visibility: hidden; transition: opacity 1.2s var(--ease), visibility 0s 1.2s; }
-html.has-world :is(.hero__scrim, .hero__scroll, .hero__wave) { display: none; }
-html.has-world .hero { align-items: flex-start; }
-html.has-world .hero__inner {
-  align-items: flex-start;
-  gap: clamp(0.75rem, 1.6vw, 1.1rem);
-  padding-top: calc(var(--header) + clamp(0.75rem, 4.5vh, 3rem));
-  padding-bottom: 2rem;
-}
-html.has-world .hero__title { max-width: none; }
-html.has-world .hero__title .ln + .ln { margin-top: -0.02em; }
-html.has-world .hero__title .ln > span {
-  padding: 0.04em 0.16em 0;
-  background: var(--plate);
-  border-radius: 0.09em;
-}
-html.has-world .hero__meta { gap: 0.5rem; }
-
-/* ── Header: a floating board with the world visible all around it. ── */
-html.has-world .site-header,
-html.has-world .site-header.is-scrolled {
-  height: var(--header);
-  background: none;
+/* ── Header: open over the hero; once the page runs beneath it, it returns on scroll-up as a pane of the same air. ── */
+html.has-world .site-header {
+  background: transparent;
   -webkit-backdrop-filter: none;
   backdrop-filter: none;
   border-bottom-color: transparent;
 }
-html.has-world .site-header .bar {
-  height: calc(var(--header) - 1rem);
-  padding-inline: clamp(1rem, 1.6vw, 1.25rem) 0.8rem;
-  background: var(--plate);
-  border-radius: var(--r-plate);
+html.has-world .site-header.is-scrolled {
+  background: var(--air);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+  backdrop-filter: blur(16px) saturate(1.2);
+  border-bottom-color: var(--rule);
 }
-html.has-world .site-header .logo__light { opacity: 1; }
-html.has-world .site-header .logo__dark { opacity: 0; }
-html.has-world .menu-btn { height: 38px; border-radius: var(--r-tag); }
-html.has-world .mobile-menu { background: var(--plate); }
-
-html.has-world .strip { background: var(--plate); }
-
-/* The chart's board: box-shadow widens it without changing the box the SVG measures. */
-html.has-world .warming__figure.is-live {
-  background: var(--plate);
-  border-radius: 4px;
-  box-shadow: 0 0 0 clamp(0.6rem, 1.2vw, 1rem) var(--plate);
-}
-
-html.has-world .foot { padding-bottom: 5.5rem; }
-html.has-world .foot > .wrap {
-  padding-inline: clamp(1.25rem, 4vw, 3rem);
-  background: var(--plate);
-  border-radius: var(--r-plate);
+html.has-world .site-header .logo__light { opacity: 0; }
+html.has-world .site-header .logo__dark { opacity: 1; }
+html.has-world.world-night .site-header .logo__light,
+html.has-world body.menu-open .site-header .logo__light { opacity: 1; }
+html.has-world.world-night .site-header .logo__dark,
+html.has-world body.menu-open .site-header .logo__dark { opacity: 0; }
+html.has-world .nav a:is(:hover, .is-active) { color: var(--ink); }
+html.has-world .menu-btn { border-color: transparent; }
+html.has-world body.menu-open .site-header {
+  --ink: var(--moon);
+  --ink-soft: rgb(237 241 234 / 0.76);
+  --accent: var(--tiger);
+  --rule: rgb(237 241 234 / 0.2);
+  --rule-strong: rgb(237 241 234 / 0.5);
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 
-@media (max-width: 960px) {
-  html.has-world .site-header .bar { padding-right: 0.4rem; }
+/* ── Actions: a tiger pill for the thing to do, a plain underlined link for everything else. ── */
+html.has-world .btn:not(.btn--line) {
+  background: var(--tiger);
+  color: var(--stripe);
+  border-color: var(--tiger);
+  border-radius: 999px;
 }
+html.has-world .btn:not(.btn--line):hover {
+  background: #F59A5C;
+  color: var(--stripe);
+  border-color: #F59A5C;
+}
+html.has-world .btn--line,
+html.has-world .btn--line:hover {
+  padding-inline: 0;
+  background: none;
+  color: var(--ink);
+  border-color: transparent;
+}
+html.has-world .btn--line::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(50% + 0.85em);
+  height: 2px;
+  background: var(--tiger);
+  transition: background-color 0.3s var(--ease);
+}
+html.has-world .btn--line:hover::after { background: var(--ink); }
 
-/* Sound of the forest: off until asked for. */
+/* ── Labels: ink after a short tiger rule, so small type never leans on colour. ── */
+html.has-world .kicker { color: var(--ink); }
+html.has-world .kicker::before {
+  content: "";
+  flex: none;
+  width: 1.75rem;
+  height: 2px;
+  background: var(--tiger);
+}
+html.has-world :is(.head__top, .team-block__label) { border-bottom-color: var(--rule-strong); }
+html.has-world .team-block__label { color: var(--ink); }
+html.has-world .lede { color: var(--ink-soft); }
+
+/* Emphasis is set in ink and marked with a tiger stroke: a dark orange word cannot hold contrast against
+   open sky and misted forest at once. In split headings the stroke draws in once the words have risen.
+   Anek's tall Bangla metrics put the Latin baseline 1.25em into the inline box, so the stroke sits just under it. */
+html.has-world :is(.display em, .lens h3 em) {
+  color: var(--ink);
+  background: linear-gradient(var(--tiger), var(--tiger)) 0 1.33em / 100% 0.075em no-repeat;
+}
+html.motion.has-world .m-split em { background-size: 0% 0.075em; transition: background-size 0.9s var(--ease) 0.55s; }
+html.motion.has-world .m-split.m-in em { background-size: 100% 0.075em; }
+html.has-world .hero__title .hero__em { background: none; }
+html.has-world :is(.statement__big b, .warming__anom) { color: var(--ink); }
+
+/* ── Hero: the title stands in open sky over the river; the forest keeps the right of the frame. ── */
+html.has-world .hero__bg { opacity: 0; visibility: hidden; transition: opacity 1.2s var(--ease), visibility 0s 1.2s; }
+html.has-world .hero__scrim { display: none; }
+html.has-world .hero { align-items: flex-start; }
+html.has-world .hero__inner {
+  align-items: flex-start;
+  gap: clamp(1rem, 2.2vw, 1.5rem);
+  padding-top: calc(var(--header) + clamp(1.25rem, 6vh, 4rem));
+  padding-bottom: clamp(3rem, 8vh, 5rem);
+}
+html.has-world .hero__title { max-width: none; }
+html.has-world .hero__lede { max-width: 33rem; color: var(--ink); }
+html.has-world .hero__meta { gap: 0.5rem 1.75rem; }
+html.has-world .hero__date { padding: 0; background: none; color: var(--ink); font-size: 0.86rem; }
+html.has-world .hero__pill { color: var(--ink); }
+html.has-world .hero__actions { align-items: center; gap: 0.75rem 2rem; margin-top: 0.5rem; }
+html.has-world .hero__scroll { color: var(--ink); }
+
+/* ── Statement, stats, facts ── */
+html.has-world .stats { border-top: 0; gap: 2rem clamp(1.25rem, 3vw, 2.5rem); }
+html.has-world .stats > div { padding: 1.4rem 0 0; text-align: left; border: 0; border-top: 1px solid var(--rule-strong); }
+html.has-world .facts { border-color: var(--rule-strong); }
+
+/* ── Warming: the chart draws straight onto the river; labels carry no halo. ── */
+html.has-world .wc :is(.wc-paris-label, .wc-tlabel--paris, .wc-note--hot text) { fill: var(--ink); }
+
+/* ── Themes: grids become lists ruled across the top, with no cells. ── */
+html.has-world .theme-core { padding: 0; border: 0; margin-bottom: clamp(3rem, 6vw, 4.5rem); }
+html.has-world .subthemes { border: 0; gap: clamp(2rem, 3.5vw, 2.75rem) clamp(1.5rem, 3vw, 2.75rem); }
+html.has-world .subtheme {
+  padding: 1.4rem 0 0;
+  border: 0 !important;
+  border-top: 1px solid var(--rule-strong) !important;
+}
+html.has-world .subtheme::before {
+  left: 0;
+  top: -1px;
+  width: 100%;
+  height: 2px;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.5s var(--ease);
+}
+html.has-world .subtheme:hover::before { height: 2px; transform: scaleX(1); }
+html.has-world .subtheme h3 span { color: var(--ink-soft); }
+
+/* ── Signature framework ── */
+html.has-world .framework__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0;
+  background: none;
+  color: var(--ink);
+}
+html.has-world .framework__pill::before,
+html.has-world .framework__pill::after { content: ""; width: 1.75rem; height: 2px; background: var(--tiger); }
+html.has-world .lenses { gap: clamp(2rem, 3.5vw, 2.75rem) clamp(1.5rem, 3vw, 3rem); }
+html.has-world .lens {
+  min-height: 0;
+  padding: 1.5rem 5.5rem 0 0;
+  background: none;
+  border: 0;
+  border-top: 1px solid var(--rule-strong);
+  overflow: visible;
+  transition: border-color 0.35s var(--ease);
+}
+html.has-world .lens:hover { transform: none; border-color: var(--tiger); }
+/* One more ring per widening scope, drawn in the accent so the thin strokes hold against the day sky. */
+html.has-world .lens__ripple { top: 1.1rem; right: 0; width: 4.25rem; height: 4.25rem; stroke: var(--accent); stroke-width: 4.5; }
+html.has-world .lens__dot { fill: var(--accent); }
+html.has-world .lens__ring { opacity: 0.55; }
+html.motion.has-world .lens__ring { animation-name: ring-pulse-world; }
+@keyframes ring-pulse-world { 0%, 100% { opacity: 0.4; } 35% { opacity: 1; } 70% { opacity: 0.4; } }
+
+/* ── Programme ── */
+html.has-world .program { border: 0; gap: 2rem clamp(1rem, 2vw, 1.75rem); }
+html.has-world .program__day {
+  min-height: 0;
+  gap: 1.1rem;
+  padding: 1.5rem 0 0;
+  border: 0 !important;
+  border-top: 1px solid var(--rule-strong) !important;
+  box-shadow: none;
+}
+html.has-world .program__day:hover { box-shadow: none; }
+html.has-world .program__num { color: var(--ink-soft); }
+html.has-world .program__boat { display: none; }
+
+/* ── Partners: an open wall of marks ── */
+html.has-world .logos { border: 0; gap: 0.5rem clamp(1rem, 2.5vw, 2rem); }
+html.has-world .logos > div { min-height: 96px; padding: clamp(1rem, 2.5vw, 1.75rem) 0.5rem; border: 0; }
+/* Marks are pressed to one deep grey so pale wordmarks hold on the misted forest; hover restores their colour. */
+html.has-world .logos img:not(.badge) { opacity: 1; filter: grayscale(1) brightness(0.42); }
+html.has-world :is(.logos > div:hover, .logos a:focus-visible) img:not(.badge) { filter: none; }
+
+/* ── Media and Get involved ── */
+html.has-world .media-feature__link { border: 0; }
+html.has-world .media-feature__visual { border-radius: var(--r-photo); }
+html.has-world .media-feature__body { padding: clamp(1.25rem, 2.5vw, 1.75rem) 0 0; }
+html.has-world .cards { gap: clamp(2rem, 4vw, 3.5rem); }
+html.has-world .card { padding: 1.6rem 0 0; border: 0; border-top: 1px solid var(--rule-strong); box-shadow: none; }
+html.has-world .card--accent { border-top: 2px solid var(--tiger); }
+
+html.has-world .foot { padding-bottom: 5rem; }
+
+/* ── Sound of the forest: a round control in the corner, off until asked for. ── */
 .sound {
   position: fixed;
   right: clamp(0.85rem, 2vw, 1.5rem);
   bottom: clamp(0.85rem, 2vw, 1.5rem);
   z-index: 230;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.7rem;
-  padding: 0.7rem 1.05rem 0.7rem 0.9rem;
-  background: var(--plate, var(--stripe));
-  color: var(--bone, var(--moon));
-  border: 1px solid transparent;
-  border-radius: var(--r-tag, 0);
-  font-family: var(--font-display);
-  font-stretch: var(--wide);
-  font-weight: 600;
-  font-size: 0.68rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  background: var(--ink, var(--stripe));
+  color: var(--tiger);
+  border: 0;
+  border-radius: 50%;
   cursor: pointer;
-  transition: border-color 0.3s var(--ease), translate 0.3s var(--ease);
+  transition: translate 0.3s var(--ease), scale 0.3s var(--ease);
 }
 .sound[hidden] { display: none; }
-.sound:hover { border-color: var(--tiger); }
+.sound:hover { scale: 1.06; }
 .sound:active { translate: 0 1px; }
+html.world-night .sound { color: var(--stripe); }
+.sound [data-sound-label] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
 .sound__bars { display: inline-flex; align-items: flex-end; gap: 2px; height: 14px; }
-.sound__bars i { display: block; width: 2px; height: 100%; background: var(--tiger); transform-origin: bottom; transform: scaleY(0.22); transition: transform 0.4s var(--ease); }
+.sound__bars i { display: block; width: 2px; height: 100%; background: currentColor; transform-origin: bottom; transform: scaleY(0.22); transition: transform 0.4s var(--ease); }
 .sound[aria-pressed="true"] .sound__bars i { animation: sound-eq 1.1s ease-in-out infinite; }
 .sound[aria-pressed="true"] .sound__bars i:nth-child(2) { animation-duration: 0.85s; animation-delay: -0.3s; }
 .sound[aria-pressed="true"] .sound__bars i:nth-child(3) { animation-duration: 1.3s; animation-delay: -0.6s; }
@@ -236,7 +315,7 @@ html:has(.toast.show) .sound,
 html:has(.toast.show) .sound:active { translate: 0 -4.1rem; }
 
 @keyframes sound-eq { 0%, 100% { transform: scaleY(0.25); } 50% { transform: scaleY(1); } }
-@keyframes sound-invite { 0% { opacity: 0.75; transform: scale(1); } 100% { opacity: 0; transform: scale(1.18, 1.6); } }
+@keyframes sound-invite { 0% { opacity: 0.75; transform: scale(1); } 100% { opacity: 0; transform: scale(1.5); } }
 
 @media (prefers-reduced-motion: reduce) {
   .sound__bars i,
