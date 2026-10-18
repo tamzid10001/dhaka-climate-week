@@ -14,9 +14,6 @@ const smooth = (a, b, v) => {
 const FOREVER = 1e6;
 
 const EVENTS = {
-  'tiger-roar': { voice: V.roar, ref: 40, gain: 1, send: 0.45 },
-  'tiger-lap': { voice: (A, o, t) => V.plop(A, o, t, 0.5), ref: 6, gain: 0.45, every: 2 },
-  'tiger-chuff': { voice: V.chuff, ref: 8, gain: 0.8 },
   'deer-alarm': { voice: V.chitalAlarm, ref: 22, gain: 0.9 },
   'monkey-call': { voice: V.macaque, ref: 18, gain: 0.8 },
   branch: { voice: V.rustle, ref: 10, gain: 0.7 },

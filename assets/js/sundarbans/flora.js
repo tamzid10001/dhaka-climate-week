@@ -358,9 +358,8 @@ export function createFlora({ density = 1 } = {}) {
     }
   }
   // Islands: a carpet of roots, young keora on the downstream end, golpata clumps at the tips. The
-  // upstream half stays open; it is where the tiger walks, and on the first island (the opening shot)
-  // the roots thin out almost entirely so nothing stands between the tiger and the boat.
-  for (const [ci, c] of CHARS.entries()) {
+  // upstream half stays open.
+  for (const c of CHARS) {
     const cx = riverX(c.z) + c.off;
     for (let i = 0; i < 1500 * Math.max(density, 0.5); i++) {
       const a = r() * TAU;
@@ -370,7 +369,6 @@ export function createFlora({ density = 1 } = {}) {
       const h = heightAt(x, z);
       if (h < -0.02) continue;
       if (rad < 0.55 && r() < 0.6) continue;
-      if (ci === 0 && Math.cos(a) * rad < 0.35 && Math.sin(a) * rad > -0.12 && r() < 0.9) continue;
       items.roots.push({ x, y: h - 0.03, z, rot: r() * TAU, s: 0.7 + r() * 0.8, hs: 0.6 + r() * 1, tx: (r() - 0.5) * 0.3, tz: (r() - 0.5) * 0.3 });
     }
     for (let i = 0; i < 7; i++) {
@@ -384,8 +382,7 @@ export function createFlora({ density = 1 } = {}) {
     }
     for (const end of [-1, 1]) {
       const z = c.z + end * c.rz * 0.78;
-      const x = cx + (r() - 0.5) * 2 + (ci === 0 && end > 0 ? c.rx * 0.45 : 0);
-      add('nipa', x, heightAt(x, z) - 0.05, z, 0.8 + r() * 0.3);
+      add('nipa', cx + (r() - 0.5) * 2, heightAt(cx, z) - 0.05, z, 0.8 + r() * 0.3);
     }
   }
 

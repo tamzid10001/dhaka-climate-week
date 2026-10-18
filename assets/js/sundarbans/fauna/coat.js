@@ -9,36 +9,6 @@ import { NOISE_GLSL, glslColor as C } from '../util.js';
 export const coatUniforms = { uNight: { value: 0 } };
 
 const PATTERNS = {
-  tiger: /* glsl */ `
-    vec3 orange = mix(${C('#b4561b')}, ${C('#d98633')}, smoothstep(0.55, -0.3, v));
-    vec3 cream = ${C('#efe6d4')};
-    vec3 ink = ${C('#16100b')};
-    col = mix(orange, cream, smoothstep(-0.18, -0.6, v));
-    float warp = vnoise(vec2(a * 3.1, v * 2.3 + s * 2.7)) - 0.5;
-    float warp2 = vnoise(vec2(a * 9.0, v * 6.0 + s * 5.0)) - 0.5;
-    float freq = R == 3.0 ? 24.0 : R == 1.0 ? 38.0 : R == 2.0 ? 30.0 : 27.0;
-    float st = sin(a * freq + warp * 4.2 + warp2 * 1.7 + abs(v) * 0.7);
-    float w = 0.5 + 0.32 * vnoise(vec2(a * 5.0, s * 3.0 + v * 3.0));
-    float aa = fwidth(st) * 1.3;
-    float stripe = smoothstep(w - aa, w + aa, st);
-    float reach = mix(-0.4, 0.45, vnoise(vec2(a * 3.7 + 13.0, s * 1.5)));
-    if (R != 3.0) stripe *= smoothstep(reach - 0.12, reach + 0.08, v);
-    if (R == 2.0) stripe *= 1.0 - smoothstep(0.1, 0.36, a);
-    if (R == 1.0) {
-      float muzzle = smoothstep(0.0, -0.5, v) * smoothstep(0.08, 0.18, a);
-      col = mix(col, cream, muzzle);
-      stripe *= (1.0 - muzzle) * smoothstep(0.2, 0.1, a);
-    }
-    if (R == 6.0) {
-      col = cream;
-      stripe = smoothstep(0.9, 0.97, sin(v * 13.0 + s * 5.0)) * smoothstep(-0.3, 0.3, v);
-    }
-    if (R == 3.0) stripe = max(stripe, smoothstep(0.8, 0.84, a));
-    col = mix(col, ink, stripe);
-    if (R == 4.0) col = mix(ink, cream, smoothstep(0.35, 0.8, v) * smoothstep(0.02, 0.05, a));
-    if (R == 5.0) col = ${C('#cf9b2c')};
-    if (R == 7.0) col = ${C('#3c2a24')};
-  `,
   deer: /* glsl */ `
     vec3 rufous = mix(${C('#94562b')}, ${C('#b97a42')}, smoothstep(0.6, -0.2, v));
     vec3 white = ${C('#efe8dc')};
@@ -88,7 +58,6 @@ const PATTERNS = {
 
 /* Animal eyes catch the dusk light like eyeshine. */
 const EYESHINE = {
-  tiger: `if (R == 5.0) totalEmissiveRadiance += ${C('#cfe88a')} * uNight * 3.0;`,
   deer: `if (R == 5.0) totalEmissiveRadiance += ${C('#e6f1c8')} * uNight * 2.2;`,
 };
 

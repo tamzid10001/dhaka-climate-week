@@ -116,13 +116,6 @@ html.motion .m-item.m-in :is(.speaker__photo, .person__photo) img {
   animation: img-settle 1.8s var(--ease) calc(var(--i, 0) * 85ms + 80ms) backwards;
 }
 
-/* ---------- About: the image rises like the tide ---------- */
-html.motion .about:not(.in) .about__img { clip-path: inset(100% 0 0 0); }
-html.motion .about.in .about__img { animation: tide 1.6s var(--ease-io) 0.1s backwards; }
-html.motion .about.in .about__img img { animation: img-settle 2.2s var(--ease) 0.1s backwards; }
-html.motion .about:not(.in) .about__badge { opacity: 0; }
-html.motion .about.in .about__badge { animation: rise-in 1s var(--ease) 0.85s backwards; }
-
 /* ---------- Four lenses: ripples widen from local to collaboration ---------- */
 .lens { position: relative; overflow: hidden; isolation: isolate; }
 .lens__ripple {

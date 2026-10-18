@@ -1,4 +1,4 @@
-import { osc, noise, filter, amp, chain, wobble, shaperCurve } from './engine.js';
+import { osc, noise, filter, amp, chain, wobble } from './engine.js';
 
 /*
  * The calls of the Sundarbans, synthesised: each voice is (A, out, t) and schedules itself from time t.
@@ -12,44 +12,6 @@ function note(A, out, t, dur, freq, gain, { type = 'sine', h2 = 0.12, attack = 0
   if (h2) {
     const o2 = osc(A, 'sine', t, dur, freq.map(([s, f]) => [s, f * 2]));
     chain(o2, amp(A, t, [[0, 0], [attack, gain * h2], [dur, 0]]), out);
-  }
-}
-
-/** Bengal tiger: a rough, formant-shaped "aaaouungh", then one or two fading moans. */
-function roarOnce(A, out, t, dur, peak, level) {
-  const f0 = [[0, peak * 0.45], [dur * 0.18, peak * 0.9], [dur * 0.45, peak], [dur * 0.8, peak * 0.72], [dur, peak * 0.45]];
-  const src = osc(A, 'sawtooth', t, dur, f0);
-  const sub = osc(A, 'sine', t, dur, f0.map(([s, f]) => [s, f * 0.5]));
-  const body = A.ctx.createGain();
-  body.gain.value = 0.5;
-  wobble(A, body.gain, t, dur, 26 + R() * 8, 0.45);
-  const grit = A.ctx.createWaveShaper();
-  grit.curve = shaperCurve(5);
-  src.connect(grit);
-  const f1 = filter(A, 'bandpass', [[0, 320], [dur * 0.35, 720], [dur, 300]], 2.4, t);
-  const f2 = filter(A, 'bandpass', [[0, 850], [dur * 0.35, 1250], [dur, 760]], 3.5, t);
-  grit.connect(f1).connect(body);
-  grit.connect(f2).connect(body);
-  const breath = chain(noise(A, 'pink', t, dur), filter(A, 'bandpass', [[0, 500], [dur * 0.4, 900], [dur, 400]], 1.2, t));
-  const e = amp(A, t, [[0, 0], [dur * 0.12, level], [dur * 0.6, level * 0.8], [dur, 0]]);
-  chain(body, filter(A, 'lowpass', 2600, 0.7), e);
-  chain(breath, amp(A, t, [[0, 0], [dur * 0.15, 0.5], [dur, 0]]), e);
-  chain(sub, amp(A, t, [[0, 0], [dur * 0.2, 0.6], [dur, 0]]), e);
-  e.connect(out);
-}
-export function roar(A, out, t) {
-  roarOnce(A, out, t, 2.3, 150 + R() * 25, 0.9);
-  roarOnce(A, out, t + 2.9, 1.6, 125 + R() * 20, 0.55);
-  if (R() < 0.6) roarOnce(A, out, t + 5.1, 1.3, 110, 0.35);
-}
-
-/** Prusten: the tiger's friendly greeting, a run of soft, fluttering snorts through the nose. */
-export function chuff(A, out, t) {
-  const n = 3 + Math.floor(R() * 3);
-  for (let i = 0; i < n; i++) {
-    const at = t + i * (0.17 + R() * 0.05);
-    chain(noise(A, 'pink', at, 0.16), filter(A, 'bandpass', 420 + R() * 120, 1.4), amp(A, at, [[0, 0], [0.015, 0.55], [0.07, 0.25], [0.16, 0]]), out);
-    chain(osc(A, 'sine', at, 0.14, [[0, 70 + R() * 14], [0.14, 55]]), amp(A, at, [[0, 0], [0.02, 0.28], [0.14, 0]]), out);
   }
 }
 

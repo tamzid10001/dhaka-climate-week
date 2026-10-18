@@ -197,13 +197,3 @@ export function bed(A, { gain = 0, send = 0.15, pan = 0 } = {}) {
   p.connect(s).connect(A.reverb);
   return g;
 }
-
-export function shaperCurve(k = 4) {
-  const n = 1024;
-  const c = new Float32Array(n);
-  for (let i = 0; i < n; i++) {
-    const x = (i / (n - 1)) * 2 - 1;
-    c[i] = ((1 + k) * x) / (1 + k * Math.abs(x));
-  }
-  return c;
-}

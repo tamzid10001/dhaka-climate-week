@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { clamp, damp, dampAngle, lerp, smoothstep, track } from './util.js';
+import { clamp, damp, lerp, track } from './util.js';
 import { createSky, sampleAtmosphere } from './sky.js';
 import { createTerrain, riverX } from './terrain.js';
 import { createWater } from './water.js';
@@ -8,10 +8,10 @@ import { createFauna } from './fauna.js';
 import { createSoundscape } from './audio.js';
 
 /*
- * The Sundarbans, behind the whole page. It opens on a tiger a few metres from the boat; then
- * scrolling is a journey down one tidal river from morning to night: the camera glides south between
- * the mangroves while the sky turns from the reference's luminous day to golden hour, dusk and a
- * starlit night. The page has no panels; its ink turns to moonlight when dusk falls (html.world-night).
+ * The Sundarbans, behind the whole page. Scrolling is a journey down one tidal river from morning to
+ * night: the camera glides south between the mangroves while the sky turns from the reference's
+ * luminous day to golden hour, dusk and a starlit night. Sections have no backgrounds; the copy rides
+ * on solid signboard plates (world.css).
  */
 
 const root = document.documentElement;
@@ -92,13 +92,9 @@ function start() {
   });
   scene.add(fauna.group);
 
-  // Scroll → journey. The first screen of scrolling belongs to the tiger: it covers only a few metres of
-  // river while the camera turns from the island to the channel ahead.
   let maxScroll = 1;
-  let heroSpan = 0.06;
   const measure = () => {
     maxScroll = Math.max(1, root.scrollHeight - innerHeight);
-    heroSpan = clamp(innerHeight / maxScroll, 0.02, 0.4);
   };
   const forcedP = params.has('world-p') ? clamp(+params.get('world-p')) : null;
   let pTarget = 0;
@@ -115,80 +111,25 @@ function start() {
   );
 
   const DEPTH = 1000;
-  const HERO_TRAVEL = 26;
-  const OFFSET = [[0, -24], [60, -16], [118, 24], [190, 8], [272, -24], [350, -4], [430, 12], [560, 26], [640, 4], [705, -20], [838, -40], [1000, -8]];
-  const HEIGHT = [[0, 4.4], [80, 6], [160, 9], [272, 6], [380, 11], [480, 8], [560, 5.5], [705, 5], [838, 3.6], [1000, 3.2]];
-  const LOOK = [[0, 0], [70, 22], [118, 50], [200, 0], [272, -34], [350, 0], [430, 20], [560, 34], [640, 0], [705, -22], [838, -38], [1000, -6]];
+  const OFFSET = [[0, -24], [60, -16], [118, 24], [190, 8], [272, -24], [350, -4], [430, 12], [560, 26], [640, 4], [705, -20], [838, -26], [1000, -8]];
+  const HEIGHT = [[0, 4.4], [80, 6], [160, 9], [272, 6], [380, 11], [480, 8], [560, 5.5], [705, 5], [838, 4], [1000, 3.2]];
+  const LOOK = [[0, 0], [70, 22], [118, 50], [200, 0], [272, -34], [350, 0], [430, 20], [560, 34], [640, 0], [705, -22], [838, -32], [1000, -6]];
   const TOD = [[0, 0], [0.5, 0], [0.72, 0.4], [0.86, 0.72], [0.965, 1]];
   const camPos = new THREE.Vector3();
   const camLook = new THREE.Vector3();
   const lookTarget = new THREE.Vector3();
   const forward = new THREE.Vector3();
   const right = new THREE.Vector3();
-  const heroPos = new THREE.Vector3();
-  const heroLook = new THREE.Vector3();
-  const heroFocus = new THREE.Vector3();
   const debugCam = params.get('world-cam')?.split(',').map(Number);
-  let heroYaw = 0;
-  let heroPitch = 0;
-  let framed = false;
-  let viewTan = 1;
 
-  /** Metres down the river for a scroll progress: a short hold on the tiger, then the full journey. */
-  function depthAt(progress) {
-    const k = HERO_TRAVEL / DEPTH;
-    if (progress <= heroSpan) return DEPTH * k * (progress / heroSpan);
-    return DEPTH * (k + ((1 - k) * (progress - heroSpan)) / (1 - heroSpan));
-  }
-
-  /**
-   * The opening shot, operated like a documentary camera: it pans after the tiger (damped, so it never
-   * jerks) to keep it right of the copy on wide screens and low in the frame, under the copy, on tall
-   * ones.
-   */
-  function aimHero(dt) {
-    const { eye, focus } = fauna.heroShot;
-    if (framed) heroFocus.lerp(focus, 1 - Math.exp(-2.4 * dt));
-    else heroFocus.copy(focus);
-    const dx = heroFocus.x - eye.x;
-    const dz = heroFocus.z - eye.z;
-    const wide = smoothstep(0.75, 1.5, camera.aspect);
-    const sx = lerp(0.12, 0.42, wide);
-    const sy = lerp(-0.7, -0.48, smoothstep(0.45, 1.5, camera.aspect));
-    const tanV = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
-    const yaw = Math.atan2(dx, -dz) - Math.atan(sx * viewTan);
-    const pitch = Math.atan2(heroFocus.y - eye.y, Math.hypot(dx, dz)) - Math.atan(sy * tanV);
-    if (!framed || reducedMotion.matches) {
-      heroYaw = yaw;
-      heroPitch = pitch;
-      framed = true;
-    } else {
-      heroYaw = dampAngle(heroYaw, yaw, 1.5, dt);
-      heroPitch = damp(heroPitch, pitch, 1.5, dt);
-    }
-    heroLook.set(
-      eye.x + Math.sin(heroYaw) * Math.cos(heroPitch) * 60,
-      eye.y + Math.sin(heroPitch) * 60,
-      eye.z - Math.cos(heroYaw) * Math.cos(heroPitch) * 60
-    );
-  }
-
-  function placeCamera(progress, t, dt) {
+  function placeCamera(progress, t) {
     const still = reducedMotion.matches;
-    const d = still ? 0 : depthAt(progress);
+    const d = still ? 0 : progress * DEPTH;
     const z = -d;
     const bob = still ? 0 : Math.sin(t * 0.45) * 0.14 + Math.sin(t * 0.21) * 0.08;
     camPos.set(riverX(z) + track(OFFSET, d), track(HEIGHT, d) + bob, z);
     const lz = z - 62;
     lookTarget.set(riverX(lz) + track(LOOK, d), track(HEIGHT, d) * 0.42, lz);
-    aimHero(dt);
-    const hero = still ? 1 : 1 - smoothstep(0, heroSpan * 1.05, progress);
-    if (hero > 0) {
-      const eye = fauna.heroShot.eye;
-      heroPos.set(eye.x, eye.y + bob * 0.5, eye.z);
-      camPos.lerp(heroPos, hero);
-      lookTarget.lerp(heroLook, hero);
-    }
     if (debugCam && debugCam.length === 6) {
       camPos.set(debugCam[0], debugCam[1], debugCam[2]);
       lookTarget.set(debugCam[3], debugCam[4], debugCam[5]);
@@ -207,7 +148,6 @@ function start() {
     camera.aspect = w / h;
     camera.fov = w / h < 0.6 ? 70 : w / h < 0.85 ? 62 : w / h < 1.2 ? 52 : 45;
     camera.updateProjectionMatrix();
-    viewTan = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * camera.aspect;
     renderer.setSize(w, h, false);
     water.setSize(w * dpr, h * dpr);
     measure();
@@ -297,7 +237,7 @@ function start() {
     p = damp(p, pTarget, 3, dt);
     pointer.x = damp(pointer.x, still ? 0 : pointerTarget.x, 3.5, dt);
     pointer.y = damp(pointer.y, still ? 0 : pointerTarget.y, 3.5, dt);
-    placeCamera(p, time, dt);
+    placeCamera(p, time);
     camera.updateMatrixWorld();
 
     const tod = track(TOD, p);
@@ -385,7 +325,6 @@ function start() {
     soundButton.addEventListener('click', async () => {
       const on = await sound.toggle();
       sync(on);
-      if (on) setTimeout(() => fauna.cue('roar'), 2200);
     });
   }
 }
