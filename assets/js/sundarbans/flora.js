@@ -256,8 +256,8 @@ const SPECIES = {
     const ld = r() * TAU;
     const lx = Math.cos(ld) * lean;
     const lz = Math.sin(ld) * lean;
-    const parts = [bole(H * 0.62, 0.32, 0.15, { seg: lod ? 6 : 9, rows: lod ? 1 : 6, lean, leanDir: ld, color: '#cdc7bf', flare: 0.5 })];
-    if (!lod) for (let i = 0; i < 4; i++) parts.push(fin((i / 4) * TAU + r() * 0.6, 0.9 + r() * 0.5, 1.3 + r() * 0.7, '#bdb7af'));
+    const parts = [bole(H * 0.62, 0.32, 0.15, { seg: lod ? 6 : 9, rows: lod ? 1 : 6, lean, leanDir: ld, color: '#dad5cd', flare: 0.5 })];
+    if (!lod) for (let i = 0; i < 4; i++) parts.push(fin((i / 4) * TAU + r() * 0.6, 0.9 + r() * 0.5, 1.3 + r() * 0.7, '#cbc5bd'));
     const clusters = [{ c: new V3(lx, H - 2, lz), R: 2.9 + r() * 0.4, tint: leafTint(r) }];
     const n = lod ? 4 : 6;
     for (let i = 0; i < n; i++) {
@@ -266,7 +266,7 @@ const SPECIES = {
       const y = H - 4.2 - r() * 2.2;
       const c = new V3(lx + Math.cos(a) * rr, y, lz + Math.sin(a) * rr);
       clusters.push({ c, R: 2.3 + r() * 0.7, tint: leafTint(r) });
-      if (!lod && i % 2 === 0) parts.push(stick(new V3(lx * 0.4, H * 0.5, lz * 0.4), c.clone().multiply(new V3(0.78, 1, 0.78)).setY(y - 0.5), 0.1, 0.05, '#c6c0b8'));
+      if (!lod && i % 2 === 0) parts.push(stick(new V3(lx * 0.4, H * 0.5, lz * 0.4), c.clone().multiply(new V3(0.78, 1, 0.78)).setY(y - 0.5), 0.1, 0.05, '#d2ccc4'));
     }
     const low = lod ? 1 : 2;
     for (let i = 0; i < low; i++) {
@@ -284,7 +284,7 @@ const SPECIES = {
     const ld = r() * TAU;
     const lx = Math.cos(ld) * lean;
     const lz = Math.sin(ld) * lean;
-    const parts = [bole(H * 0.66, 0.25, 0.1, { seg: lod ? 6 : 8, rows: lod ? 1 : 6, lean, leanDir: ld, color: '#d4c8b8', flare: 0.35 })];
+    const parts = [bole(H * 0.66, 0.25, 0.1, { seg: lod ? 6 : 8, rows: lod ? 1 : 6, lean, leanDir: ld, color: '#ded3c4', flare: 0.35 })];
     const n = lod ? 5 : 8;
     const clusters = [];
     for (let i = 0; i < n; i++) {
@@ -303,7 +303,7 @@ const SPECIES = {
   garjan(seed, lod) {
     const r = rng(seed);
     const H = 7 + r() * 2.5;
-    const parts = [bole(H * 0.78, 0.2, 0.1, { seg: lod ? 6 : 8, rows: lod ? 1 : 6, color: '#c6b9a8', flare: 0.2 })];
+    const parts = [bole(H * 0.78, 0.2, 0.1, { seg: lod ? 6 : 8, rows: lod ? 1 : 6, color: '#d2c6b6', flare: 0.2 })];
     const roots = lod ? 5 : 9;
     for (let i = 0; i < roots; i++) {
       const a = (i / roots) * TAU + r() * 0.5;
@@ -332,7 +332,7 @@ const SPECIES = {
   gewa(seed, lod) {
     const r = rng(seed);
     const H = 8 + r() * 2.5;
-    const parts = [bole(H * 0.7, 0.2, 0.09, { seg: lod ? 6 : 8, rows: lod ? 1 : 6, lean: 0.3, leanDir: r() * TAU, color: '#d2c6b6', flare: 0.3 })];
+    const parts = [bole(H * 0.7, 0.2, 0.09, { seg: lod ? 6 : 8, rows: lod ? 1 : 6, lean: 0.3, leanDir: r() * TAU, color: '#dcd1c2', flare: 0.3 })];
     const n = lod ? 4 : 6;
     const clusters = [];
     const red = seed % 2 === 1;
