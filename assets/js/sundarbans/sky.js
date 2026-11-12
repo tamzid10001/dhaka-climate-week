@@ -23,6 +23,7 @@ export const skyUniforms = {
   uSunDisc: { value: 0 },
   uNight: { value: 0 },
   uNightGlow: { value: color('#2b5cf5') },
+  uMoonDir: { value: new THREE.Vector3(0.42, 0.4, -0.81).normalize() },
 };
 
 export const SKY_GLSL = /* glsl */ `
@@ -39,6 +40,7 @@ uniform float uSunGlow;
 uniform float uSunDisc;
 uniform float uNight;
 uniform vec3 uNightGlow;
+uniform vec3 uMoonDir;
 
 float sunDistance(vec3 dir) {
   float el = asin(clamp(dir.y, -1.0, 1.0));
@@ -91,7 +93,6 @@ uniform vec3 uCloudLight;
 uniform vec3 uCloudShade;
 uniform float uCloudCover;
 uniform float uCloudAlpha;
-uniform vec3 uMoonDir;
 uniform vec3 uMoonShadow;
 varying vec3 vWorld;
 
@@ -258,7 +259,6 @@ export function createSky({ layers = 3, octaves = 5 } = {}) {
     uCloudShade: { value: color('#bccfeb') },
     uCloudCover: { value: 0.5 },
     uCloudAlpha: { value: 0.96 },
-    uMoonDir: { value: new THREE.Vector3(0.42, 0.4, -0.81).normalize() },
     uMoonShadow: { value: new THREE.Vector3() },
   };
   const material = new THREE.ShaderMaterial({

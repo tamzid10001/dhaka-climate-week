@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { TAU, loft, merge, paint, rng, damp, clamp, smoothstep } from '../util.js';
 import { riverX, riverW } from '../terrain.js';
 import { rod, ellipsoid } from './rig.js';
+import { withAir } from '../air.js';
 
 const V = (x, y, z) => new THREE.Vector3(x, y, z);
 const col = (g, c) => paint(g, c, { under: 0.72, top: 1.05 });
@@ -162,7 +163,7 @@ export function createBoat({ mat, z0 = -690, z1 = -830, off = 6, emit }) {
     ),
     '#3e2c1f'
   );
-  const roofMat = new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide });
+  const roofMat = withAir(new THREE.MeshLambertMaterial({ vertexColors: true, side: THREE.DoubleSide }));
   const roof = col(new THREE.CylinderGeometry(0.78, 0.78, 2.2, 12, 1, true, -Math.PI / 2, Math.PI).rotateX(-Math.PI / 2).translate(0, 0.5, 0.2), '#8c6c3e');
   const man = merge([
     col(rod(V(0, 0.5, -2.2), V(0, 1.05, -2.15), 0.13, 0.12, 0, 8), '#3b5f7c'),

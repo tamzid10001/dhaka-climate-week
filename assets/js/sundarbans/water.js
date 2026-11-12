@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { NOISE_GLSL } from './util.js';
 import { SKY_GLSL, skyUniforms } from './sky.js';
+import { AIR_PARS_GLSL, airUniforms } from './air.js';
 import { RIVER_GLSL, Z_START, Z_END, HMAP_HALF, createHeightTexture } from './terrain.js';
 
 export const RIPPLES = 20;
@@ -24,6 +25,7 @@ const FRAG = /* glsl */ `
 ${NOISE_GLSL}
 ${SKY_GLSL}
 ${RIVER_GLSL}
+${AIR_PARS_GLSL}
 uniform float uTime;
 uniform sampler2D uRefl;
 uniform sampler2D uHeight;
@@ -62,8 +64,20 @@ vec3 waterNormal(vec2 p, float dist) {
     float env = exp(-x * x * 1.4) * exp(-age * 0.65) * r.w / (1.0 + d * 0.3);
     g += (dv / d) * cos(x * 6.5) * env * 0.7;
   }
+  // Fine chop, two octaves, fading with distance so the far river lies flat and mirror-calm.
+  vec2 q2 = p * 2.3 + vec2(-uTime * 0.22, uTime * 0.27);
+  float m0 = vnoise(q2);
+  g += vec2(vnoise(q2 + vec2(e, 0.0)) - m0, vnoise(q2 + vec2(0.0, e)) - m0) / e * 0.018;
   g /= 1.0 + dist * 0.011;
   return normalize(vec3(-g.x, 1.0, -g.y));
+}
+
+/* A glitter lobe that broadens with distance, as the surface's small waves blur into one bright path. */
+float glitter(vec3 N, vec3 V, vec3 L, float dist) {
+  vec3 H = normalize(V + L);
+  float nh = max(dot(N, H), 0.0);
+  float k = mix(1400.0, 160.0, 1.0 - exp(-dist * 0.0045));
+  return pow(nh, k) * (k * 0.0022) + pow(nh, 30.0) * 0.045;
 }
 
 void main() {
@@ -79,38 +93,49 @@ void main() {
 
   vec3 R = reflect(-V, N);
   #ifdef REFLECT
-    vec2 ruv = vRefl.xy / vRefl.w + N.xz * 0.03;
+    vec2 ruv = vRefl.xy / vRefl.w + N.xz * vec2(0.03, 0.05);
     vec3 refl = texture2D(uRefl, ruv).rgb;
   #else
     vec3 refl = skyGradient(normalize(vec3(R.x, abs(R.y), R.z)));
     refl = mix(refl, uForest, smoothstep(0.22, 0.03, R.y) * 0.85);
   #endif
 
+  // Water's own Fresnel (n = 1.33): steep views see into the body, grazing ones see the sky. Silt
+  // scatters light back just under the surface, so a little of the sky returns even looking straight down.
   float facing = max(dot(N, V), 0.0);
-  float fres = 0.08 + 0.92 * pow(1.0 - facing, 4.0);
-  fres = clamp(mix(fres, 1.0, 0.22), 0.0, 1.0);
+  float fres = 0.02 + 0.98 * pow(1.0 - facing, 5.0);
+  float mirror = clamp(fres * 1.15 + 0.07, 0.0, 1.0);
   vec3 body = mix(uShallow, uDeep, smoothstep(0.0, 2.4, depth));
-  vec3 col = mix(body, refl, fres);
+  vec3 col = mix(body, refl, mirror);
 
-  float shore = 1.0 - smoothstep(0.0, 0.4, depth);
+  float shore = 1.0 - smoothstep(0.0, 0.45, depth);
   float lap = sin(uTime * 1.2 + vWorld.x * 0.21 + vWorld.z * 0.13) * 0.05;
-  float foam = smoothstep(0.1 + lap, 0.0 + lap, depth) * (0.5 + 0.5 * vnoise(vWorld.xz * 2.2 + uTime * 0.35));
-  col = mix(col, uShallow * 1.12, shore * 0.38);
-  col = mix(col, uFoam, foam * 0.32);
+  float foam = smoothstep(0.12 + lap, 0.0 + lap, depth) * (0.4 + 0.6 * vnoise(vWorld.xz * 2.6 + uTime * 0.3));
+  col = mix(col, uShallow * 1.1, shore * 0.3);
+  col = mix(col, uFoam, foam * 0.3);
 
-  float rs = max(dot(R, uSunDir), 0.0);
-  col += uSunColor * (pow(rs, 420.0) * 5.0 + pow(rs, 48.0) * 0.14) * uSpec;
+  // The sun's path, and the moon's once the sun has set.
+  float sunUp = smoothstep(-0.03, 0.06, uSunDir.y);
+  col += uSunColor * glitter(N, V, uSunDir, dist) * uSpec * sunUp * (0.35 + 0.65 * fres);
+  col += vec3(0.62, 0.72, 1.0) * glitter(N, V, uMoonDir, dist) * 0.5 * uNight * smoothstep(0.0, 0.1, uMoonDir.y) * (0.35 + 0.65 * fres);
 
-  float f = 1.0 - exp(-uFogDensity * uFogDensity * vFogDepth * vFogDepth);
-  col = mix(col, uFogColor, f);
-  gl_FragColor = vec4(col, 1.0);
+  // The waterline feathers into the mud instead of cutting it.
+  float alpha = smoothstep(-0.02, 0.1, depth) * inMap + (1.0 - inMap);
+  gl_FragColor = vec4(col, alpha);
+  #include <tonemapping_fragment>
   #include <colorspace_fragment>
+  // Fog and the river air are laid on in the output space, as the lit materials do, so the far water meets
+  // the horizon in exactly the sky's colour.
+  float f = 1.0 - exp(-uFogDensity * uFogDensity * vFogDepth * vFogDepth);
+  gl_FragColor.rgb = mix(gl_FragColor.rgb, linearToOutputTexel(vec4(uFogColor, 1.0)).rgb, f);
+  gl_FragColor.rgb = mix(gl_FragColor.rgb, linearToOutputTexel(vec4(uAirColor, 1.0)).rgb, airAmount(vFogDepth, vWorld));
 }
 `;
 
 export function createWater({ reflect = true, resolution = 0.5 } = {}) {
   const uniforms = {
     ...skyUniforms,
+    ...airUniforms,
     uTime: { value: 0 },
     uRefl: { value: null },
     uTexMatrix: { value: new THREE.Matrix4() },
@@ -130,6 +155,7 @@ export function createWater({ reflect = true, resolution = 0.5 } = {}) {
     vertexShader: VERT,
     fragmentShader: FRAG,
     defines: reflect ? { REFLECT: 1 } : {},
+    transparent: true,
   });
   const length = Z_START - Z_END + 400;
   const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1800, length), material);

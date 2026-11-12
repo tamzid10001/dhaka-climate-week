@@ -6,7 +6,7 @@ import { createWater } from './water.js';
 import { createFlora } from './flora.js';
 import { createFauna } from './fauna.js';
 import { createSoundscape } from './audio.js';
-import { createMist } from './mist.js';
+import { airUniforms } from './air.js';
 
 /*
  * The Sundarbans, behind the whole page. Scrolling is a journey down one tidal river from morning to
@@ -64,7 +64,10 @@ function start() {
     return;
   }
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.NoToneMapping;
+  // A neutral filmic curve: sunlit leaves and the glitter on the water roll off instead of clipping, while
+  // the palette's mid-tones stay where they were tuned. The sky draws its own gradient outside the curve.
+  renderer.toneMapping = THREE.NeutralToneMapping;
+  renderer.toneMappingExposure = 1;
   let dpr = Math.min(window.devicePixelRatio || 1, Q.dpr);
   renderer.setPixelRatio(dpr);
 
@@ -78,11 +81,35 @@ function start() {
   const sun = new THREE.DirectionalLight(0xfff3df, 1.5);
   scene.add(hemi, sun, sun.target);
 
+  /*
+   * Sun shadows from one map that travels with the boat: the forest ahead casts onto the mud, the
+   * animals and itself. The map is sized to the stretch the camera looks across; beyond it the haze has
+   * already taken most of the contrast. Phones (tier 0) go without.
+   */
+  const shadows = tier > 0;
+  const SHADOW_HALF = tier === 2 ? 120 : 90;
+  renderer.shadowMap.enabled = shadows;
+  renderer.shadowMap.type = THREE.PCFShadowMap;
+  renderer.shadowMap.autoUpdate = false;
+  if (shadows) {
+    const size = tier === 2 ? 2048 : 1024;
+    sun.castShadow = true;
+    sun.shadow.mapSize.set(size, size);
+    sun.shadow.camera.near = 20;
+    sun.shadow.camera.far = 540;
+    sun.shadow.camera.left = -SHADOW_HALF;
+    sun.shadow.camera.right = SHADOW_HALF;
+    sun.shadow.camera.top = SHADOW_HALF;
+    sun.shadow.camera.bottom = -SHADOW_HALF;
+    sun.shadow.bias = -0.0003;
+    sun.shadow.normalBias = 0.6;
+    sun.shadow.radius = tier === 2 ? 2.5 : 1.5;
+  }
+
   const sky = createSky({ layers: Q.clouds, octaves: Q.octaves });
   const water = createWater({ reflect: Q.reflect });
-  const flora = createFlora({ density: Q.density });
+  const flora = createFlora({ density: Q.density, tier });
   scene.add(sky.mesh, createTerrain(), water.mesh, flora.group);
-  const mist = createMist();
 
   const sound = createSoundscape({ hrtf: tier > 0 });
   const fauna = createFauna({
@@ -145,6 +172,7 @@ function start() {
   const LOOK = [[0, 0], [70, 22], [118, 50], [200, 0], [272, -34], [350, 0], [430, 20], [560, 34], [640, 0], [705, -22], [838, -32], [1000, -6]];
   const camPos = new THREE.Vector3();
   const camLook = new THREE.Vector3();
+  const focus = new THREE.Vector3();
   const lookTarget = new THREE.Vector3();
   const forward = new THREE.Vector3();
   const right = new THREE.Vector3();
@@ -296,8 +324,10 @@ function start() {
     sun.color.copy(atm.light);
     sun.intensity = atm.lightI;
     const az = yaw + atm.sunAz;
-    sun.position.set(Math.sin(az) * Math.cos(atm.lightEl), Math.sin(atm.lightEl), -Math.cos(az) * Math.cos(atm.lightEl)).multiplyScalar(100).add(camera.position);
-    sun.target.position.copy(camera.position);
+    // The light (and its shadow map) is aimed at the river ahead, where the camera is looking.
+    focus.set(camera.position.x + forward.x * SHADOW_HALF * 0.45, 0, camera.position.z + forward.z * SHADOW_HALF * 0.45);
+    sun.position.set(Math.sin(az) * Math.cos(atm.lightEl), Math.sin(atm.lightEl), -Math.cos(az) * Math.cos(atm.lightEl)).multiplyScalar(260).add(focus);
+    sun.target.position.copy(focus);
     sun.target.updateMatrixWorld();
 
     water.update(atm, time, fog);
@@ -308,17 +338,25 @@ function start() {
     // Lighter in the hero, where the title stands in open sky, and settled once the programme begins.
     const settle = clamp(scrollY / innerHeight);
     mistAmount = damp(mistAmount, lerp(heroMist(), MIST.page, settle) * lerp(1, MIST.night, atm.night), 2.5, dt);
-    mist.uniforms.uAmount.value = mistAmount;
+    // The page's amount is the air's average: near surfaces keep a third more of their colour, the far forest
+    // gives up a little more, and a low bank of mist drifts over the water between them (see air.js).
+    airUniforms.uAir.value.set(mistAmount * 0.66, Math.min(0.95, mistAmount * 1.12), 1, time);
     // Under the dark day ink the mist sits halfway between the fog and the horizon haze, the brightest air in the
     // frame, so it lifts the forest most per step. Once the ink turns to moonlight it drifts toward the upper sky
     // instead, deepening the land rather than lifting it toward a sunset glow behind light type.
     mistTarget.copy(atm.fog).lerp(nightInk ? atm.upper : atm.horizon, 0.5);
     mistColor.lerp(mistTarget, ready ? 1 - Math.exp(-4 * dt) : 1);
-    mist.uniforms.uColor.value.copy(mistColor);
+    airUniforms.uAirColor.value.copy(mistColor);
 
-    if (water.reflect && (tier === 2 || frame % 2 === 0)) water.renderReflection(renderer, scene, camera);
+    // Shadows are drawn once per frame, by whichever pass comes first.
+    renderer.shadowMap.needsUpdate = shadows;
+    if (water.reflect && (tier === 2 || frame % 2 === 0)) {
+      // The mirror reflects the forest itself; the air is laid over the water's surface afterwards.
+      airUniforms.uAir.value.z = 0;
+      water.renderReflection(renderer, scene, camera);
+      airUniforms.uAir.value.z = 1;
+    }
     renderer.render(scene, camera);
-    mist.render(renderer);
 
     if (!ready) {
       ready = true;

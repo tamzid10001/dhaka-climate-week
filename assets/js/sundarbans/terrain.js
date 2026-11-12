@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-import { noise2D, smoothstep, lerp, clamp } from './util.js';
+import { noise2D, smoothstep, lerp, clamp, NOISE_GLSL } from './util.js';
+import { withAir } from './air.js';
 
 /*
  * Geography of the journey: one tidal river (a "gang") meandering south (−z) between mudflat banks and
@@ -95,10 +96,10 @@ export function bankAt(x, z) {
 /** World x of a point `b` metres onto the bank on `side`. */
 export const bankX = (z, side, b) => riverX(z) + side * (riverW(z) + b);
 
-const MUD_DEEP = new THREE.Color('#3a3128');
-const MUD_WET = new THREE.Color('#4d4133');
-const MUD = new THREE.Color('#6c5a45');
-const MUD_DRY = new THREE.Color('#7b6850');
+const MUD_DEEP = new THREE.Color('#38302a');
+const MUD_WET = new THREE.Color('#4b4136');
+const MUD = new THREE.Color('#695946');
+const MUD_DRY = new THREE.Color('#7c6b53');
 const FLOOR = new THREE.Color('#3d3d25');
 const FLOOR_LITTER = new THREE.Color('#4f4a2c');
 const GRASS = new THREE.Color('#7d8f45');
@@ -162,24 +163,58 @@ export function createTerrain() {
   geo.setIndex(idx);
   geo.computeVertexNormals();
 
+  /*
+   * Mud up close: the vertex colours carry the broad zones, the shader adds what a bank really shows at
+   * a few metres: mottling, the dark saturated band the last tide left at the waterline, faint ledges
+   * from earlier tides, and a low relief of ripples and footprints that catches a low sun. The relief
+   * fades with distance so it never shimmers, and the wettest mud stays glossy and smooth.
+   */
   const material = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1, metalness: 0 });
   material.onBeforeCompile = (shader) => {
     shader.vertexShader = shader.vertexShader
-      .replace('#include <common>', '#include <common>\nattribute float wet;\nvarying float vWet;')
-      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvWet = wet;');
+      .replace('#include <common>', '#include <common>\nattribute float wet;\nvarying float vWet;\nvarying vec3 vTPos;')
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvWet = wet;\nvTPos = (modelMatrix * vec4(transformed, 1.0)).xyz;');
     shader.fragmentShader = shader.fragmentShader
-      .replace('#include <common>', '#include <common>\nvarying float vWet;')
-      .replace('#include <roughnessmap_fragment>', 'float roughnessFactor = mix(0.97, 0.32, vWet);');
+      .replace('#include <common>', `#include <common>\nvarying float vWet;\nvarying vec3 vTPos;\n${NOISE_GLSL}`)
+      .replace(
+        '#include <color_fragment>',
+        /* glsl */ `#include <color_fragment>
+        {
+          float fine = vnoise(vTPos.xz * 1.1);
+          float broad = vnoise(vTPos.xz * 0.17 + 3.0);
+          diffuseColor.rgb *= 0.84 + 0.24 * broad + 0.1 * fine;
+          diffuseColor.rgb *= mix(1.0, 0.72, smoothstep(0.5, 0.95, vWet));
+          float ledge = 1.0 - smoothstep(0.32, 0.5, abs(fract((vTPos.y + 0.12) * 3.4 + fine * 0.2) - 0.5));
+          diffuseColor.rgb *= 1.0 - 0.07 * ledge * smoothstep(1.2, 0.25, vTPos.y) * step(-0.05, vTPos.y);
+        }`
+      )
+      .replace(
+        '#include <normal_fragment_maps>',
+        /* glsl */ `#include <normal_fragment_maps>
+        #ifdef USE_FOG
+        {
+          vec2 pz = vTPos.xz * 1.6;
+          float e = 0.07;
+          float h0 = vnoise(pz) * 0.6 + vnoise(pz * 3.3 + 7.0) * 0.3;
+          float hx = vnoise(pz + vec2(e, 0.0)) * 0.6 + vnoise((pz + vec2(e, 0.0)) * 3.3 + 7.0) * 0.3;
+          float hz = vnoise(pz + vec2(0.0, e)) * 0.6 + vnoise((pz + vec2(0.0, e)) * 3.3 + 7.0) * 0.3;
+          float amp = 0.11 * exp(-vFogDepth * 0.028) * mix(1.0, 0.3, vWet);
+          normal = normalize(normal + mat3(viewMatrix) * (vec3(h0 - hx, 0.0, h0 - hz) / e * amp));
+        }
+        #endif`
+      )
+      .replace('#include <roughnessmap_fragment>', 'float roughnessFactor = mix(0.96, 0.24, vWet);');
   };
   material.customProgramCacheKey = () => 'terrain';
+  withAir(material);
   const mesh = new THREE.Mesh(geo, material);
-  mesh.receiveShadow = false;
+  mesh.receiveShadow = true;
   return mesh;
 }
 
 /** River-aligned height texture for the water shader: s ∈ [−HMAP_HALF, HMAP_HALF] across, z along. */
 export const HMAP_HALF = 140;
-export function createHeightTexture(width = 256, height = 1024) {
+export function createHeightTexture(width = 384, height = 1536) {
   const data = new Uint8Array(width * height);
   for (let j = 0; j < height; j++) {
     const z = Z_START + ((j + 0.5) / height) * (Z_END - Z_START);

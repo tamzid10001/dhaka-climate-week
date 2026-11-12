@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { NOISE_GLSL, glslColor as C } from '../util.js';
+import { withAir } from '../air.js';
 
 /*
  * Coats painted in the fragment shader from the loft `coat` attribute: a = metres along the part,
@@ -85,8 +86,8 @@ export function coatMaterial(kind, { roughness = 0.86 } = {}) {
       .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>\n${EYESHINE[kind] || ''}`);
   };
   m.customProgramCacheKey = () => `coat-${kind}`;
-  return m;
+  return withAir(m);
 }
 
 /** Flat vertex-coloured material for birds, boat and people. */
-export const paintedMaterial = () => new THREE.MeshLambertMaterial({ vertexColors: true });
+export const paintedMaterial = () => withAir(new THREE.MeshLambertMaterial({ vertexColors: true }));

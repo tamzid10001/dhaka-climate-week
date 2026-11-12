@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { TAU, loft, limb, merge, dampAngle, damp } from '../util.js';
 import { heightAt } from '../terrain.js';
+import { withAir } from '../air.js';
 
 const Z = new THREE.Vector3(0, 0, 1);
 
@@ -40,7 +41,7 @@ const shadowTexture = (() => {
 export function blobShadow(w, l) {
   const m = new THREE.Mesh(
     new THREE.PlaneGeometry(w, l).rotateX(-Math.PI / 2),
-    new THREE.MeshBasicMaterial({ map: shadowTexture, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -4 })
+    withAir(new THREE.MeshBasicMaterial({ map: shadowTexture, transparent: true, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -4 }))
   );
   m.position.y = 0.04;
   m.renderOrder = 2;

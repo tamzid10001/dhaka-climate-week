@@ -87,6 +87,14 @@ export function createFauna({ hosts = [], tier = 1, emit = () => {} }) {
   add(createBoat({ mat: mats.paint, emit }), 280);
   add(createDolphins({ mat: mats.paint, count: tier ? 2 : 1, emit }), 0, null);
 
+  // Everything with a body throws a shadow and stands in the forest's; contact shadows and glows do not.
+  group.traverse((o) => {
+    if (o.isMesh && !o.material.transparent) {
+      o.castShadow = true;
+      o.receiveShadow = true;
+    }
+  });
+
   const forward = new THREE.Vector3();
   return {
     group,
