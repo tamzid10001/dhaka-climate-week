@@ -37,8 +37,9 @@ html.has-world .world { opacity: 1; transition: none; }
 .world__canvas { opacity: 0; transition: opacity 1.4s var(--ease); }
 html.world-ready .world__canvas { opacity: 1; }
 html.world-night .world { background: linear-gradient(180deg, #0b1322 0%, #172131 55%, #1d2a33 100%); }
-html.has-world main,
-html.has-world .foot { position: relative; z-index: 1; }
+/* Always lifted, so when the world hands the page back its fading sky stays beneath the strip and footer too. */
+main,
+.foot { position: relative; z-index: 1; }
 html.has-world .deco { display: none; }
 /* Sections share one continuous scene instead of their own bands, so a slightly closer rhythm keeps them connected. */
 html.has-world { --section: clamp(4.5rem, 9vw, 8rem); }
@@ -149,7 +150,7 @@ html.has-world .kicker::before {
 html.has-world :is(.head__top, .team-block__label) { border-bottom-color: var(--rule-strong); }
 html.has-world .team-block__label { color: var(--ink); }
 html.has-world .lede { color: var(--ink-soft); }
-html.has-world :is(.statement__point .lede, .about__body > .lede, .subtheme p) { color: var(--ink); }
+html.has-world :is(.statement__point .lede, .about__body > .lede) { color: var(--ink); }
 
 /* Emphasis is set in ink and marked with a tiger stroke: a dark orange word cannot hold contrast against
    open sky and misted forest at once. In split headings the stroke draws in once the words have risen.
@@ -258,7 +259,7 @@ html.has-world .program__theme { margin-top: 0; }
 
 /* ── Partners: an open wall of marks ── */
 html.has-world .logos { border: 0; gap: 0.5rem clamp(1rem, 2.5vw, 2rem); }
-html.has-world .logos > div { min-height: 96px; padding: clamp(1rem, 2.5vw, 1.75rem) 0.5rem; border: 0; }
+html.has-world .logos > div { min-height: 96px; padding: clamp(1rem, 2.5vw, 1.75rem) 0.5rem; border: 0; grid-column: auto; }
 /* Marks are pressed to one deep grey so pale wordmarks hold on the misted forest; hover restores their colour.
    Marks that come on a white box keep it as a small white tile instead of a grey one. */
 html.has-world .logos img:not(.badge) { opacity: 1; filter: grayscale(1) brightness(0.42); transition: opacity 0.3s var(--ease), filter 0.7s var(--ease); }

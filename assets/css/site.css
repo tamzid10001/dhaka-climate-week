@@ -320,10 +320,9 @@ body.menu-open .logo__dark { opacity: 0; }
 .statement__side { display: flex; flex-direction: column; align-items: flex-start; gap: 1.75rem; padding-top: 0.5rem; }
 .statement__point { align-self: stretch; display: flex; flex-direction: column; align-items: flex-start; gap: 0.75rem; }
 .statement__point + .statement__point { padding-top: 1.75rem; border-top: 1px solid var(--rule); }
-/* The vision, the mission, the about paragraph and each sub-theme line carry the argument: full ink, a little larger and heavier than an aside. */
-.statement__point .lede, .about__body > .lede, .subtheme p { color: var(--ink); font-weight: 600; }
-.statement__point .lede, .about__body > .lede { font-size: clamp(1.05rem, 1.35vw, 1.25rem); line-height: 1.55; }
-.subtheme p { font-size: clamp(0.98rem, 1.15vw, 1.08rem); }
+/* The vision, the mission and the about paragraph carry the argument: full ink, a little larger and heavier than an aside
+   (the sub-theme lines get the same treatment in their own rule below). */
+.statement__point .lede, .about__body > .lede { color: var(--ink); font-weight: 600; font-size: clamp(1.05rem, 1.35vw, 1.25rem); line-height: 1.55; }
 
 /* ── Stats ── */
 .stats { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--rule); }
@@ -369,7 +368,7 @@ body.menu-open .logo__dark { opacity: 0; }
   display: block; margin-top: 0.5rem; font-family: var(--font-body); font-stretch: normal; font-weight: 600;
   font-size: 0.6em; line-height: 1.3; letter-spacing: 0; color: var(--accent);
 }
-.subtheme p { margin-top: 0.75rem; font-size: 0.95rem; color: var(--ink-soft); line-height: 1.55; }
+.subtheme p { margin-top: 0.75rem; font-size: clamp(0.98rem, 1.15vw, 1.08rem); font-weight: 600; color: var(--ink); line-height: 1.55; }
 
 /* Signature framework */
 .framework-head {
@@ -501,6 +500,10 @@ body.menu-open .logo__dark { opacity: 0; }
   padding: clamp(2rem, 4vw, 3rem) 1.5rem; min-height: 120px;
   border-right: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
 }
+/* The ruled wall closes its frame whatever the count: the last cell spans the rest of its row (not the two-column organizers). */
+.logos:not(.logos--2) > div:last-child:nth-child(4n+3) { grid-column: span 2; }
+.logos:not(.logos--2) > div:last-child:nth-child(4n+2) { grid-column: span 3; }
+.logos:not(.logos--2) > div:last-child:nth-child(4n+1) { grid-column: span 4; }
 .logos a { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
 .logos img { max-width: 80%; max-height: 50px; width: auto; height: auto; object-fit: contain; opacity: 0.78; filter: grayscale(1); transition: opacity 0.3s var(--ease), filter 0.3s var(--ease); }
 .logos > div:hover img, .logos a:focus-visible img { opacity: 1; filter: none; }
@@ -636,6 +639,8 @@ body::after {
   .program__theme { margin-top: 0; }
 
   .logos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .logos:not(.logos--2) > div:last-child:nth-child(n) { grid-column: auto; }
+  .logos:not(.logos--2) > div:last-child:nth-child(odd) { grid-column: span 2; }
 
   .foot__grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
   .hero__scroll { display: none; }

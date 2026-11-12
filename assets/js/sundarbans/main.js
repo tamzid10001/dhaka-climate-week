@@ -284,7 +284,12 @@ function build(renderer, tier, Q) {
   let slowFor = 0;
   let fastFor = 0;
   let crawlFor = 0;
+  // The level that last proved too much, and when: the governor does not climb back to it for a minute,
+  // so a device that holds 60 Hz only one step down is not pushed into 30 Hz every few seconds.
+  const failed = { dpr: Infinity, reach: Infinity, at: -Infinity };
+  const canRaise = (kind, next, now) => now - failed.at > 60000 || next < failed[kind] - 1e-3;
   function govern(ms) {
+    const now = performance.now();
     // A lone long gap after smooth frames is a pause or a hitch (a tab in the background, a debugger, the
     // first draw of a new program), not a slow device.
     const paused = ms > 250 && prevMs < 60;
@@ -301,16 +306,22 @@ function build(renderer, tier, Q) {
     crawlFor = avg > 55 ? crawlFor + span : 0;
     if (slowFor > 1200 && (dpr > Q.minDpr || flora.reach > 0.5 || water.reflect)) {
       // Resolution first, then how far the forest draws, and only then the mirror.
-      if (dpr > Q.minDpr) setDpr(Math.max(Q.minDpr, dpr - 0.15));
-      else if (flora.reach > 0.5) flora.setReach(flora.reach - 0.25);
-      else water.dropReflection();
+      failed.at = now;
+      if (dpr > Q.minDpr) {
+        failed.dpr = dpr;
+        setDpr(Math.max(Q.minDpr, dpr - 0.15));
+      } else if (flora.reach > 0.5) {
+        failed.reach = flora.reach;
+        flora.setReach(flora.reach - 0.25);
+      } else water.dropReflection();
       slowFor = 0;
       crawlFor = 0;
     } else if (crawlFor > 3000 && !forced) {
       retire();
-    } else if (fastFor > 5000 && (dpr < Math.min(window.devicePixelRatio || 1, Q.dpr) || flora.reach < 1)) {
-      if (flora.reach < 1) flora.setReach(flora.reach + 0.25);
-      else setDpr(Math.min(Q.dpr, dpr + 0.1));
+    } else if (fastFor > 5000) {
+      const dprCap = Math.min(window.devicePixelRatio || 1, Q.dpr);
+      if (flora.reach < 1 && canRaise('reach', flora.reach + 0.25, now)) flora.setReach(flora.reach + 0.25);
+      else if (dpr < dprCap && canRaise('dpr', Math.min(dprCap, dpr + 0.1), now)) setDpr(Math.min(dprCap, dpr + 0.1));
       fastFor = 0;
     }
   }
@@ -324,6 +335,10 @@ function build(renderer, tier, Q) {
     const still = reducedMotion.matches;
     if (!still) time += dt;
     frame++;
+    // Quality decisions come first: a resolution step resizes the canvas, which clears it, so it must be
+    // followed by this frame's passes rather than presented empty.
+    govern(frameMs);
+    if (retired) return;
 
     pTarget = forcedP ?? clamp(scrollY / maxScroll);
     p = damp(p, pTarget, 3, dt);
@@ -391,8 +406,6 @@ function build(renderer, tier, Q) {
       ready = true;
       root.classList.add('has-world', 'world-ready');
     }
-
-    govern(frameMs);
   }
 
   function run() {
