@@ -272,9 +272,10 @@ export function createSky({ layers = 3, octaves = 5 } = {}) {
   });
   const mesh = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 24), material);
   mesh.scale.setScalar(1800);
-  // Drawn first. It cannot go last to save the cloud shader on covered pixels: in the water's mirror, the
-  // oblique projection pushes every depth toward the far plane, where a depth-tested sky would win.
-  mesh.renderOrder = -10;
+  // Last of the opaque draws: it sits just inside the far plane, so the depth test spares every pixel the
+  // land and water already cover from the cloud shader. Verified against the water's mirror pass, whose
+  // oblique projection keeps the main camera's far plane and leaves the reflected forest in front of it.
+  mesh.renderOrder = 1;
   mesh.frustumCulled = false;
 
   const dirFrom = (v, az, el) => v.set(Math.sin(az) * Math.cos(el), Math.sin(el), -Math.cos(az) * Math.cos(el));
