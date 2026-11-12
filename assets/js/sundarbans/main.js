@@ -104,11 +104,14 @@ function start() {
     sun.shadow.bias = -0.0003;
     sun.shadow.normalBias = 0.6;
     sun.shadow.radius = tier === 2 ? 2.5 : 1.5;
+    sun.shadow.camera.updateProjectionMatrix();
   }
 
   const sky = createSky({ layers: Q.clouds, octaves: Q.octaves });
   const water = createWater({ reflect: Q.reflect });
-  const flora = createFlora({ density: Q.density, tier });
+  // `?world-a2c=1` turns on alpha-to-coverage for the leaves. Off by default: the hard cut is clean on every
+  // driver, while coverage dithering left bright pixels along leaf edges on some.
+  const flora = createFlora({ density: Q.density, tier, smooth: params.get('world-a2c') === '1' });
   scene.add(sky.mesh, createTerrain(), water.mesh, flora.group);
 
   const sound = createSoundscape({ hrtf: tier > 0 });

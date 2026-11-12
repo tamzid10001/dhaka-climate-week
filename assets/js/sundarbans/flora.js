@@ -89,7 +89,7 @@ function fin(angle, len, height, color) {
  * radius, randomly turned; every vertex carries the crown's ellipsoid normal (blended with the card's
  * own), an occlusion shade that darkens toward the heart and foot of the crown, and one atlas cell.
  */
-function crownCards(r, clusters, count, cell, { squash = 1, spread = 0.62, size = 1.35, far = false, core = 0.6 } = {}) {
+function crownCards(r, clusters, count, cell, { squash = 1, spread = 0.6, size = 1.05, far = false, core = 0.44 } = {}) {
   if (far) {
     spread *= 0.7;
     size *= 1.45;
@@ -182,18 +182,20 @@ function crownCards(r, clusters, count, cell, { squash = 1, spread = 0.62, size 
       const x = bp.getX(i);
       const y = bp.getY(i);
       const z = bp.getZ(i);
-      const lump = 1 + 0.12 * Math.sin(x * 4.1 + cl.c.x) * Math.sin(y * 3.3 + cl.c.y) * Math.sin(z * 3.7 + cl.c.z);
+      const lump = 1 + 0.22 * Math.sin(x * 4.1 + cl.c.x) * Math.sin(y * 3.3 + cl.c.y) * Math.sin(z * 3.7 + cl.c.z);
       bp.setXYZ(i, cl.c.x + x * cl.R * core * lump, cl.c.y + y * cl.R * core * squash * lump, cl.c.z + z * cl.R * core * lump);
       uv[i * 2] = lerp(rect[0], rect[2], Math.atan2(z, x) / TAU + 0.5);
       uv[i * 2 + 1] = lerp(rect[1], rect[3], y * 0.5 + 0.5);
-      const k = (0.5 + 0.3 * (y * 0.5 + 0.5)) * lerp(0.75, 1, r());
+      const k = (0.72 + 0.26 * (y * 0.5 + 0.5)) * lerp(0.85, 1, r());
       cc[i * 3] = cl.tint.r * k;
       cc[i * 3 + 1] = cl.tint.g * k;
       cc[i * 3 + 2] = cl.tint.b * k;
     }
     b.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
     b.setAttribute('color', new THREE.BufferAttribute(cc, 3));
-    b.computeVertexNormals();
+    const bn = b.attributes.normal;
+    for (let i = 0; i < bp.count; i++) bn.setXYZ(i, (bp.getX(i) - cl.c.x) / cl.R, (bp.getY(i) - cl.c.y) / (cl.R * squash), (bp.getZ(i) - cl.c.z) / cl.R);
+    b.normalizeNormals();
     return b;
   });
   return merge([g, ...cores]);
@@ -386,7 +388,7 @@ function tuft(r) {
     const col = new Float32Array(p.count * 3);
     for (let i = 0; i < p.count; i++) {
       const t = p.getY(i) / 0.85;
-      col.set([0.68 + 0.4 * t, 0.68 + 0.4 * t, 0.68 + 0.4 * t], i * 3);
+      col.set([0.5 + 0.5 * t, 0.5 + 0.5 * t, 0.5 + 0.5 * t], i * 3);
     }
     g.setAttribute('color', new THREE.BufferAttribute(col, 3));
     cellUV(g, atlas.pick('grass', r));
@@ -522,11 +524,10 @@ function instanced(geo, material, items, { layer = 0, chunk = 150, from = 0, rea
   return meshes;
 }
 
-export function createFlora({ density = 1, tier = 2 } = {}) {
+export function createFlora({ density = 1, tier = 2, smooth = false } = {}) {
   atlas = createLeafAtlas(tier > 0 ? 2048 : 1024);
-  Q.cards = [4, 5, 7][tier];
+  Q.cards = [5, 7, 10][tier];
   Q.farCards = tier ? 3 : 2;
-  const smooth = tier > 0;
   const shared = { uTime: { value: 0 }, uWind: { value: 1 } };
   const treeMat = leafMaterial(shared, 0.0009, smooth);
   const palmMat = leafMaterial(shared, 0.011, smooth);
@@ -593,7 +594,7 @@ export function createFlora({ density = 1, tier = 2 } = {}) {
           const h = heightAt(x, zz);
           const m = meadowAt(x, zz);
           if (m > 0.3) {
-            if (r() < density * 0.75) items.grass.push({ x, y: h - 0.02, z: zz, rot: r() * TAU, s: 0.75 + r() * 0.75, c: tint() });
+            if (r() < density * 0.7) items.grass.push({ x: x + (r() - 0.5) * 1.4, y: h - 0.02, z: zz + (r() - 0.5) * 1.4, rot: r() * TAU, s: 0.55 + r() * 0.9, c: tint().multiplyScalar(0.72 + r() * 0.22) });
             continue;
           }
           const clump = smoothstep(-0.15, 0.45, clumps(x * 0.09, zz * 0.09));

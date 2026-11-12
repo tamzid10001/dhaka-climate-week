@@ -39,7 +39,7 @@ function leaf(ctx, x, y, angle, len, width, hsl, { light = 1, shadow = true, tip
     ctx.save();
     ctx.translate(len * 0.03, width * 0.5);
     blade();
-    ctx.fillStyle = col(h, s * 0.7, l * 0.35, 0.42);
+    ctx.fillStyle = col(h, s * 0.7, l * 0.35, 0.3);
     ctx.fill();
     ctx.restore();
   }
@@ -68,7 +68,7 @@ function leaf(ctx, x, y, angle, len, width, hsl, { light = 1, shadow = true, tip
 
 /** A roughly round cluster of leaves on radiating twigs, the unit every crown card shows. */
 function cluster(ctx, S, r, spec) {
-  const { count, len, width, hue, sat, light, hueSpread = 10, lightSpread = 0.1, twigs = 9, red = 0, narrow = 0, fold = 0.18, reach = 0.44 } = spec;
+  const { count, len, width, hue, sat, light, hueSpread = 10, lightSpread = 0.1, twigs = 9, red = 0, narrow = 0, fold = 0.18, reach = 0.36 } = spec;
   const cx = S / 2;
   const cy = S / 2;
   const R = S * reach;
@@ -176,14 +176,12 @@ function tuft(ctx, S, r, variant) {
 
 /** The inside of a crown: packed, shaded leaves with no gaps, for the core behind every cloud of cards. */
 function core(ctx, S, r) {
-  ctx.fillStyle = col(128, 0.3, 0.16);
-  ctx.fillRect(0, 0, S, S);
-  for (let i = 0; i < 420; i++) {
+  for (let i = 0; i < 520; i++) {
     const x = r() * S;
     const y = r() * S;
     const L = S * (0.07 + r() * 0.07);
     const shade = 0.55 + r() * 0.5;
-    leaf(ctx, x, y, r() * TAU, L, L * 0.42, [122 + r() * 18, 0.32, 0.22], { light: shade, shadow: false, fold: 0.3 });
+    leaf(ctx, x, y, r() * TAU, L, L * 0.42, [122 + r() * 18, 0.34, 0.3], { light: shade, shadow: false, fold: 0.3 });
   }
   const g = ctx.createRadialGradient(S / 2, S / 2, S * 0.1, S / 2, S / 2, S * 0.7);
   g.addColorStop(0, 'rgba(0,0,0,0.25)');
@@ -230,7 +228,7 @@ const SPECIES = {
   gewa: { count: 112, len: 0.15, width: 0.52, hue: 92, sat: 0.42, light: 0.37, hueSpread: 16, lightSpread: 0.12, twigs: 8 },
   gewaRed: { count: 112, len: 0.15, width: 0.52, hue: 90, sat: 0.4, light: 0.36, hueSpread: 16, lightSpread: 0.12, twigs: 8, red: 0.22 },
   // Keora: small, pale, grey-green leaves on hanging twigs, open enough to see sky through.
-  keora: { count: 175, len: 0.1, width: 0.42, hue: 96, sat: 0.26, light: 0.44, hueSpread: 12, lightSpread: 0.12, twigs: 12, narrow: 1, reach: 0.46 },
+  keora: { count: 175, len: 0.1, width: 0.42, hue: 96, sat: 0.26, light: 0.44, hueSpread: 12, lightSpread: 0.12, twigs: 12, narrow: 1, reach: 0.4 },
   // Garjan: glossy, deep green, blue-leaning leaves in tight rosettes.
   garjan: { count: 124, len: 0.14, width: 0.46, hue: 140, sat: 0.34, light: 0.3, hueSpread: 10, lightSpread: 0.1, twigs: 9, fold: 0.24 },
 };
