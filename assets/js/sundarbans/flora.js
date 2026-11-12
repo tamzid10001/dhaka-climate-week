@@ -90,6 +90,7 @@ function fin(angle, len, height, color) {
  * own), an occlusion shade that darkens toward the heart and foot of the crown, and one atlas cell.
  */
 function crownCards(r, clusters, count, cell, { squash = 1, spread = 0.6, size = 1.05, far = false, core = 0.44 } = {}) {
+  // `core` 0 leaves the crown without an interior (low shrubs stand against mud, not sky).
   if (far) {
     spread *= 0.7;
     size *= 1.45;
@@ -175,8 +176,6 @@ function crownCards(r, clusters, count, cell, { squash = 1, spread = 0.6, size =
   const cores = clusters.map((cl) => {
     const b = new THREE.IcosahedronGeometry(1, far || Q.coreDetail === 0 ? 0 : 1);
     const bp = b.attributes.position;
-    const rect = atlas.rects.core[0];
-    const uv = new Float32Array(bp.count * 2);
     const cc = new Float32Array(bp.count * 3);
     for (let i = 0; i < bp.count; i++) {
       const x = bp.getX(i);
@@ -184,14 +183,13 @@ function crownCards(r, clusters, count, cell, { squash = 1, spread = 0.6, size =
       const z = bp.getZ(i);
       const lump = 1 + 0.22 * Math.sin(x * 4.1 + cl.c.x) * Math.sin(y * 3.3 + cl.c.y) * Math.sin(z * 3.7 + cl.c.z);
       bp.setXYZ(i, cl.c.x + x * cl.R * core * lump, cl.c.y + y * cl.R * core * squash * lump, cl.c.z + z * cl.R * core * lump);
-      uv[i * 2] = lerp(rect[0], rect[2], Math.atan2(z, x) / TAU + 0.5);
-      uv[i * 2 + 1] = lerp(rect[1], rect[3], y * 0.5 + 0.5);
       const k = (0.86 + 0.14 * (y * 0.5 + 0.5)) * lerp(0.92, 1, r());
       cc[i * 3] = cl.tint.r * k;
       cc[i * 3 + 1] = cl.tint.g * k;
       cc[i * 3 + 2] = cl.tint.b * k;
     }
-    b.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+    // The icosahedron's own uvs are already corrected per triangle at the seam.
+    cellUV(b, atlas.rects.core[0]);
     b.setAttribute('color', new THREE.BufferAttribute(cc, 3));
     const bn = b.attributes.normal;
     for (let i = 0; i < bp.count; i++) bn.setXYZ(i, (bp.getX(i) - cl.c.x) / cl.R, (bp.getY(i) - cl.c.y) / (cl.R * squash), (bp.getZ(i) - cl.c.z) / cl.R);
@@ -359,7 +357,7 @@ const SPECIES = {
       parts.push(stick(new V3(0, 0, 0), new V3(Math.cos(a) * rr, y, Math.sin(a) * rr), 0.05, 0.03, '#c4b6a4', 4));
       clusters.push({ c: new V3(Math.cos(a) * rr, y + 0.3, Math.sin(a) * rr), R: 0.8 + r() * 0.45, tint: leafTint(r).multiplyScalar(0.82) });
     }
-    parts.push(crownCards(r, clusters, 4, 'gewa', { squash: 0.9, size: 1.5 }));
+    parts.push(crownCards(r, clusters, 4, 'gewa', { squash: 0.9, size: 1.5, core: 0 }));
     return merge(parts);
   },
 
@@ -598,7 +596,11 @@ export function createFlora({ density = 1, tier = 2, smooth = false } = {}) {
           const h = heightAt(x, zz);
           const m = meadowAt(x, zz);
           if (m > 0.3) {
-            if (r() < density * 0.7) items.grass.push({ x: x + (r() - 0.5) * 1.4, y: h - 0.02, z: zz + (r() - 0.5) * 1.4, rot: r() * TAU, s: 0.55 + r() * 0.9, c: tint().multiplyScalar(0.72 + r() * 0.22) });
+            if (r() < density * 0.7) {
+              const gx = x + (r() - 0.5) * 1.4;
+              const gz = zz + (r() - 0.5) * 1.4;
+              items.grass.push({ x: gx, y: heightAt(gx, gz) - 0.02, z: gz, rot: r() * TAU, s: 0.55 + r() * 0.9, c: tint().multiplyScalar(0.72 + r() * 0.22) });
+            }
             continue;
           }
           const clump = smoothstep(-0.15, 0.45, clumps(x * 0.09, zz * 0.09));
@@ -647,8 +649,10 @@ export function createFlora({ density = 1, tier = 2, smooth = false } = {}) {
     }
   };
   for (const sp of ['sundari', 'keora', 'garjan', 'gewa', 'nipa']) {
-    const near = [SPECIES[sp](11 + sp.length * 7, false), SPECIES[sp](53 + sp.length * 3, false)];
-    const far = SPECIES[sp](97 + sp.length, true);
+    const seeds = [11 + sp.length * 7, 53 + sp.length * 3];
+    const near = seeds.map((seed) => SPECIES[sp](seed, false));
+    // The distant forms share their near forms' seeds, so height, lean and trunk match across the hand-over.
+    const far = seeds.map((seed) => SPECIES[sp](seed, true));
     const mat = sp === 'nipa' ? palmMat : treeMat;
     const nearA = items[sp].filter((it, i) => !it.lod && i % 2 === 0);
     const nearB = items[sp].filter((it, i) => !it.lod && i % 2 === 1);
@@ -657,13 +661,13 @@ export function createFlora({ density = 1, tier = 2, smooth = false } = {}) {
     // Bank trees keep full detail while near; past the haze line their cell hands over to the same
     // trees in the species' distant form. Only the first rows of the forest cast shadows: anything
     // deeper lands on a floor the river never sees.
-    for (const [geo, list] of [[near[0], nearA], [near[1], nearB]]) {
+    for (const [geo, twin, list] of [[near[0], far[0], nearA], [near[1], far[1], nearB]]) {
       if (!list.length) continue;
       plant(geo, mat, list, { reach: DETAIL_REACH, shadow: true, receive: false });
-      plant(far, mat, list, { from: DETAIL_REACH, reach: Q.reach, receive: false, far: true });
+      plant(twin, mat, list, { from: DETAIL_REACH, reach: Q.reach, receive: false, far: true });
     }
-    if (lodNear.length) plant(far, mat, lodNear, { reach: Q.reach, shadow: true, receive: false, far: true });
-    if (lodFar.length) plant(far, mat, lodFar, { reach: Q.reach, receive: false, far: true });
+    if (lodNear.length) plant(far[0], mat, lodNear, { reach: Q.reach, shadow: true, receive: false, far: true });
+    if (lodFar.length) plant(far[1], mat, lodFar, { reach: Q.reach, receive: false, far: true });
   }
   // Understorey detail is lost in the haze long before the canopy, so it stops drawing much sooner.
   plant(SPECIES.goran(7), treeMat, items.goran, { layer: 1, reach: 450 });
@@ -687,7 +691,7 @@ export function createFlora({ density = 1, tier = 2, smooth = false } = {}) {
       for (const mesh of cells) {
         const { cell, from, reach, far } = mesh.userData;
         const d = Math.max(0, cell.distanceToPoint(eye));
-        mesh.visible = d >= from && d < (far ? reach * reachScale : reach);
+        mesh.visible = d >= from && d < (far ? Math.max(DETAIL_REACH + 1, reach * reachScale) : reach);
       }
     },
   };

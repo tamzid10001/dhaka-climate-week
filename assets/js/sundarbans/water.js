@@ -246,14 +246,11 @@ export function createWater({ reflect = true, resolution = 0.5, halfFloat = true
       virtualCamera.position.copy(view);
       virtualCamera.up.set(0, 1, 0).applyMatrix4(rotation).reflect(normal);
       virtualCamera.lookAt(tgt);
+      virtualCamera.far = camera.far;
       virtualCamera.updateMatrixWorld();
-      // The mirror's own projection: the same view, but a far plane just past the detailed forest, so
-      // the distant cells (all fog by then) are culled from the pass.
-      virtualCamera.fov = camera.fov;
-      virtualCamera.aspect = camera.aspect;
-      virtualCamera.near = camera.near;
-      virtualCamera.far = 700;
-      virtualCamera.updateProjectionMatrix();
+      // The main camera's projection, far plane included: the oblique clip below skews the frustum's far
+      // plane, and with a nearer one three.js culls the forest cells out of the mirror.
+      virtualCamera.projectionMatrix.copy(camera.projectionMatrix);
       textureMatrix.set(0.5, 0, 0, 0.5, 0, 0.5, 0, 0.5, 0, 0, 0.5, 0.5, 0, 0, 0, 1);
       textureMatrix.multiply(virtualCamera.projectionMatrix).multiply(virtualCamera.matrixWorldInverse).multiply(mesh.matrixWorld);
 
