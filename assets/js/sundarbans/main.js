@@ -68,7 +68,16 @@ function start() {
   // waiting, and build the forest on the next frame so this state paints first. The canvas itself fades in
   // on its first frame (world-ready).
   root.classList.add('has-world');
-  requestAnimationFrame(() => build(renderer, tier, Q));
+  requestAnimationFrame(() => {
+    try {
+      build(renderer, tier, Q);
+    } catch (error) {
+      // Hand the page back to the static design rather than leave it on an empty sky.
+      root.classList.remove('has-world', 'world-ready');
+      renderer.dispose();
+      console.error('Sundarbans world failed to build', error);
+    }
+  });
 }
 
 function build(renderer, tier, Q) {
