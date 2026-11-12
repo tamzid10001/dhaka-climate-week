@@ -341,9 +341,9 @@ function start() {
     // Lighter in the hero, where the title stands in open sky, and settled once the programme begins.
     const settle = clamp(scrollY / innerHeight);
     mistAmount = damp(mistAmount, lerp(heroMist(), MIST.page, settle) * lerp(1, MIST.night, atm.night), 2.5, dt);
-    // The page's amount is the air's average: near surfaces keep a third more of their colour, the far forest
+    // The page's amount is the air's average: near surfaces keep a fifth more of their colour, the far forest
     // gives up a little more, and a low bank of mist drifts over the water between them (see air.js).
-    airUniforms.uAir.value.set(mistAmount * 0.66, Math.min(0.95, mistAmount * 1.12), 1, time);
+    airUniforms.uAir.value.set(mistAmount * 0.78, Math.min(0.95, mistAmount * 1.08), 1, time);
     // Under the dark day ink the mist sits halfway between the fog and the horizon haze, the brightest air in the
     // frame, so it lifts the forest most per step. Once the ink turns to moonlight it drifts toward the upper sky
     // instead, deepening the land rather than lifting it toward a sunset glow behind light type.

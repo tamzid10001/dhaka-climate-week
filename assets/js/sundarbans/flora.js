@@ -186,7 +186,7 @@ function crownCards(r, clusters, count, cell, { squash = 1, spread = 0.6, size =
       bp.setXYZ(i, cl.c.x + x * cl.R * core * lump, cl.c.y + y * cl.R * core * squash * lump, cl.c.z + z * cl.R * core * lump);
       uv[i * 2] = lerp(rect[0], rect[2], Math.atan2(z, x) / TAU + 0.5);
       uv[i * 2 + 1] = lerp(rect[1], rect[3], y * 0.5 + 0.5);
-      const k = (0.72 + 0.26 * (y * 0.5 + 0.5)) * lerp(0.85, 1, r());
+      const k = (0.86 + 0.14 * (y * 0.5 + 0.5)) * lerp(0.92, 1, r());
       cc[i * 3] = cl.tint.r * k;
       cc[i * 3 + 1] = cl.tint.g * k;
       cc[i * 3 + 2] = cl.tint.b * k;

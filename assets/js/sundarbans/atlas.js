@@ -183,11 +183,6 @@ function core(ctx, S, r) {
     const shade = 0.55 + r() * 0.5;
     leaf(ctx, x, y, r() * TAU, L, L * 0.42, [122 + r() * 18, 0.34, 0.3], { light: shade, shadow: false, fold: 0.3 });
   }
-  const g = ctx.createRadialGradient(S / 2, S / 2, S * 0.1, S / 2, S / 2, S * 0.7);
-  g.addColorStop(0, 'rgba(0,0,0,0.25)');
-  g.addColorStop(1, 'rgba(0,0,0,0)');
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, S, S);
 }
 
 /** Bark: streaked, fissured, lighter where the trunk catches the sky. */
