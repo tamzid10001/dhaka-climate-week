@@ -343,7 +343,7 @@ function start() {
     mistAmount = damp(mistAmount, lerp(heroMist(), MIST.page, settle) * lerp(1, MIST.night, atm.night), 2.5, dt);
     // The page's amount is the air's average: near surfaces keep a little more of their colour, the far forest
     // gives up a little more, and a low bank of mist drifts over the water between them (see air.js).
-    airUniforms.uAir.value.set(mistAmount * 0.86, Math.min(0.95, mistAmount * 1.06), 1, time);
+    airUniforms.uAir.value.set(mistAmount * 0.9, Math.min(0.95, mistAmount * 1.06), 1, time);
     // Under the dark day ink the mist sits halfway between the fog and the horizon haze, the brightest air in the
     // frame, so it lifts the forest most per step. Once the ink turns to moonlight it drifts toward the upper sky
     // instead, deepening the land rather than lifting it toward a sunset glow behind light type.

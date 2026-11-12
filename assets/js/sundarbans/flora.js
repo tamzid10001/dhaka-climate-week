@@ -151,8 +151,8 @@ function crownCards(r, clusters, count, cell, { squash = 1, spread = 0.6, size =
         sn.set((q.x - centre.x) / (radii.x * radii.x), (q.y - centre.y) / (radii.y * radii.y), (q.z - centre.z) / (radii.z * radii.z)).normalize();
         sn.addScaledVector(n, 0.3 * face).normalize();
         const dist = Math.hypot((q.x - centre.x) / radii.x, (q.y - centre.y) / radii.y, (q.z - centre.z) / radii.z);
-        const heart = lerp(0.5, 1.0, smoothstep(0.1, 0.95, dist));
-        const foot = lerp(0.8, 1.04, clamp((q.y - lo.y) / Math.max(0.5, hi.y - lo.y)));
+        const heart = lerp(0.62, 1.0, smoothstep(0.1, 0.95, dist));
+        const foot = lerp(0.86, 1.04, clamp((q.y - lo.y) / Math.max(0.5, hi.y - lo.y)));
         c.copy(cl.tint).multiplyScalar(heart * foot);
         return [q.x, q.y, q.z, sn.x, sn.y, sn.z, uu, vv, c.r, c.g, c.b];
       });
@@ -258,8 +258,8 @@ const SPECIES = {
     const ld = r() * TAU;
     const lx = Math.cos(ld) * lean;
     const lz = Math.sin(ld) * lean;
-    const parts = [bole(H * 0.62, 0.32, 0.15, { seg: lod ? 6 : 9, lean, leanDir: ld, color: '#b9b3ab', flare: 0.5 })];
-    if (!lod) for (let i = 0; i < 4; i++) parts.push(fin((i / 4) * TAU + r() * 0.6, 0.9 + r() * 0.5, 1.3 + r() * 0.7, '#aaa49c'));
+    const parts = [bole(H * 0.62, 0.32, 0.15, { seg: lod ? 6 : 9, lean, leanDir: ld, color: '#cdc7bf', flare: 0.5 })];
+    if (!lod) for (let i = 0; i < 4; i++) parts.push(fin((i / 4) * TAU + r() * 0.6, 0.9 + r() * 0.5, 1.3 + r() * 0.7, '#bdb7af'));
     const clusters = [{ c: new V3(lx, H - 2, lz), R: 2.9 + r() * 0.4, tint: leafTint(r) }];
     const n = lod ? 4 : 6;
     for (let i = 0; i < n; i++) {
@@ -268,7 +268,7 @@ const SPECIES = {
       const y = H - 4.2 - r() * 2.2;
       const c = new V3(lx + Math.cos(a) * rr, y, lz + Math.sin(a) * rr);
       clusters.push({ c, R: 2.3 + r() * 0.7, tint: leafTint(r) });
-      if (!lod && i % 2 === 0) parts.push(stick(new V3(lx * 0.4, H * 0.5, lz * 0.4), c.clone().multiply(new V3(0.78, 1, 0.78)).setY(y - 0.5), 0.1, 0.05, '#b3ada5'));
+      if (!lod && i % 2 === 0) parts.push(stick(new V3(lx * 0.4, H * 0.5, lz * 0.4), c.clone().multiply(new V3(0.78, 1, 0.78)).setY(y - 0.5), 0.1, 0.05, '#c6c0b8'));
     }
     const low = lod ? 1 : 2;
     for (let i = 0; i < low; i++) {
