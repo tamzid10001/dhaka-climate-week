@@ -13,7 +13,8 @@ export const CELLS = {
   gewa: [4, 5],
   gewaRed: [6],
   keora: [7, 8],
-  garjan: [9, 10],
+  garjan: [9],
+  core: [10],
   nipa: [11, 12],
   grass: [13, 14],
   bark: [15],
@@ -173,6 +174,24 @@ function tuft(ctx, S, r, variant) {
   }
 }
 
+/** The inside of a crown: packed, shaded leaves with no gaps, for the core behind every cloud of cards. */
+function core(ctx, S, r) {
+  ctx.fillStyle = col(128, 0.3, 0.16);
+  ctx.fillRect(0, 0, S, S);
+  for (let i = 0; i < 420; i++) {
+    const x = r() * S;
+    const y = r() * S;
+    const L = S * (0.07 + r() * 0.07);
+    const shade = 0.55 + r() * 0.5;
+    leaf(ctx, x, y, r() * TAU, L, L * 0.42, [122 + r() * 18, 0.32, 0.22], { light: shade, shadow: false, fold: 0.3 });
+  }
+  const g = ctx.createRadialGradient(S / 2, S / 2, S * 0.1, S / 2, S / 2, S * 0.7);
+  g.addColorStop(0, 'rgba(0,0,0,0.25)');
+  g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, S, S);
+}
+
 /** Bark: streaked, fissured, lighter where the trunk catches the sky. */
 function bark(ctx, S, r, x, y) {
   ctx.fillStyle = col(26, 0.2, 0.3);
@@ -206,14 +225,14 @@ function bark(ctx, S, r, x, y) {
 
 const SPECIES = {
   // Sundari: dense, dark, leathery elliptic leaves.
-  sundari: { count: 118, len: 0.13, width: 0.4, hue: 128, sat: 0.36, light: 0.27, hueSpread: 14, lightSpread: 0.1, twigs: 10 },
+  sundari: { count: 160, len: 0.135, width: 0.42, hue: 128, sat: 0.36, light: 0.27, hueSpread: 14, lightSpread: 0.1, twigs: 10 },
   // Gewa: broader, yellow-green, glossy; a winter variant turns a few leaves red.
-  gewa: { count: 86, len: 0.145, width: 0.5, hue: 92, sat: 0.42, light: 0.37, hueSpread: 16, lightSpread: 0.12, twigs: 8 },
-  gewaRed: { count: 86, len: 0.145, width: 0.5, hue: 90, sat: 0.4, light: 0.36, hueSpread: 16, lightSpread: 0.12, twigs: 8, red: 0.22 },
+  gewa: { count: 112, len: 0.15, width: 0.52, hue: 92, sat: 0.42, light: 0.37, hueSpread: 16, lightSpread: 0.12, twigs: 8 },
+  gewaRed: { count: 112, len: 0.15, width: 0.52, hue: 90, sat: 0.4, light: 0.36, hueSpread: 16, lightSpread: 0.12, twigs: 8, red: 0.22 },
   // Keora: small, pale, grey-green leaves on hanging twigs, open enough to see sky through.
-  keora: { count: 150, len: 0.095, width: 0.42, hue: 96, sat: 0.26, light: 0.44, hueSpread: 12, lightSpread: 0.12, twigs: 12, narrow: 1, reach: 0.46 },
+  keora: { count: 175, len: 0.1, width: 0.42, hue: 96, sat: 0.26, light: 0.44, hueSpread: 12, lightSpread: 0.12, twigs: 12, narrow: 1, reach: 0.46 },
   // Garjan: glossy, deep green, blue-leaning leaves in tight rosettes.
-  garjan: { count: 96, len: 0.135, width: 0.44, hue: 140, sat: 0.34, light: 0.3, hueSpread: 10, lightSpread: 0.1, twigs: 9, fold: 0.24 },
+  garjan: { count: 124, len: 0.14, width: 0.46, hue: 140, sat: 0.34, light: 0.3, hueSpread: 10, lightSpread: 0.1, twigs: 9, fold: 0.24 },
 };
 
 /**
@@ -242,6 +261,7 @@ export function createLeafAtlas(size = 2048) {
       if (name === 'nipa') draw(cell, () => frond(ctx, S, r, k));
       else if (name === 'grass') draw(cell, () => tuft(ctx, S, r, k));
       else if (name === 'bark') bark(ctx, S, r, cellRect(cell).x, cellRect(cell).y);
+      else if (name === 'core') draw(cell, () => core(ctx, S, r));
       else draw(cell, () => cluster(ctx, S, r, SPECIES[name]));
     });
   }

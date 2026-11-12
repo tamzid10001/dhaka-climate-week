@@ -89,7 +89,7 @@ function fin(angle, len, height, color) {
  * radius, randomly turned; every vertex carries the crown's ellipsoid normal (blended with the card's
  * own), an occlusion shade that darkens toward the heart and foot of the crown, and one atlas cell.
  */
-function crownCards(r, clusters, count, cell, { squash = 1, spread = 0.7, size = 1.35, far = false } = {}) {
+function crownCards(r, clusters, count, cell, { squash = 1, spread = 0.62, size = 1.35, far = false, core = 0.6 } = {}) {
   if (far) {
     spread *= 0.7;
     size *= 1.45;
@@ -170,7 +170,33 @@ function crownCards(r, clusters, count, cell, { squash = 1, spread = 0.7, size =
   g.setAttribute('normal', new THREE.Float32BufferAttribute(nor, 3));
   g.setAttribute('uv', new THREE.Float32BufferAttribute(uvs, 2));
   g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
-  return g;
+  if (!core) return g;
+  // The crown's dark interior: one shaded blob per cluster, so gaps between cards show leaves, not sky.
+  const cores = clusters.map((cl) => {
+    const b = new THREE.IcosahedronGeometry(1, 1);
+    const bp = b.attributes.position;
+    const rect = atlas.rects.core[0];
+    const uv = new Float32Array(bp.count * 2);
+    const cc = new Float32Array(bp.count * 3);
+    for (let i = 0; i < bp.count; i++) {
+      const x = bp.getX(i);
+      const y = bp.getY(i);
+      const z = bp.getZ(i);
+      const lump = 1 + 0.12 * Math.sin(x * 4.1 + cl.c.x) * Math.sin(y * 3.3 + cl.c.y) * Math.sin(z * 3.7 + cl.c.z);
+      bp.setXYZ(i, cl.c.x + x * cl.R * core * lump, cl.c.y + y * cl.R * core * squash * lump, cl.c.z + z * cl.R * core * lump);
+      uv[i * 2] = lerp(rect[0], rect[2], Math.atan2(z, x) / TAU + 0.5);
+      uv[i * 2 + 1] = lerp(rect[1], rect[3], y * 0.5 + 0.5);
+      const k = (0.5 + 0.3 * (y * 0.5 + 0.5)) * lerp(0.75, 1, r());
+      cc[i * 3] = cl.tint.r * k;
+      cc[i * 3 + 1] = cl.tint.g * k;
+      cc[i * 3 + 2] = cl.tint.b * k;
+    }
+    b.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+    b.setAttribute('color', new THREE.BufferAttribute(cc, 3));
+    b.computeVertexNormals();
+    return b;
+  });
+  return merge([g, ...cores]);
 }
 
 /** One nipa frond: a ribbon arching up and out along +z, wearing a painted leaflet strip. */
@@ -424,7 +450,7 @@ function withLeaves(material) {
       .replace('#include <lights_lambert_pars_fragment>', LEAF_FRAG_LIGHTS)
       .replace('#include <normal_fragment_begin>', LEAF_NORMAL)
       // Mip filtering thins alpha-tested leaves with distance; thicken them back so far crowns stay full.
-      .replace('#include <map_fragment>', '#include <map_fragment>\n#ifdef USE_FOG\ndiffuseColor.a = min(1.0, diffuseColor.a * (1.0 + vFogDepth * 0.008));\n#endif');
+      .replace('#include <map_fragment>', '#include <map_fragment>\n#ifdef USE_FOG\ndiffuseColor.a = min(1.0, diffuseColor.a * (1.12 + vFogDepth * 0.005));\n#endif');
   };
   const key = material.customProgramCacheKey;
   material.customProgramCacheKey = () => `${key ? key.call(material) : ''}|leaf`;
