@@ -229,11 +229,13 @@ export function trunk(height, r0, r1, { seg = 6, lean = 0, leanDir = 0, color = 
 
 /** Wind sway for instanced vegetation: bend grows with height², phase varies per instance. */
 export function withWind(material, shared, bend = 0.0016) {
+  const uBend = { value: bend };
   material.onBeforeCompile = (shader) => {
     shader.uniforms.uTime = shared.uTime;
     shader.uniforms.uWind = shared.uWind;
+    shader.uniforms.uBend = uBend;
     shader.vertexShader = shader.vertexShader
-      .replace('#include <common>', '#include <common>\nuniform float uTime;\nuniform float uWind;')
+      .replace('#include <common>', '#include <common>\nuniform float uTime;\nuniform float uWind;\nuniform float uBend;')
       .replace(
         '#include <begin_vertex>',
         `#include <begin_vertex>
@@ -244,13 +246,13 @@ export function withWind(material, shared, bend = 0.0016) {
         #endif
         float wPh = dot(wOrigin, vec2(0.071, 0.053));
         float wH = max(position.y, 0.0);
-        float wBend = wH * wH * ${bend.toFixed(5)} * uWind;
+        float wBend = wH * wH * uBend * uWind;
         float wS = sin(uTime * 0.85 + wPh) * 0.7 + sin(uTime * 2.2 + wPh * 2.3) * 0.3;
         transformed.x += wS * wBend;
         transformed.z += sin(uTime * 0.63 + wPh * 1.7) * wBend * 0.55;`
       );
   };
-  material.customProgramCacheKey = () => `wind-${bend}`;
+  material.customProgramCacheKey = () => 'wind';
   return material;
 }
 

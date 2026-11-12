@@ -272,6 +272,8 @@ export function createSky({ layers = 3, octaves = 5 } = {}) {
   });
   const mesh = new THREE.Mesh(new THREE.SphereGeometry(1, 48, 24), material);
   mesh.scale.setScalar(1800);
+  // Drawn first. It cannot go last to save the cloud shader on covered pixels: in the water's mirror, the
+  // oblique projection pushes every depth toward the far plane, where a depth-tested sky would win.
   mesh.renderOrder = -10;
   mesh.frustumCulled = false;
 

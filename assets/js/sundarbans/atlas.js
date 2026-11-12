@@ -176,6 +176,8 @@ function tuft(ctx, S, r, variant) {
 
 /** The inside of a crown: packed, shaded leaves with no gaps, for the core behind every cloud of cards. */
 function core(ctx, S, r) {
+  ctx.fillStyle = col(126, 0.3, 0.27);
+  ctx.fillRect(0, 0, S, S);
   for (let i = 0; i < 520; i++) {
     const x = r() * S;
     const y = r() * S;
@@ -232,7 +234,7 @@ const SPECIES = {
  * Paint the atlas. `size` is the canvas edge; 2048 gives 512 px cells, enough for the nearest bank trees.
  * Returns the texture and a lookup of UV rectangles per cell.
  */
-export function createLeafAtlas(size = 2048) {
+export function createLeafAtlas(size = 2048, { anisotropy = 4, keepCanvas = false } = {}) {
   const canvas = document.createElement('canvas');
   canvas.width = canvas.height = size;
   const ctx = canvas.getContext('2d');
@@ -307,8 +309,10 @@ export function createLeafAtlas(size = 2048) {
   texture.minFilter = THREE.LinearMipmapLinearFilter;
   texture.magFilter = THREE.LinearFilter;
   texture.generateMipmaps = true;
-  texture.anisotropy = 4;
+  texture.anisotropy = anisotropy;
   texture.needsUpdate = true;
+  // The painted canvas has done its work; free its backing store unless a preview wants it.
+  if (!keepCanvas) canvas.width = canvas.height = 0;
 
   // UV rectangle of a cell, inset a little so mip filtering never bleeds a neighbour in.
   const uv = (i) => {
@@ -318,5 +322,5 @@ export function createLeafAtlas(size = 2048) {
   };
   const rects = {};
   for (const [name, cells] of Object.entries(CELLS)) rects[name] = cells.map(uv);
-  return { texture, rects, canvas, pick: (name, rr) => rects[name][Math.floor(clamp(rr(), 0, 0.999) * rects[name].length)] };
+  return { texture, rects, canvas: keepCanvas ? canvas : null, pick: (name, rr) => rects[name][Math.floor(clamp(rr(), 0, 0.999) * rects[name].length)] };
 }

@@ -320,6 +320,10 @@ body.menu-open .logo__dark { opacity: 0; }
 .statement__side { display: flex; flex-direction: column; align-items: flex-start; gap: 1.75rem; padding-top: 0.5rem; }
 .statement__point { align-self: stretch; display: flex; flex-direction: column; align-items: flex-start; gap: 0.75rem; }
 .statement__point + .statement__point { padding-top: 1.75rem; border-top: 1px solid var(--rule); }
+/* The vision, the mission, the about paragraph and each sub-theme line carry the argument: full ink, a little larger and heavier than an aside. */
+.statement__point .lede, .about__body > .lede, .subtheme p { color: var(--ink); font-weight: 600; }
+.statement__point .lede, .about__body > .lede { font-size: clamp(1.05rem, 1.35vw, 1.25rem); line-height: 1.55; }
+.subtheme p { font-size: clamp(0.98rem, 1.15vw, 1.08rem); }
 
 /* ── Stats ── */
 .stats { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--rule); }

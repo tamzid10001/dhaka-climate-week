@@ -132,7 +132,7 @@ void main() {
 }
 `;
 
-export function createWater({ reflect = true, resolution = 0.5 } = {}) {
+export function createWater({ reflect = true, resolution = 0.5, halfFloat = true } = {}) {
   const uniforms = {
     ...skyUniforms,
     ...airUniforms,
@@ -161,10 +161,12 @@ export function createWater({ reflect = true, resolution = 0.5 } = {}) {
   const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1800, length), material);
   mesh.rotation.x = -Math.PI / 2;
   mesh.position.set(0, 0, (Z_START + Z_END) / 2);
-  mesh.renderOrder = 1;
+  // First of the transparent draws, so lantern glow, fireflies and contact shadows land on top of it.
+  mesh.renderOrder = -1;
   mesh.updateMatrixWorld();
 
   let target = null;
+  let dirty = false;
   const virtualCamera = new THREE.PerspectiveCamera();
   virtualCamera.layers.set(0);
   const plane = new THREE.Plane();
@@ -201,9 +203,17 @@ export function createWater({ reflect = true, resolution = 0.5 } = {}) {
       const rw = Math.max(2, Math.round(w * resolution));
       const rh = Math.max(2, Math.round(h * resolution));
       if (!target) {
-        target = new THREE.WebGLRenderTarget(rw, rh, { type: THREE.HalfFloatType });
+        target = new THREE.WebGLRenderTarget(rw, rh, { type: halfFloat ? THREE.HalfFloatType : THREE.UnsignedByteType });
         uniforms.uRefl.value = target.texture;
       } else target.setSize(rw, rh);
+      dirty = true;
+    },
+    /** True after a resize, until the mirror has been drawn again at the new size. */
+    get dirty() {
+      return dirty;
+    },
+    get target() {
+      return target;
     },
     addRipple(x, z, strength = 1, time) {
       uniforms.uRipples.value[rippleIndex].set(x, z, time, strength);
@@ -236,9 +246,14 @@ export function createWater({ reflect = true, resolution = 0.5 } = {}) {
       virtualCamera.position.copy(view);
       virtualCamera.up.set(0, 1, 0).applyMatrix4(rotation).reflect(normal);
       virtualCamera.lookAt(tgt);
-      virtualCamera.far = camera.far;
       virtualCamera.updateMatrixWorld();
-      virtualCamera.projectionMatrix.copy(camera.projectionMatrix);
+      // The mirror's own projection: the same view, but a far plane just past the detailed forest, so
+      // the distant cells (all fog by then) are culled from the pass.
+      virtualCamera.fov = camera.fov;
+      virtualCamera.aspect = camera.aspect;
+      virtualCamera.near = camera.near;
+      virtualCamera.far = 700;
+      virtualCamera.updateProjectionMatrix();
       textureMatrix.set(0.5, 0, 0, 0.5, 0, 0.5, 0, 0.5, 0, 0, 0.5, 0.5, 0, 0, 0, 1);
       textureMatrix.multiply(virtualCamera.projectionMatrix).multiply(virtualCamera.matrixWorldInverse).multiply(mesh.matrixWorld);
 
@@ -262,6 +277,7 @@ export function createWater({ reflect = true, resolution = 0.5 } = {}) {
       renderer.render(scene, virtualCamera);
       renderer.setRenderTarget(prev);
       mesh.visible = true;
+      dirty = false;
     },
   };
 }

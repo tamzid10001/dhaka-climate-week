@@ -28,7 +28,7 @@ const leafTint = (r, l = 0.1) => new THREE.Color('#f4f6f0').offsetHSL((r() - 0.5
 
 let atlas = null;
 /** Quality knobs set by createFlora: cards per crown cluster, near and far. */
-const Q = { cards: 7, farCards: 3 };
+const Q = { cards: 7, farCards: 3, coreDetail: 1, reach: 800 };
 
 /** Map a geometry's 0…1 uv square onto one atlas cell. */
 function cellUV(geo, rect) {
@@ -38,8 +38,8 @@ function cellUV(geo, rect) {
 }
 
 /** A trunk: smooth, slightly leaning, flaring into the mud. Base at y = 0. */
-function bole(height, r0, r1, { seg = 8, lean = 0, leanDir = 0, color = '#cbbfb2', flare = 0.45 } = {}) {
-  const g = new THREE.CylinderGeometry(r1, r0, height, seg, 6, true);
+function bole(height, r0, r1, { seg = 8, lean = 0, leanDir = 0, color = '#cbbfb2', flare = 0.45, rows = 6 } = {}) {
+  const g = new THREE.CylinderGeometry(r1, r0, height, seg, rows, true);
   g.translate(0, height / 2, 0);
   const p = g.attributes.position;
   const lx = Math.cos(leanDir) * lean;
@@ -173,7 +173,7 @@ function crownCards(r, clusters, count, cell, { squash = 1, spread = 0.6, size =
   if (!core) return g;
   // The crown's dark interior: one shaded blob per cluster, so gaps between cards show leaves, not sky.
   const cores = clusters.map((cl) => {
-    const b = new THREE.IcosahedronGeometry(1, 1);
+    const b = new THREE.IcosahedronGeometry(1, far || Q.coreDetail === 0 ? 0 : 1);
     const bp = b.attributes.position;
     const rect = atlas.rects.core[0];
     const uv = new Float32Array(bp.count * 2);
@@ -258,7 +258,7 @@ const SPECIES = {
     const ld = r() * TAU;
     const lx = Math.cos(ld) * lean;
     const lz = Math.sin(ld) * lean;
-    const parts = [bole(H * 0.62, 0.32, 0.15, { seg: lod ? 6 : 9, lean, leanDir: ld, color: '#cdc7bf', flare: 0.5 })];
+    const parts = [bole(H * 0.62, 0.32, 0.15, { seg: lod ? 6 : 9, rows: lod ? 1 : 6, lean, leanDir: ld, color: '#cdc7bf', flare: 0.5 })];
     if (!lod) for (let i = 0; i < 4; i++) parts.push(fin((i / 4) * TAU + r() * 0.6, 0.9 + r() * 0.5, 1.3 + r() * 0.7, '#bdb7af'));
     const clusters = [{ c: new V3(lx, H - 2, lz), R: 2.9 + r() * 0.4, tint: leafTint(r) }];
     const n = lod ? 4 : 6;
@@ -286,7 +286,7 @@ const SPECIES = {
     const ld = r() * TAU;
     const lx = Math.cos(ld) * lean;
     const lz = Math.sin(ld) * lean;
-    const parts = [bole(H * 0.66, 0.25, 0.1, { seg: lod ? 6 : 8, lean, leanDir: ld, color: '#d4c8b8', flare: 0.35 })];
+    const parts = [bole(H * 0.66, 0.25, 0.1, { seg: lod ? 6 : 8, rows: lod ? 1 : 6, lean, leanDir: ld, color: '#d4c8b8', flare: 0.35 })];
     const n = lod ? 5 : 8;
     const clusters = [];
     for (let i = 0; i < n; i++) {
@@ -305,7 +305,7 @@ const SPECIES = {
   garjan(seed, lod) {
     const r = rng(seed);
     const H = 7 + r() * 2.5;
-    const parts = [bole(H * 0.78, 0.2, 0.1, { seg: lod ? 6 : 8, color: '#c6b9a8', flare: 0.2 })];
+    const parts = [bole(H * 0.78, 0.2, 0.1, { seg: lod ? 6 : 8, rows: lod ? 1 : 6, color: '#c6b9a8', flare: 0.2 })];
     const roots = lod ? 5 : 9;
     for (let i = 0; i < roots; i++) {
       const a = (i / roots) * TAU + r() * 0.5;
@@ -334,7 +334,7 @@ const SPECIES = {
   gewa(seed, lod) {
     const r = rng(seed);
     const H = 8 + r() * 2.5;
-    const parts = [bole(H * 0.7, 0.2, 0.09, { seg: lod ? 6 : 8, lean: 0.3, leanDir: r() * TAU, color: '#d2c6b6', flare: 0.3 })];
+    const parts = [bole(H * 0.7, 0.2, 0.09, { seg: lod ? 6 : 8, rows: lod ? 1 : 6, lean: 0.3, leanDir: r() * TAU, color: '#d2c6b6', flare: 0.3 })];
     const n = lod ? 4 : 6;
     const clusters = [];
     const red = seed % 2 === 1;
@@ -473,7 +473,7 @@ function leafMaterial(shared, bend, smooth) {
     prev(shader, renderer);
     shader.vertexShader = shader.vertexShader.replace('#include <project_vertex>', FLUTTER_VERT);
   };
-  depth.customProgramCacheKey = () => `depth-wind-${bend}`;
+  depth.customProgramCacheKey = () => 'depth-wind-leaf';
   m.userData.depth = depth;
   return m;
 }
@@ -489,7 +489,7 @@ const ps = new V3();
  * Each cell draws only while the camera is between `from` and `reach` metres away, measured from a
  * sphere around the trees themselves so a detailed cell and its distant twin hand over exactly.
  */
-function instanced(geo, material, items, { layer = 0, chunk = 150, from = 0, reach = 950, shadow = false, receive = true } = {}) {
+function instanced(geo, material, items, { layer = 0, chunk = 150, from = 0, reach = 950, shadow = false, receive = true, far = false } = {}) {
   const chunks = new Map();
   for (const it of items) {
     const k = `${Math.floor((Z_START - it.z) / chunk)}:${Math.floor(it.x / chunk)}`;
@@ -517,7 +517,7 @@ function instanced(geo, material, items, { layer = 0, chunk = 150, from = 0, rea
       if (material.userData.depth) mesh.customDepthMaterial = material.userData.depth;
     }
     const cell = new THREE.Sphere().setFromPoints(list.map((it) => new V3(it.x, it.y, it.z)));
-    Object.assign(mesh.userData, { cell, from, reach });
+    Object.assign(mesh.userData, { cell, from, reach, far });
     if (layer) mesh.layers.set(layer);
     meshes.push(mesh);
   }
@@ -525,9 +525,13 @@ function instanced(geo, material, items, { layer = 0, chunk = 150, from = 0, rea
 }
 
 export function createFlora({ density = 1, tier = 2, smooth = false } = {}) {
-  atlas = createLeafAtlas(tier > 0 ? 2048 : 1024);
+  atlas = createLeafAtlas(tier > 0 ? 2048 : 1024, { anisotropy: tier > 0 ? 4 : 1 });
   Q.cards = [5, 7, 10][tier];
   Q.farCards = tier ? 3 : 2;
+  Q.coreDetail = tier === 2 ? 1 : 0;
+  // How far the distant forest draws: beyond this the fog and air leave nothing to see.
+  Q.reach = [560, 680, 800][tier];
+  let reachScale = 1;
   const shared = { uTime: { value: 0 }, uWind: { value: 1 } };
   const treeMat = leafMaterial(shared, 0.0009, smooth);
   const palmMat = leafMaterial(shared, 0.011, smooth);
@@ -554,7 +558,7 @@ export function createFlora({ density = 1, tier = 2, smooth = false } = {}) {
     for (const band of bands) {
       for (let z = Z_START; z > Z_END; z -= band.cz) {
         for (let b = band.b0; b < band.b1; b += band.cb) {
-          if (r() > (band.far ? Math.max(density, 0.6) : density)) continue;
+          if (r() > (band.far && tier > 0 ? Math.max(density, 0.6) : density)) continue;
           const zz = z - r() * band.cz;
           const bb = b + r() * band.cb;
           const x = riverX(zz) + side * (riverW(zz) + bb);
@@ -571,7 +575,7 @@ export function createFlora({ density = 1, tier = 2, smooth = false } = {}) {
           const sp = band.pick();
           if (!sp) continue;
           const s = band.scale ? band.scale[0] + r() * (band.scale[1] - band.scale[0]) : 0.85 + r() * 0.4;
-          add(sp, x, h - 0.1, zz, s, { lod: !!band.lod, hs: sp === 'sundari' ? 0.9 + r() * 0.25 : 1 });
+          add(sp, x, h - 0.1, zz, s, { lod: !!band.lod, cast: band.b0 < 70, hs: sp === 'sundari' ? 0.9 + r() * 0.25 : 1 });
           if ((sp === 'keora' || sp === 'garjan') && band.b0 < 20) hosts.push(new V3(x, h + (sp === 'keora' ? 8 : 5), zz));
         }
       }
@@ -648,32 +652,42 @@ export function createFlora({ density = 1, tier = 2, smooth = false } = {}) {
     const mat = sp === 'nipa' ? palmMat : treeMat;
     const nearA = items[sp].filter((it, i) => !it.lod && i % 2 === 0);
     const nearB = items[sp].filter((it, i) => !it.lod && i % 2 === 1);
-    const lod = items[sp].filter((it) => it.lod);
+    const lodNear = items[sp].filter((it) => it.lod && it.cast);
+    const lodFar = items[sp].filter((it) => it.lod && !it.cast);
     // Bank trees keep full detail while near; past the haze line their cell hands over to the same
-    // trees in the species' distant form.
+    // trees in the species' distant form. Only the first rows of the forest cast shadows: anything
+    // deeper lands on a floor the river never sees.
     for (const [geo, list] of [[near[0], nearA], [near[1], nearB]]) {
       if (!list.length) continue;
       plant(geo, mat, list, { reach: DETAIL_REACH, shadow: true, receive: false });
-      plant(far, mat, list, { from: DETAIL_REACH, receive: false });
+      plant(far, mat, list, { from: DETAIL_REACH, reach: Q.reach, receive: false, far: true });
     }
-    if (lod.length) plant(far, mat, lod, { shadow: true, receive: false });
+    if (lodNear.length) plant(far, mat, lodNear, { reach: Q.reach, shadow: true, receive: false, far: true });
+    if (lodFar.length) plant(far, mat, lodFar, { reach: Q.reach, receive: false, far: true });
   }
   // Understorey detail is lost in the haze long before the canopy, so it stops drawing much sooner.
-  plant(SPECIES.goran(7), treeMat, items.goran, { layer: 1, reach: 450, shadow: true });
+  plant(SPECIES.goran(7), treeMat, items.goran, { layer: 1, reach: 450 });
   plant(tuft(r), grassMat, items.grass, { layer: 1, reach: 260 });
   plant(pneumatophore(), rootMat, items.roots, { layer: 1, chunk: 120, reach: 220 });
 
   return {
     group,
     hosts,
+    /** The governor's geometry lever: scale how far the distant forest draws (1 = the tier's default). */
+    setReach(k) {
+      reachScale = clamp(k, 0.5, 1);
+    },
+    get reach() {
+      return reachScale;
+    },
     update(time, wind, eye) {
       shared.uTime.value = time;
       shared.uWind.value = wind;
       if (!eye) return;
       for (const mesh of cells) {
-        const { cell, from, reach } = mesh.userData;
+        const { cell, from, reach, far } = mesh.userData;
         const d = Math.max(0, cell.distanceToPoint(eye));
-        mesh.visible = d >= from && d < reach;
+        mesh.visible = d >= from && d < (far ? reach * reachScale : reach);
       }
     },
   };

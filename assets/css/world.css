@@ -32,7 +32,10 @@
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
 }
 
-html.has-world .world { opacity: 1; }
+/* The sky gradient stands in at once; the canvas fades in on its first frame. */
+html.has-world .world { opacity: 1; transition: none; }
+.world__canvas { opacity: 0; transition: opacity 1.4s var(--ease); }
+html.world-ready .world__canvas { opacity: 1; }
 html.world-night .world { background: linear-gradient(180deg, #0b1322 0%, #172131 55%, #1d2a33 100%); }
 html.has-world main,
 html.has-world .foot { position: relative; z-index: 1; }
@@ -146,6 +149,7 @@ html.has-world .kicker::before {
 html.has-world :is(.head__top, .team-block__label) { border-bottom-color: var(--rule-strong); }
 html.has-world .team-block__label { color: var(--ink); }
 html.has-world .lede { color: var(--ink-soft); }
+html.has-world :is(.statement__point .lede, .about__body > .lede, .subtheme p) { color: var(--ink); }
 
 /* Emphasis is set in ink and marked with a tiger stroke: a dark orange word cannot hold contrast against
    open sky and misted forest at once. In split headings the stroke draws in once the words have risen.
@@ -255,13 +259,24 @@ html.has-world .program__theme { margin-top: 0; }
 /* ── Partners: an open wall of marks ── */
 html.has-world .logos { border: 0; gap: 0.5rem clamp(1rem, 2.5vw, 2rem); }
 html.has-world .logos > div { min-height: 96px; padding: clamp(1rem, 2.5vw, 1.75rem) 0.5rem; border: 0; }
-/* Marks are pressed to one deep grey so pale wordmarks hold on the misted forest; hover restores their colour. */
-html.has-world .logos img:not(.badge) { opacity: 1; filter: grayscale(1) brightness(0.42); }
+/* Marks are pressed to one deep grey so pale wordmarks hold on the misted forest; hover restores their colour.
+   Marks that come on a white box keep it as a small white tile instead of a grey one. */
+html.has-world .logos img:not(.badge) { opacity: 1; filter: grayscale(1) brightness(0.42); transition: opacity 0.3s var(--ease), filter 0.7s var(--ease); }
+html.has-world .logos img.boxed { filter: grayscale(1); border-radius: 3px; }
 html.has-world :is(.logos > div:hover, .logos a:focus-visible) img:not(.badge) { filter: none; }
+/* Under moonlight every mark reads in white: dark art on transparency is inverted to white, dark plates with
+   white lettering invert to white tiles with dark lettering, and boxed marks stay white tiles. */
+html.has-world.world-night .logos img:not(.badge):not(.boxed) { filter: grayscale(1) invert(1) brightness(1.45); }
+html.has-world.world-night .logos img.badge { opacity: 1; filter: grayscale(1) invert(1) brightness(1.1); border-radius: 3px; transition: opacity 0.3s var(--ease), filter 0.7s var(--ease); }
+html.has-world.world-night .logos img.boxed { filter: grayscale(1) brightness(1.05); }
+html.has-world.world-night :is(.logos > div:hover, .logos a:focus-visible) img:not(.badge):not(.boxed) { filter: grayscale(1) invert(1) brightness(1.9); }
+html.has-world.world-night :is(.logos > div:hover, .logos a:focus-visible) img:is(.badge, .boxed) { filter: grayscale(0) brightness(1); }
 /* The two organizers lead in their own colours at a larger size, set left on the content edge. */
 html.has-world .logos.logos--2 { display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem clamp(2.5rem, 7vw, 5.5rem); }
 html.has-world .logos.logos--2 > div { min-height: 0; padding: 0.25rem 0; }
 html.has-world .logos.logos--2 img { width: auto; max-width: none; max-height: none; opacity: 1; filter: none; }
+html.has-world.world-night .logos.logos--2 img:not(.badge) { filter: grayscale(1) invert(1) brightness(1.45); }
+html.has-world.world-night .logos.logos--2 img.badge { filter: grayscale(1) invert(1) brightness(1.1); border-radius: 4px; }
 html.has-world .logos.logos--2 img.wide { height: clamp(26px, 3vw, 38px); }
 html.has-world .logos.logos--2 img.badge { height: clamp(56px, 6vw, 76px); }
 

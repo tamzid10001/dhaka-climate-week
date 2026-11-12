@@ -214,7 +214,7 @@ export function createTerrain() {
 
 /** River-aligned height texture for the water shader: s ∈ [−HMAP_HALF, HMAP_HALF] across, z along. */
 export const HMAP_HALF = 140;
-export function createHeightTexture(width = 384, height = 1536) {
+export function createHeightTexture(width = 256, height = 1024) {
   const data = new Uint8Array(width * height);
   for (let j = 0; j < height; j++) {
     const z = Z_START + ((j + 0.5) / height) * (Z_END - Z_START);

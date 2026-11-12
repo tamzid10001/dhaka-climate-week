@@ -22,10 +22,11 @@ const soundButton = document.querySelector('[data-sound]');
 const params = new URLSearchParams(location.search);
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 // `?world-tier=0|1|2` pins the quality and keeps the world running on any device, for debugging.
-const forced = params.has('world-tier');
+const forcedTier = Math.round(+params.get('world-tier'));
+const forced = params.has('world-tier') && Number.isInteger(forcedTier);
 
 function pickTier() {
-  if (forced) return clamp(+params.get('world-tier'), 0, 2);
+  if (forced) return clamp(forcedTier, 0, 2);
   const coarse = matchMedia('(pointer: coarse)').matches;
   const small = Math.min(innerWidth, innerHeight) < 700;
   const cores = navigator.hardwareConcurrency || 4;
@@ -63,6 +64,14 @@ function start() {
     renderer.dispose();
     return;
   }
+  // The world will run: switch the page to its layout over the sky now, so the static design is never seen
+  // waiting, and build the forest on the next frame so this state paints first. The canvas itself fades in
+  // on its first frame (world-ready).
+  root.classList.add('has-world');
+  requestAnimationFrame(() => build(renderer, tier, Q));
+}
+
+function build(renderer, tier, Q) {
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   // A neutral filmic curve: sunlit leaves and the glitter on the water roll off instead of clipping, while
   // the palette's mid-tones stay where they were tuned. The sky draws its own gradient outside the curve.
@@ -87,7 +96,7 @@ function start() {
    * already taken most of the contrast. Phones (tier 0) go without.
    */
   const shadows = tier > 0;
-  const SHADOW_HALF = tier === 2 ? 120 : 90;
+  const SHADOW_HALF = tier === 2 ? 150 : 110;
   renderer.shadowMap.enabled = shadows;
   renderer.shadowMap.type = THREE.PCFShadowMap;
   renderer.shadowMap.autoUpdate = false;
@@ -108,7 +117,7 @@ function start() {
   }
 
   const sky = createSky({ layers: Q.clouds, octaves: Q.octaves });
-  const water = createWater({ reflect: Q.reflect });
+  const water = createWater({ reflect: Q.reflect, halfFloat: renderer.extensions.has('EXT_color_buffer_float') || renderer.extensions.has('EXT_color_buffer_half_float') });
   // `?world-a2c=1` turns on alpha-to-coverage for the leaves. Off by default: the hard cut is clean on every
   // driver, while coverage dithering left bright pixels along leaf edges on some.
   const flora = createFlora({ density: Q.density, tier, smooth: params.get('world-a2c') === '1' });
@@ -155,7 +164,7 @@ function start() {
       TOD = todFor(nightfall, innerHeight / maxScroll);
     }
   };
-  const forcedP = params.has('world-p') ? clamp(+params.get('world-p')) : null;
+  const forcedP = params.has('world-p') && Number.isFinite(+params.get('world-p')) ? clamp(+params.get('world-p')) : null;
   let pTarget = 0;
   let p = forcedP ?? clamp(scrollY / Math.max(1, root.scrollHeight - innerHeight));
   const pointer = new THREE.Vector2();
@@ -234,7 +243,7 @@ function start() {
   let mistAmount = heroMist();
   const stats = { tier, dpr, fps: 60 };
   window.__sundarbans = stats;
-  if (params.has('world-debug')) Object.assign(stats, { scene, camera, fauna, renderer, sound });
+  if (params.has('world-debug')) Object.assign(stats, { scene, camera, fauna, renderer, sound, water, flora, sun });
 
   function setDpr(value) {
     dpr = value;
@@ -248,7 +257,7 @@ function start() {
     retired = true;
     stats.retired = true;
     stop();
-    root.classList.remove('has-world', 'world-night');
+    root.classList.remove('has-world', 'world-night', 'world-ready');
     if (soundButton && soundButton.getAttribute('aria-pressed') !== 'true') soundButton.hidden = true;
     setTimeout(() => renderer.forceContextLoss(), 1800);
   }
@@ -267,26 +276,32 @@ function start() {
   let fastFor = 0;
   let crawlFor = 0;
   function govern(ms) {
-    const paused = ms > 1000 && prevMs < 100;
+    // A lone long gap after smooth frames is a pause or a hitch (a tab in the background, a debugger, the
+    // first draw of a new program), not a slow device.
+    const paused = ms > 250 && prevMs < 60;
     prevMs = ms;
     if (paused) return;
     const span = Math.min(ms, 1000);
-    avg = lerp(avg, Math.min(ms, 250), 1 - Math.exp(-span / 400));
+    avg = lerp(avg, Math.min(ms, 120), 1 - Math.exp(-span / 400));
     stats.fps = Math.round(1000 / avg);
     warm += span;
     if (warm < 2000) return;
     slowFor = avg > 24 ? slowFor + span : 0;
-    fastFor = avg < 13 ? fastFor + span : 0;
+    // Under vsync a steady 60 Hz is headroom too.
+    fastFor = avg < 17.5 ? fastFor + span : 0;
     crawlFor = avg > 55 ? crawlFor + span : 0;
-    if (slowFor > 1200 && (dpr > Q.minDpr || water.reflect)) {
+    if (slowFor > 1200 && (dpr > Q.minDpr || flora.reach > 0.5 || water.reflect)) {
+      // Resolution first, then how far the forest draws, and only then the mirror.
       if (dpr > Q.minDpr) setDpr(Math.max(Q.minDpr, dpr - 0.15));
+      else if (flora.reach > 0.5) flora.setReach(flora.reach - 0.25);
       else water.dropReflection();
       slowFor = 0;
       crawlFor = 0;
     } else if (crawlFor > 3000 && !forced) {
       retire();
-    } else if (fastFor > 5000 && dpr < Math.min(window.devicePixelRatio || 1, Q.dpr)) {
-      setDpr(Math.min(Q.dpr, dpr + 0.1));
+    } else if (fastFor > 5000 && (dpr < Math.min(window.devicePixelRatio || 1, Q.dpr) || flora.reach < 1)) {
+      if (flora.reach < 1) flora.setReach(flora.reach + 0.25);
+      else setDpr(Math.min(Q.dpr, dpr + 0.1));
       fastFor = 0;
     }
   }
@@ -351,19 +366,21 @@ function start() {
     mistColor.lerp(mistTarget, ready ? 1 - Math.exp(-4 * dt) : 1);
     airUniforms.uAirColor.value.copy(mistColor);
 
-    // Shadows are drawn once per frame, by whichever pass comes first.
-    renderer.shadowMap.needsUpdate = shadows;
-    if (water.reflect && (tier === 2 || frame % 2 === 0)) {
+    // The shadow map is drawn by the main pass, whose camera sees every layer; the mirror reuses last
+    // frame's map. On the first frame there is none yet, so the mirror draws it once itself.
+    renderer.shadowMap.needsUpdate = shadows && frame === 1;
+    if (water.reflect && (tier === 2 || frame % 2 === 0 || water.dirty)) {
       // The mirror reflects the forest itself; the air is laid over the water's surface afterwards.
       airUniforms.uAir.value.z = 0;
       water.renderReflection(renderer, scene, camera);
       airUniforms.uAir.value.z = 1;
     }
+    renderer.shadowMap.needsUpdate = shadows;
     renderer.render(scene, camera);
 
     if (!ready) {
       ready = true;
-    root.classList.add('has-world');
+      root.classList.add('has-world', 'world-ready');
     }
 
     govern(frameMs);
@@ -392,7 +409,7 @@ function start() {
     lost = true;
     nightInk = false;
     stop();
-    root.classList.remove('has-world', 'world-night');
+    root.classList.remove('has-world', 'world-night', 'world-ready');
   });
   // three.js rebuilds its GPU resources on restore, and the first frame back fades the world in again.
   canvas.addEventListener('webglcontextrestored', () => {
