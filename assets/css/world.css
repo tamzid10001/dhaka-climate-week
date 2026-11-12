@@ -269,6 +269,10 @@ html.has-world .logos.logos--2 img.badge { height: clamp(56px, 6vw, 76px); }
 html.has-world .media-feature__link { border: 0; }
 html.has-world .media-feature__visual { border-radius: var(--r-photo); }
 html.has-world .media-feature__body { padding: clamp(1.25rem, 2.5vw, 1.75rem) 0 0; }
+@media (min-width: 961px) {
+  /* The leading feature sits beside its picture; on the open river it keeps no panel, only a gutter. */
+  html.has-world .media-feature:first-child:nth-last-child(odd) .media-feature__body { padding: 0.25rem 0 0 clamp(1.5rem, 3vw, 2.5rem); }
+}
 html.has-world .media-feature__source { color: var(--ink); }
 html.has-world .cards { gap: clamp(2rem, 4vw, 3.5rem); }
 html.has-world .card { padding: 1.6rem 0 0; border: 0; border-top: 1px solid var(--rule-strong); box-shadow: none; }
