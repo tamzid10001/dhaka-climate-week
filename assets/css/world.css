@@ -264,10 +264,12 @@ html.has-world .logos > div { min-height: 96px; padding: clamp(1rem, 2.5vw, 1.75
    Marks that come on a white box keep it as a small white tile instead of a grey one. */
 html.has-world .logos img:not(.badge) { opacity: 1; filter: grayscale(1) brightness(0.42); transition: opacity 0.3s var(--ease), filter 0.7s var(--ease); }
 html.has-world .logos img.boxed { filter: grayscale(1); border-radius: 3px; }
+html.has-world .logos img.light, html.has-world .logos > div:hover img.light { filter: grayscale(1) brightness(0.26); }
 html.has-world :is(.logos > div:hover, .logos a:focus-visible) img:not(.badge) { filter: none; }
 /* Under moonlight every mark reads in white: dark art on transparency is inverted to white, dark plates with
    white lettering invert to white tiles with dark lettering, and boxed marks stay white tiles. */
-html.has-world.world-night .logos img:not(.badge):not(.boxed) { filter: grayscale(1) invert(1) brightness(1.45); }
+html.has-world.world-night .logos img:not(.badge):not(.boxed):not(.light) { filter: grayscale(1) invert(1) brightness(1.45); }
+html.has-world.world-night .logos img.light, html.has-world.world-night .logos > div:hover img.light { filter: grayscale(1) brightness(1.1); }
 html.has-world.world-night .logos img.badge { opacity: 1; filter: grayscale(1) invert(1) brightness(1.1); border-radius: 3px; transition: opacity 0.3s var(--ease), filter 0.7s var(--ease); }
 html.has-world.world-night .logos img.boxed { filter: grayscale(1) brightness(1.05); }
 html.has-world.world-night :is(.logos > div:hover, .logos a:focus-visible) img:not(.badge):not(.boxed) { filter: grayscale(1) invert(1) brightness(1.9); }
