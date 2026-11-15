@@ -150,7 +150,7 @@ html.has-world .kicker::before {
 html.has-world :is(.head__top, .team-block__label) { border-bottom-color: var(--rule-strong); }
 html.has-world .team-block__label { color: var(--ink); }
 html.has-world .lede { color: var(--ink-soft); }
-html.has-world :is(.statement__point .lede, .about__body > .lede) { color: var(--ink); }
+html.has-world :is(.statement__point .lede, .about__body > .lede, .subtheme p) { color: var(--ink); font-weight: 700; }
 
 /* Emphasis is set in ink and marked with a tiger stroke: a dark orange word cannot hold contrast against
    open sky and misted forest at once. In split headings the stroke draws in once the words have risen.

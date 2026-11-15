@@ -322,7 +322,7 @@ body.menu-open .logo__dark { opacity: 0; }
 .statement__point + .statement__point { padding-top: 1.75rem; border-top: 1px solid var(--rule); }
 /* The vision, the mission and the about paragraph carry the argument: full ink, a little larger and heavier than an aside
    (the sub-theme lines get the same treatment in their own rule below). */
-.statement__point .lede, .about__body > .lede { color: var(--ink); font-weight: 600; font-size: clamp(1.05rem, 1.35vw, 1.25rem); line-height: 1.55; }
+.statement__point .lede, .about__body > .lede { color: var(--ink); font-weight: 700; font-size: clamp(1.12rem, 1.5vw, 1.35rem); line-height: 1.5; }
 
 /* ── Stats ── */
 .stats { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--rule); }
@@ -368,7 +368,7 @@ body.menu-open .logo__dark { opacity: 0; }
   display: block; margin-top: 0.5rem; font-family: var(--font-body); font-stretch: normal; font-weight: 600;
   font-size: 0.6em; line-height: 1.3; letter-spacing: 0; color: var(--accent);
 }
-.subtheme p { margin-top: 0.75rem; font-size: clamp(0.98rem, 1.15vw, 1.08rem); font-weight: 600; color: var(--ink); line-height: 1.55; }
+.subtheme p { margin-top: 0.75rem; font-size: clamp(1rem, 1.2vw, 1.1rem); font-weight: 700; color: var(--ink); line-height: 1.5; }
 
 /* Signature framework */
 .framework-head {
